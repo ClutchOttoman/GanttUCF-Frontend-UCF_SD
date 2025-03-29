@@ -55,7 +55,7 @@ html.custom {
       background-color: var(--buttons) !important;
     }
     
-    button, .btn.btn-primary, .btn, .cta-button{
+    button, .btn.btn-primary, .btn, .cta-button, button.fc-today-button.fc-button.fc-button-primary{
         background-color: var(--buttons, #dc6b2c)  !important;  /* Dark background for buttons */
         color: var(--text, #FFFFFF);  /* Light text */
         transition: ease-in 0.1s;
@@ -69,7 +69,7 @@ html.custom {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container, input#myColor{
+    div.task-title-container, input#myColor, div#task-tab{
       color: var(--text, #000000);
       background-color:  var(--contentarea, #ffffff) !important;
       visibility: visible;
@@ -199,14 +199,14 @@ html.custom {
   
     /* To Do/todo List Page */
     /* Table background*/
-    th.todoTableBody  { 
+    th.todoTableBody,.fc-scrollgrid-sync-inner,  .fc-daygrid-day-frame.fc-scrollgrid-sync-inner, table.fc-scrollgrid{ 
         background-color: var(--todolist, #dc6b2c);
         border-color:var(--todolist, #dc6b2c);
         color:var(--text, rgb(255, 255, 255));
         visibility: visible;
         
     }
-    table tbody, td{
+    table tbody, td, .fc-header-toolbar.fc-toolbar{
       background-color: var(--todolistinner, #ffffff);
       color: var(--text, black);
     }

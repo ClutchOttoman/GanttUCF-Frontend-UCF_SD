@@ -73,7 +73,7 @@ html.dark {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container{
+    div.task-title-container, div#task-tab{
       color: white;
       background-color: #2b2b2b !important;
       visibility: visible;
@@ -189,15 +189,15 @@ html.dark {
         visibility: visible;
         }
   
-    /* To Do/todo List Page */
+    /* To Do List and Calander List Page */
     /* Table background*/
-    th.todoTableBody  { 
+    th.todoTableBody,.fc-scrollgrid-sync-inner,  .fc-daygrid-day-frame.fc-scrollgrid-sync-inner, table.fc-scrollgrid { 
         background-color: #1E1E1E;
         border-color:#1E1E1E;
         color:rgb(255, 255, 255);
         visibility: visible;
     }
-    table tbody, td{
+    table tbody, td, .fc-header-toolbar.fc-toolbar{
       background-color: #292929;
       color: white;
       border-color: #292929;
@@ -209,8 +209,9 @@ html.dark {
     }
     
     /* Button inside the table */
-    .taskBtn {
+    .taskBtn, .fc-daygrid-event-dot {
         background-color:  #1E1E1E!important;
+        border-color: white!important;
         &:hover{
           background-color: #555 !important;
         }

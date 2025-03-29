@@ -97,6 +97,7 @@ function DashboardToDo() {
                 let currTaskProgress = usersTasks[i].progress
                 let currTaskCategory = usersTasks[i].taskCategory;
                 let currTaskCategoryId = usersTasks[i].taskCategoryId;
+                let prerequisiteTasks = usersTasks[i].prerequisiteTasks;
                 let currProject = allProjects.filter(project => project._id === currProjectId);
                 var currProjectName;
                 var currProjectOwnerId;
