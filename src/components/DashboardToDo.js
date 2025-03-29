@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AnnouncementModal from './AnnouncementModal';
 import './DashboardToDo.css';
-import DOMPurify from 'dompurify';
 import {buildPath} from './buildPath';
 import {toast} from 'react-toastify';
 import ToastSuccess from './ToastSuccess';
@@ -249,7 +248,7 @@ function DashboardToDo() {
                                             <td colSpan="6" className="details-row">
                                                 <div>
                                                     <h5><strong>Description:</strong></h5>
-                                                    <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(task.description, {USE_PROFILES: {html: true}})}}></div>
+                                                        <p dangerouslySetInnerHTML={{__html: task.description}}></p>
                                                     <p>
                                                         <span>
                                                             {task.dueDatePretty === 'PAST DUE' ?
