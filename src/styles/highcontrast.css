@@ -312,6 +312,9 @@ html.high-contrast {
               &:hover{
                 background-color: #d3d3d3 !important;
               }
+              &.active{
+                background-color: #6B2B00  !important;
+              }
             }
             .dropdown-toggle{
               background-color: #f0f0f0 !important;

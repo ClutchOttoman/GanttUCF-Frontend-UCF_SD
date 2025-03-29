@@ -21,7 +21,7 @@ function AboutUs() {
     return (
         <div className="about-section">
             
-            <h1>Ganttify Teams</h1>
+            <h1>GanttUCF Teams</h1>
             <p>Thank you for your contributions to this project.</p>
             
             {/* SD1 and SD2 Credits. */}

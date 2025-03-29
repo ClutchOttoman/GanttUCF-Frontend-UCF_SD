@@ -182,7 +182,7 @@ function ResetPassword() {
   
   return (
 
-    <div className="reset-password-container">
+    <div className="reset-password-container background-tile-repeat">
       <div className="reset-password-form">
 
         <div className="card-header registerFormHeader text-center">

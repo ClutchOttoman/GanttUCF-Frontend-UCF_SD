@@ -5,8 +5,6 @@ import { buildPath } from './buildPath';
 import ProjectTitle from './GanttChart/ProjectTitle';
 import './NavBar.css';
 import ProjectInviteLink from './ProjectInviteLink.js';
-import useDarkMode from './useDarkMode';
-import useHighContrastMode from './useHighContrastMode';
 
 const baseStyle = {
   backgroundColor: "#FDDC87",
@@ -102,8 +100,6 @@ async function createTask(newTask) {
   }
 }
 
-
-
 function NavBar(props) {
 
   const [showAnnouncementModal, setAnnouncmentModal] = useState(false);
@@ -116,33 +112,6 @@ function NavBar(props) {
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
 
-
-
-
-  const [isDarkMode, setIsDarkMode] = useDarkMode();
-  const [isHighContrastMode, setIsHightContrastMode] = useHighContrastMode();
-
-const toggleDarkMode = () => {
-  setIsDarkMode((prevMode) => {
-    if (!prevMode) {
-      setIsHightContrastMode(false); // Turn off High Contrast Mode if it's on
-    }
-    return !prevMode;
-  });
-};
-
-const toggleHighContrastMode = () => {
-  setIsHightContrastMode((prevMode) => {
-    if (!prevMode) {
-      setIsDarkMode(false); // Turn off Dark Mode if it's on
-    }
-    return !prevMode;
-  });
-};
-  
-
-
-
   const [taskData, setTaskData] = useState({
     taskTitle: "",
     description: "",
@@ -153,16 +122,10 @@ const toggleHighContrastMode = () => {
     pattern: "default-pattern"
   });
 
-
-
-
   const [isEditor, setIsEditor] = useState(false);
   const [founderId, setFounderId] = useState(null);
   const [team, setTeam] = useState(null);
 
-
-
- 
   var _ud;
   var ud;
   var userId;
@@ -486,12 +449,12 @@ const toggleHighContrastMode = () => {
   
   
   else if (props.layout == 1) {
-    // For the Ganttify homepage.
+    // For the GanttUCF homepage.
     return (
       <div id="navBarDiv">
         <div className="navbar">
             <img src={Logo} alt="GanttifyHomePage" className="logo" />
-          <h1 className="navbarHeader"> Ganttify </h1>
+          <h1 className="navbarHeader"> GanttUCF </h1>
           <ul className="navbarOptions">
             <li><Link to="/"><button id="button"> Home</button></Link></li>
             <li><Link to="/about-us"><button id="button">About Us</button></Link></li>
@@ -502,7 +465,7 @@ const toggleHighContrastMode = () => {
       </div>
     );
   } else if (props.layout == 2) {
-    // For the Ganttify user dashboard.
+    // For the GanttUCF user dashboard.
     return (
       <div id="navBarDiv" style={dashboardNav}>
         <div class="container-fluid navbarDash">
@@ -661,7 +624,7 @@ const toggleHighContrastMode = () => {
           <a href="/dashboard" aria-label="Go back to home page">
             <img src={Logo} alt="GanttifyHomePage" className="logo" />
           </a>
-          <h1 className="navbarHeader" > Ganttify </h1>
+          <h1 className="navbarHeader" > GanttUCF </h1>
           <ul className="navbarOptions">
           </ul>
         </div>

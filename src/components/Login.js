@@ -47,14 +47,12 @@ function Login() {
             name: res.name,
             username: res.username,
             phone: res.phone,
+            showAnnouncement: res.showAnnouncement,
             uiOptions: res.uiOptions,
+            test: res.test,
             error: res.error
         };
         console.log(JSON.stringify(user));
-        localStorage.setItem('CVDFilter', user.uiOptions.CVDFilter);
-        localStorage.setItem('fontStyle', user.uiOptions.textFontStyle);
-        localStorage.setItem('isDarkMode', user.uiOptions.useDefaultDarkMode);
-        localStorage.setItem('isHighContrastMode', user.uiOptions.useDefaultHighContrastMode);
         localStorage.setItem('user_data', JSON.stringify(user));
         setMessage('');
         window.location.href = '/dashboard';
@@ -66,10 +64,8 @@ function Login() {
   };
 
   return (
-
-    
-    <div className = "loginContainer mt-5">
-      <div className ="loginForm">
+    <div className = "loginContainer background-tile-repeat">
+      <div className ="loginForm mt-1">
           <div className ="card-header loginFormHeader text-center">
             <h1 className = "loginTitle">Login</h1>
           </div>
