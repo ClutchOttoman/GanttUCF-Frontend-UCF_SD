@@ -11,7 +11,29 @@ body{
     margin-left:40px;
     margin-top:-60px;
     color: black;
+
 }
+.calendar-btn{
+    margin-left: 10vw;
+    /* line-height: 1; */
+    padding: 5px 10px 5px 10px;
+    max-height: fit-content;
+    border-radius: var(--bs-border-radius);
+    align-self: center;
+    background-color: rgb(220, 107, 44);
+    border: none;
+    color: white;
+}
+
+.search-bar-calendar-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    /* flex-wrap: nowrap; */
+    flex-wrap: wrap;
+    align-content: center;
+}
+
 .todo-toolbar{
     position: relative;
     display: flex;
@@ -24,6 +46,7 @@ body{
     width: 500px !important;
 }
 
+/* All css for to-do list table */
 .table {
     margin-left: 40px;
     width: 70vw;

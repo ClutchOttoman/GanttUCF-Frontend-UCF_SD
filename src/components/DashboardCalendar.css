@@ -1,0 +1,221 @@
+/* css for the container that will house the calendar */
+.calendar {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-left: 40px;
+    max-width: 70vw !important;
+    height: auto !important;
+    min-height: 500px;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: none;
+    color: white;
+    overflow: visible !important;
+    max-height: none !important;
+    /* background-color:rgb(220, 107, 44); */
+}
+
+.calendar-btn{
+    margin-left: 10vw;
+    padding: 5px 10px 5px 10px;
+    max-height: fit-content;
+    border-radius: var(--bs-border-radius);
+    align-self: center;
+    background-color: rgb(220, 107, 44);
+    border: none;
+    color: white;
+}
+
+/* Adjusting css made by FullCalendar in order for it 
+    to fit our website */
+.fc-media-screen{
+    height: auto;
+}
+
+.fc-header-toolbar{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgb(220, 107, 44);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: none;
+    color: white;
+    margin-bottom: 0px;
+}
+
+.fc-toolbar{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    justify-content: space-between;
+    background-color: rgb(220, 107, 44);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border: none;
+    color: white;
+    margin-bottom: 0px !important;
+}
+
+.fc-view-harness {
+    height: auto !important;
+    min-height: 600px !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
+.fc-daygrid{
+    overflow-y: visible !important;
+    height: auto !important;
+}
+
+.fc-scrollgrid {
+    height: auto !important;
+}
+
+.fc-daygrid-body {
+    height: auto !important;
+    min-height: 600px !important;
+    /* background-color: rgb(220, 107, 44); */
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+    overflow-x: hidden !important;
+    overflow: visible !important;
+    padding-bottom: 60vh;
+    display: flex !important;
+    flex-grow: 1 !important;
+}
+
+.fc-daygrid-body table tbody tr:last-child {
+    margin-bottom: 40px;
+    padding-bottom: 40px;
+}
+
+.fc-daygrid-day {
+    background-color: white !important;
+}
+
+tbody {
+    overflow-y: visible !important;
+}
+
+.fc-event-title{
+    text-align : left;
+}
+
+.search-bar-calendar-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.task-tab {
+    background-color: rgba(255, 255, 255, 0.9);
+    height: 78%;
+    width: 40%;
+    right: 0;
+    top: 0;
+    padding: 10px 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    z-index: 999;
+    position: absolute;
+    overflow-y: scroll;
+}
+
+.fc-scrollgrid{
+    border-bottom: none;
+}
+
+.fc-scrollgrid-section {
+    border: 0px;
+}
+
+.fc-scroller{
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
+/* Style for the close button */
+.close-btn {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.close-btn:hover {
+    background-color: #ff0000;
+}
+
+/* Style for the tab that appears after a date is
+    selected */
+.task-tab h3 {
+    margin-bottom: 10px;
+    color: black;
+    font-size: 18px;
+}
+
+.task-tab ul.task{
+    color: black;
+    list-style-type: disc !important;
+    text-align: left;
+    margin: 0;
+    padding: 10px 0 !important;
+    padding-left: 20px !important
+}
+
+.task-tab li.task{
+    margin-bottom: 10px;
+    color: black;
+    font-size: 16px;
+    text-align: left;
+}
+
+.task-tab li p{
+    margin: 0;
+}
+
+.task-tab ul.task-description{
+    list-style-type: none;
+    color: black;
+    list-style-type: disc !important;
+    text-align: left;
+}
+
+.task-tab li.task-description{
+    margin: 0px;
+    color: black;
+    font-size: 16px;
+    text-align: left;
+}
+
+.task-tab li strong {
+    font-weight: bold;
+    color: black;
+}
+  
+  /* Resizing calendar */
+  @media (max-width: 1400px) {
+    .calendar {
+        width: 80vw !important;
+        transform: translateX(-5%)
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .calendar{
+        max-width: 100vw !important; 
+        transform: translateX(0%)
+    }
+  }
+
