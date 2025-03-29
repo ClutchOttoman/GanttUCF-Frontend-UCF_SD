@@ -47,6 +47,7 @@ function Login() {
             name: res.name,
             username: res.username,
             phone: res.phone,
+            showAnnouncement: res.showAnnouncement,
             uiOptions: res.uiOptions,
             test: res.test,
             error: res.error

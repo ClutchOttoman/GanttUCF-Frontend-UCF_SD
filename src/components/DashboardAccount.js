@@ -143,7 +143,6 @@ function DashboardAccount() {
 
   const handleEditAnnoucnement = () => {
     setShowAnnouncementModal(true)
-    const modalShown = localStorage.getItem('modalShown');
     localStorage.setItem('modalShown', 'false');
   }
 
@@ -239,36 +238,37 @@ function DashboardAccount() {
                 <span className="detailValue">{user.timezone || 'N/A'}</span>
               )}
             </div>
-          </div>
-          <div className="accountActions">
-            <button className="btn resetPasswordBtn" onClick={handleResetPassword}>
-              Reset Password
-            </button>
-            {isEditing ? (
-              <button className="btn saveBtn" onClick={handleSave}>
-                Save
+            
+              <div className="accountActions">
+              <button className="btn resetPasswordBtn" onClick={handleResetPassword}>
+                Reset Password
               </button>
-            ) : (
-              <button className="btn editBtn" onClick={handleEditToggle}>
-                Edit
-              </button>
-            )}
-            {isEditing ? (
-              <button className="btn deleteBtn" onClick={handleCancelEdit}>
-                Cancel
-              </button>
-            ) : (
-              <button className="btn deleteBtn" onClick={handleDeleteAccount}>
-                Delete Account
-              </button>
-            )}
-           {editAnnouncement ? (
-              <button className="btn deleteBtn" onClick={handleEditAnnoucnement}>
-                Edit Announcement
-              </button>
-            ) : (
-              <></>
-            )}
+              {isEditing ? (
+                <button className="btn saveBtn" onClick={handleSave}>
+                  Save
+                </button>
+              ) : (
+                <button className="btn editBtn" onClick={handleEditToggle}>
+                  Edit
+                </button>
+              )}
+              {isEditing ? (
+                <button className="btn deleteBtn" onClick={handleCancelEdit}>
+                  Cancel
+                </button>
+              ) : (
+                <button className="btn deleteBtn" onClick={handleDeleteAccount}>
+                  Delete Account
+                </button>
+              )}
+            {editAnnouncement ? (
+                <button className="btn deleteBtn" onClick={handleEditAnnoucnement}>
+                  Edit Announcement
+                </button>
+              ) : (
+                <></>
+              )}
+            </div>
           </div>
         </>
       ) : (
