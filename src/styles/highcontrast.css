@@ -22,7 +22,7 @@ html.high-contrast {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container, div#task-tab{
+    div.task-title-container, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
       color: black;
       background-color: white !important;
       visibility: visible;

@@ -37,6 +37,12 @@ html.dark {
             visibility: visible;
         }
     }
+    /* visibility icons */
+    i.fas.fa-eye.detailIcon, i.fas.fa-eye-slash.detailIcon{
+      background-color:  transparent !important; /* Darker background for input fields */
+      color: #fff !important; /* White text */
+      visibility: visible;
+    }
 
     /* Dropdown Selector */
     select, option {
@@ -65,7 +71,7 @@ html.dark {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container, div#task-tab{
+    div.task-title-container, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
       color: white;
       background-color: #2b2b2b !important;
       visibility: visible;
