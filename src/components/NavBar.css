@@ -58,9 +58,6 @@ ul li{
     margin : 10px 20px;
     font-size: 18px;
     cursor: pointer;
-    &:hover{
-        color: #DC6B2C;
-    }
 }
 
 
