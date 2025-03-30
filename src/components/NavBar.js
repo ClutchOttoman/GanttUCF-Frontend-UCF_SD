@@ -5,8 +5,6 @@ import { buildPath } from './buildPath';
 import ProjectTitle from './GanttChart/ProjectTitle';
 import './NavBar.css';
 import ProjectInviteLink from './ProjectInviteLink.js';
-import useDarkMode from './useDarkMode';
-import useHighContrastMode from './useHighContrastMode';
 
 const baseStyle = {
   backgroundColor: "#FDDC87",
@@ -102,8 +100,6 @@ async function createTask(newTask) {
   }
 }
 
-
-
 function NavBar(props) {
 
   const [showAnnouncementModal, setAnnouncmentModal] = useState(false);
@@ -115,34 +111,9 @@ function NavBar(props) {
   const [editMessage, setEditMessage] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
-
-
-
-
-  const [isDarkMode, setIsDarkMode] = useDarkMode();
-  const [isHighContrastMode, setIsHightContrastMode] = useHighContrastMode();
-
-const toggleDarkMode = () => {
-  setIsDarkMode((prevMode) => {
-    if (!prevMode) {
-      setIsHightContrastMode(false); // Turn off High Contrast Mode if it's on
-    }
-    return !prevMode;
-  });
-};
-
-const toggleHighContrastMode = () => {
-  setIsHightContrastMode((prevMode) => {
-    if (!prevMode) {
-      setIsDarkMode(false); // Turn off Dark Mode if it's on
-    }
-    return !prevMode;
-  });
-};
+  const [teamUserInfo, setTeamUserInfo] = useState(null);
+  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
   
-
-
-
   const [taskData, setTaskData] = useState({
     taskTitle: "",
     description: "",
@@ -153,16 +124,10 @@ const toggleHighContrastMode = () => {
     pattern: "default-pattern"
   });
 
-
-
-
   const [isEditor, setIsEditor] = useState(false);
   const [founderId, setFounderId] = useState(null);
   const [team, setTeam] = useState(null);
 
-
-
- 
   var _ud;
   var ud;
   var userId;
@@ -230,6 +195,21 @@ const toggleHighContrastMode = () => {
     }
   };
 
+  const fetchUserInfo = async (userId) => {
+    try {
+      const response = await fetch(buildPath(`api/user/${userId}`));
+      const user = await response.json();
+  
+      if (response.ok) {
+        setTeamUserInfo(user);
+        setShowUserInfoModal(true);
+      } else {
+        console.error('Error fetching user info:', user.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
 
   const filterValidUsers = (users) => {
     return users.filter(user => user !== null);
@@ -530,7 +510,6 @@ const toggleHighContrastMode = () => {
             </a>
             <ProjectTitle projectId={projectId} founderId={founderId}/>
             <ul className="navbarOptionsView">
-              {isEditor && (
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Team
@@ -543,7 +522,6 @@ const toggleHighContrastMode = () => {
                     <a className="dropdown-header" onClick={openInviteModal}>Invite Team Members</a>
                   </div>
                 </li>
-              )}
               <li><Link to="/dashboard"><button id="button" className="dashBoardButtons">Dashboard</button></Link></li>
               <li><button id="button" className="dashBoardButtons" onClick={Logout}>Sign Out</button></li>
             </ul>
@@ -629,22 +607,55 @@ const toggleHighContrastMode = () => {
                   </button>
                 </div>
                 <div className="modal-body">
-                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name}`}</p>
+                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name} `} 
+                    <i className="fas fa-info-circle info-icon" onClick={(e) => { fetchUserInfo(selectedMember._id); }} ></i>
+                    {showUserInfoModal && (
+                        <div className="modal show" tabIndex="-1" role="dialog">
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title">User Information</h5>
+                                <button type="button" className="close" aria-label="Close" onClick={() => setShowUserInfoModal(false)}>
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div className="modal-body">
+                                {teamUserInfo ? (
+                                  <div>
+                                    {/* <p><strong>Name:</strong> {teamUserInfo.name}</p> */}
+                                    <p><strong>Email:</strong> {teamUserInfo.email}</p>
+                                    <p><strong>Username:</strong> {teamUserInfo.username}</p>
+                                    <p><strong>Discord:</strong> {teamUserInfo.discordAccount}</p>
+                                  </div>
+                                ) : (
+                                  <p>Loading...</p>
+                                )}
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowUserInfoModal(false)}>Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </p>
                   {selectedMember && selectedMember._id === founderId ? (
                     <input type="text" className="form-control" value="Founder" readOnly />
-                  ) : (
+                  ) : isEditor ? (
                     <select className="form-select" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
                       <option value="member">Member</option>
                       <option value="editor">Editor</option>
                     </select>
-                  )}
+                  ) :
+                  <input type="text" className="form-control" value={selectedRole} readOnly />
+                  }
                   <div className="edit-message" style={{ textAlign: "center" }}>{editMessage}</div>
                 </div>
                 <div className="modal-footer">
-                  {selectedMember && selectedMember._id !== founderId && (
+                  {selectedMember && selectedMember._id !== founderId && isEditor  === true && (
                     <>
                       <button type="button" className="btn btn-secondary" onClick={handleDeleteMember}>Remove Member</button>
-                      <button type="button" className="btn btn-primary px-0 mx-0 mt-3 w-100" onClick={handleEditMemberSubmit}>Update Role</button>
+                      <button type="button" className="btn btn-secondary" onClick={handleEditMemberSubmit}>Update Role</button>
                     </>
                   )}
                 </div>

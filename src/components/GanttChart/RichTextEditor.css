@@ -152,6 +152,12 @@ outline-offset: 3px;
   outline-offset: 3px; 
 }
 
+input.form-control.form-control-color-sidebar-RTE{
+  padding: 0;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
 .no-highlight{
   display: flex;
   align-items: center;

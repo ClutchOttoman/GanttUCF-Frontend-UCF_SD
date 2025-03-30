@@ -16,6 +16,7 @@ function AcceptInvite() {
   const [email, setEmail] = useState("");
   const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+  // Compare the entered email to the valid email test
   function checkEmailValidity(){
     if(email.localeCompare("") === 0){
       setEmailMessage("");
@@ -37,6 +38,7 @@ function AcceptInvite() {
     setEmailMessage("");
   };
 
+  // After submit, check validity then accept the invite
   const handleSubmit = () => {
     if(checkEmailValidity()){
       doAcceptInvite();
@@ -44,9 +46,11 @@ function AcceptInvite() {
   };
 
   const doAcceptInvite = async () => {
+    // Check email isnt empty, and is valid
     if(email !== "" && validEmail.test(email)){
       let isValidUser = false;
 
+      // Find the user based on their email
       try{
         const response = await fetch(buildPath(`api/search-user/${email}`), {
           method: 'GET',
@@ -62,7 +66,9 @@ function AcceptInvite() {
           isValidUser = true;
         }
 
+        // If the user has a valid GanttUCF account
         if(isValidUser){
+          // Accept the invite
           try {
             const response = await fetch(buildPath(`api/accept-invite/${token}/${email}`), {
               method: 'GET',
@@ -76,6 +82,7 @@ function AcceptInvite() {
           }
         }
 
+        // Display thank you message, and reroute to login page
         setMessage(thankYouMessage);
 
         setTimeout(() => {
@@ -110,6 +117,7 @@ function AcceptInvite() {
           onChange={handleInputChange}
         />
 
+        {/* Displaying the email message and the forms depending on what the message currently is */}
         <div className="button-container d-grid gap-2">
           {emailMessage === "" ? (
             <div>

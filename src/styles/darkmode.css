@@ -16,7 +16,7 @@ html.dark {
     }
 
     /* Text */
-    h1, h2, h3, h4, h4, h5, h6, p, a, li, text, span,
+    h1, h2, h3, h4, h4, h5, h6, p, a, li, text, span, em, strong, .fa-redo, .fa-undo, u, i.fas.fa-eye-dropper, s, i.fas.fa-list-ul, i.fas.fa-list-ol,
     span.detailValue, label.detailLabel{
         color: #fff !important;  /* High-contrast white for headers */
         visibility: visible;
@@ -37,6 +37,12 @@ html.dark {
             visibility: visible;
         }
     }
+    /* visibility icons */
+    i.fas.fa-eye.detailIcon, i.fas.fa-eye-slash.detailIcon{
+      background-color:  transparent !important; /* Darker background for input fields */
+      color: #fff !important; /* White text */
+      visibility: visible;
+    }
 
     /* Dropdown Selector */
     select, option {
@@ -50,16 +56,8 @@ html.dark {
     }
     
     /* General Buttons */
-
-     button.btn-close{
-      background-color: #2b2b2b !important ;
-    }
-
-      button.close{
-      background-color: #2b2b2b !important;
-    }
     
-    button, .btn.btn-primary, .btn, .cta-button{
+    button, .btn.btn-primary, .btn, .cta-button, button.close{
         background-color: #424242  !important;  /* Dark background for buttons */
         color: #fff;  /* Light text */
         transition: ease-in 0.1s;
@@ -73,7 +71,7 @@ html.dark {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container{
+    div.task-title-container, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
       color: white;
       background-color: #2b2b2b !important;
       visibility: visible;
@@ -104,6 +102,14 @@ html.dark {
       visibility: visible;
       &:hover{
         color:#a8a8a8 !important; 
+      }
+    }
+
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  white !important;
+      &:hover{
+        color: #a8a8a8 !important
       }
     }
   
@@ -189,15 +195,15 @@ html.dark {
         visibility: visible;
         }
   
-    /* To Do/todo List Page */
+    /* To Do List and Calander List Page */
     /* Table background*/
-    th.todoTableBody  { 
+    th.todoTableBody,.fc-scrollgrid-sync-inner,  .fc-daygrid-day-frame.fc-scrollgrid-sync-inner, table.fc-scrollgrid { 
         background-color: #1E1E1E;
         border-color:#1E1E1E;
         color:rgb(255, 255, 255);
         visibility: visible;
     }
-    table tbody, td{
+    table tbody, td, .fc-header-toolbar.fc-toolbar{
       background-color: #292929;
       color: white;
       border-color: #292929;
@@ -209,8 +215,9 @@ html.dark {
     }
     
     /* Button inside the table */
-    .taskBtn {
+    .taskBtn, .fc-daygrid-event-dot {
         background-color:  #1E1E1E!important;
+        border-color: white!important;
         &:hover{
           background-color: #555 !important;
         }
@@ -278,15 +285,10 @@ html.dark {
         visibility: visible;
       }
 
-    .ui-settings-container, .color-preset-container, .ui-preview-container, .font-container {
+    .ui-settings-container, .ui-preview-container, .font-container {
       background-color: #313131 !important; 
       visibility: visible;
     }
-    .settings-container {
-      background-color: #121212 !important;
-      visibility: visible;
-    }
-
     /* Gantt Chart/Project Page */
     /* Time table */
     /*Time table container outer color*/
@@ -375,12 +377,7 @@ html.dark {
       background-color: #555 !important ;
       visibility: visible;
     }
-
-    /*Rich Text Editor */
-    button.toolbar-btn{
-      background-color: #4a4a4a;
-      visibility: visible;
-    }
+  
     /*Color Selector */
     .highlight-picker-sidebar, .color-picker-sidebar{
       background-color: #313131 !important;
@@ -400,8 +397,13 @@ html.dark {
         visibility: visible;
         &:hover{
           background-color:#555  !important;
+          
+        }
+        &.active{
+          background-color: #555  !important;
         }
       }
+
       .dropdown-toggle{
         background-color: #2b2b2b !important;
         color: white !important;

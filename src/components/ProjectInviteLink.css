@@ -1,3 +1,4 @@
+/* Main container for invite link */
 .invite-link-container {
     padding: 10px;
     border: 1px solid #ccc;
@@ -13,6 +14,7 @@
     margin-bottom: 10px;
   }
   
+  /* Invite link */
   .invite-link-container a {
     color: #007bff;
     text-decoration: underline;
@@ -54,8 +56,3 @@
   .error {
     color: red;
   }
-
-  /* .link{
-    overflow: hidden;
-  }
-   */

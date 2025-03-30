@@ -5,12 +5,13 @@ import {toast} from 'react-toastify';
 import ToastSuccess from './ToastSuccess';
 
 const ProjectInviteLink = ({ projectId }) => {
+  // Variables to display the current state of the invite link
   const [inviteLink, setInviteLink] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  console.log("ProjectID: ", projectId);
-
+  // Whenever the projectId changes (when every project is made)
+  // fetch the new invite link
   useEffect(() => {
     const fetchInviteLink = async () => {
       setLoading(true);
@@ -33,6 +34,7 @@ const ProjectInviteLink = ({ projectId }) => {
     fetchInviteLink();
   }, [projectId]);
 
+  // Variables for the copy to clipboard button
   const copyToClipboard = () => {
     navigator.clipboard.writeText(inviteLink);
     toast.success(ToastSuccess, {data: {title: "Invite link copied to the clipboard!"},
@@ -46,6 +48,7 @@ const ProjectInviteLink = ({ projectId }) => {
     </svg>
   );
 
+  // Returning other states for the invite link
   if (loading) return <p>Loading invite link...</p>;
   if (error) return <p className="error">{error}</p>;
 

@@ -3,12 +3,12 @@
 <rect id="background" width="347" height="208" rx="4" fill="var(--background-color)"/>
 <rect id="sidebar" y="27" width="57" height="181" fill="var(--sidebar-color)"/>
 <rect id="navbar" x="347" width="27" height="347" transform="rotate(90 347 0)" fill="var(--navbar-color)" />
-<rect id="sidebar-btn" x="53" y="34" width="12" height="49" rx="2" transform="rotate(90 53 34)" fill="var(--sidebar-btn-color)"/>
-<rect id="sidebar-btn" x="53" y="50" width="12" height="49" rx="2" transform="rotate(90 53 50)" fill="var(--sidebar-btn-color)"/>
-<rect id="sidebar-btn" x="53" y="66" width="12" height="49" rx="2" transform="rotate(90 53 66)" fill="var(--sidebar-btn-color)"/>
-<rect id="sidebar-btn" x="53" y="82" width="12" height="49" rx="2" transform="rotate(90 53 82)" fill="var(--sidebar-btn-color)"/>
-<rect id="sidebar-btn" x="53" y="98" width="12" height="49" rx="2" transform="rotate(90 53 98)" fill="var(--sidebar-btn-color)"/>
-<rect id="sidebar-btn" x="53" y="114" width="12" height="49" rx="2" transform="rotate(90 53 114)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="34" width="12" height="49" rx="2" transform="rotate(90 53 34)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="50" width="12" height="49" rx="2" transform="rotate(90 53 50)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="66" width="12" height="49" rx="2" transform="rotate(90 53 66)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="82" width="12" height="49" rx="2" transform="rotate(90 53 82)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="98" width="12" height="49" rx="2" transform="rotate(90 53 98)" fill="var(--sidebar-btn-color)"/>
+<rect id="sidebarbtn" x="53" y="114" width="12" height="49" rx="2" transform="rotate(90 53 114)" fill="var(--sidebar-btn-color)"/>
 <rect x="6" y="3" width="23" height="23" fill="url(#pattern0_382_202)"/>
 <rect id="project_card" x="137.282" y="37.7139" width="50.5362" height="52.5322" rx="1.25" transform="rotate(90 137.282 37.7139)" fill="var(--project-color)" stroke="var(--project-border-color)" stroke-width="1.5"/>
 <rect id="view-btn" x="129.648" y="70.9873" width="10.007" height="18.6318" rx="2" transform="rotate(90 129.648 70.9873)" fill="var(--view-btn-color)"/>
