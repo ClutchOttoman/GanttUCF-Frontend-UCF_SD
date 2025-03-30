@@ -3,6 +3,14 @@ html.high-contrast {
     /* General CSS */
     /* General Buttons */
 
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
+    }
+
     button.btn-outline-primary{
       color: #000;
     }

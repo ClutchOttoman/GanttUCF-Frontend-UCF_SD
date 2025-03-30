@@ -5,7 +5,17 @@ html.custom {
     /* Background/Wallpaper Colors  */
     body{
       background-color: var(--background-color, #ffffff) !important;
+
     } 
+
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      color: var(--text, #000000);
+      background-color:  var(--contentarea, #ffffff) !important;
+      border-radius: 8px;
+    }
+        
     /* Need to make these transparent */
     div.loginContainer.mt-5, div.forgot-password-container, .registerContainer, .verify-email-container{ 
       background-color: transparent  ;

@@ -3,6 +3,14 @@ html.dark {
     color: #fff;
     visibility: visible;
     scrollbar-color: #1e1e1e #797979 !important; 
+    
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      background-color: #333;
+      color: white;
+      border-radius: 8px;
+    }
 
     /* General CSS */
     /* Background/Wallpaper Colors  */
