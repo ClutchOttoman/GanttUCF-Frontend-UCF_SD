@@ -222,34 +222,34 @@ function DasboardNavBar({page}) {
     
 
           return(
-            <div class = "d-md-flex d-block">         
+            <div className = "d-md-flex d-block">         
             {/*Announcements for new features */}
             <AnnouncementModal />
-                <div class = "d-none d-md-table-cell container-lg navBarBody me-5 pb-5">
-                        <a id ="ToDo List" class = "btn navBtn topNavBtn" href="/dashboard"><span class = "navBtnText">To Do List</span></a>
-                        <a id ="Charts" class = "btn navBtn" href="/dashboard/charts"><span class = "navBtnText">Charts</span></a>
-                        <a id ="Recently Deleted" class ="btn navBtn" href="/dashboard/recently-deleted"><span class = "navBtnText">Recently Deleted</span></a>
-                        <button id ="Create Project" class ="btn navBtn" data-bs-toggle="modal" data-bs-target="#createProjectModal"><span class = "navBtnText">Create Project</span></button> 
-                        <a id ="Account" class ="btn navBtn" href="/dashboard/account" ><span class = "navBtnText">Account</span></a> 
-                        <a id ="UI Settings" class="btn navBtn" href="/dashboard/ui-settings"><span class = "navBtnText">UI Settings</span></a> 
+                <div className = "d-none d-md-table-cell container-lg navBarBody me-5 pb-5">
+                        <a id ="ToDo List" className = "btn navBtn topNavBtn" href="/dashboard"><span className = "navBtnText">To Do List</span></a>
+                        <a id ="Charts" className = "btn navBtn" href="/dashboard/charts"><span className = "navBtnText">Charts</span></a>
+                        <a id ="Recently Deleted" className ="btn navBtn" href="/dashboard/recently-deleted"><span className = "navBtnText">Recently Deleted</span></a>
+                        <button id ="Create Project" className ="btn navBtn" data-bs-toggle="modal" data-bs-target="#createProjectModal"><span className = "navBtnText">Create Project</span></button> 
+                        <a id ="Account" className ="btn navBtn" href="/dashboard/account" ><span className = "navBtnText">Account</span></a> 
+                        <a id ="UI Settings" className="btn navBtn" href="/dashboard/ui-settings"><span className = "navBtnText">UI Settings</span></a> 
                 </div>
-                <div class = "d-md-none navBarBodySmall mb-5 pb-5">
-                    <div class = "row align-items-center mt-3">
-                        <div class = "col-2"><a id ="ToDo List" class= "btn navBtnSmall" href="/dashboard"><span class = "navBtnTextSmall">To Do</span></a></div>
-                        <div class = "col-2"><a id ="Charts" class = "btn navBtnSmall" href="/dashboard/charts"><span class = "navBtnTextSmall">Charts</span></a></div>
-                        <div class = "col-2"><a id ="Recently Deleted" class ="btn navBtnSmall" href="/dashboard/recently-deleted"><span class = "navBtnTextSmall">R.D.</span></a></div>
-                        <div class = "col-2"><a id ="Create Project" class ="btn navBtnSmall" data-bs-toggle="modal" data-bs-target="#createProjectModal"><span class = "navBtnTextSmall">Create</span></a> </div>
-                        <div class = "col-2"><a id ="Account" class ="btn navBtnSmall" href="/dashboard/account"><span class = "navBtnTextSmall">Account</span></a></div>
-                        <div class = "col-2"><a id ="Settings" class ="btn navBtnSmall" href="/dashboard/ui-settings"><span class = "navBtnTextSmall">UI Settings</span></a></div>
+                <div className = "d-md-none navBarBodySmall mb-5 pb-5">
+                    <div className = "row align-items-center mt-3">
+                        <div className = "col-2"><a id ="ToDo List" className= "btn navBtnSmall" href="/dashboard"><span className = "navBtnTextSmall">To Do</span></a></div>
+                        <div className = "col-2"><a id ="Charts" className = "btn navBtnSmall" href="/dashboard/charts"><span className = "navBtnTextSmall">Charts</span></a></div>
+                        <div className = "col-2"><a id ="Recently Deleted" className ="btn navBtnSmall" href="/dashboard/recently-deleted"><span className = "navBtnTextSmall">R.D.</span></a></div>
+                        <div className = "col-2"><a id ="Create Project" className ="btn navBtnSmall" data-bs-toggle="modal" data-bs-target="#createProjectModal"><span className = "navBtnTextSmall">Create</span></a> </div>
+                        <div className = "col-2"><a id ="Account" className ="btn navBtnSmall" href="/dashboard/account"><span className = "navBtnTextSmall">Account</span></a></div>
+                        <div className = "col-2"><a id ="Settings" className ="btn navBtnSmall" href="/dashboard/ui-settings"><span className = "navBtnTextSmall">UI Settings</span></a></div>
                      </div>
             </div>
-            <div class = "d-md-inline-flex d-block container mainContainer ms-5 mt-5">
+            <div className = "d-md-inline-flex d-block container mainContainer ms-5 mt-5">
                {page}
             </div>
             
             
 
-            <div className="modal fade px-0" id="createProjectModal" tabindex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="false">
+            <div className="modal fade px-0" id="createProjectModal" tabIndex="-1" aria-labelledby="createProjectModalLabel" aria-hidden="true" data-bs-backdrop="false" data-bs-keyboard="false">
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">

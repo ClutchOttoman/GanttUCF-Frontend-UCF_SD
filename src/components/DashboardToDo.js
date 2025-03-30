@@ -3,7 +3,10 @@ import AnnouncementModal from './AnnouncementModal';
 import { buildPath } from './buildPath';
 import DashboardCalendar from './DashboardCalendar.js';
 import './DashboardToDo.css';
-
+import {buildPath} from './buildPath';
+import {toast} from 'react-toastify';
+import ToastSuccess from './ToastSuccess';
+import ToastError from './ToastError';
 var i, j, task,tasks = [];
 
 function toDate(timestanp) {
@@ -122,8 +125,8 @@ function DashboardToDo() {
                 };
                 tasks.push(task);
             };
-            
-            setTaskList(tasks)
+
+            setTaskList(tasks);
         }
         catch (e) {
             console.log(e);
@@ -144,6 +147,20 @@ function DashboardToDo() {
 
             setPrerequisites(prequisites.allPrerequisitesOfTask || []);
 
+    // Removes a row that whose task has been marked as complete.
+    function dismissTaskFromList(rowNum){
+        console.log(`Inside of dismissTaskFromList(${rowNum})`);
+        document.getElementById(`task-row ${rowNum}`).remove();
+        document.getElementById(`task-row ${rowNum} show`).remove();
+    }
+
+    // Toggles the visibility of a expanded row's content.
+    function toggleExpandVisible(rowNum){
+        let rowToggle = document.getElementById(`task-row ${rowNum} show`);
+        if (rowToggle.style.visibility === "collapse"){
+            rowToggle.style.visibility = "visible";
+        } else if (rowToggle.style.visibility === "visible"){
+            rowToggle.style.visibility = "collapse";
         }
         catch (e) {
             console.log(e);
@@ -182,6 +199,9 @@ function DashboardToDo() {
         return taskList.filter(task => !(task.dueDatePretty === "PAST DUE" && task.progress === "Completed"));
     };
 
+
+    const doMarkTaskStatus = async (task, index) => { 
+
     // Function to change the progress of a task within the to-do list
     const doMarkTaskStatus = async (task) => { 
         var error = "";
@@ -209,16 +229,24 @@ function DashboardToDo() {
     
             var jsonResult = await response.json();
             if (response.ok) {
-                alert(jsonResult.message);
+                toast.success(ToastSuccess, {data: {title: jsonResult.message},
+                    draggable: false, autoClose: 2000, ariaLabel: jsonResult.message,
+                });
+
+                // Remove the item from the to-do list.
+                dismissTaskFromList(index);
+
             } else {
-                alert(jsonResult.error);
+                toast.error(ToastError, {data: {title: jsonResult.error},
+                    draggable: false, autoClose: 2000, ariaLabel: jsonResult.error,
+                });
             }
-            window.location.assign(window.location.pathname);
+
         } catch (e) {
             error = "Failed to update task visibility";
-            alert(error);
-        } finally {
-            window.location.assign(window.location.pathname);
+            toast.error(ToastError, {data: {title: error},
+                draggable: false, autoClose: 2000, ariaLabel: error,
+            });
         }
     }
 
@@ -235,6 +263,12 @@ function DashboardToDo() {
     };
 
     return (
+        <div className="container px-0 mt-5 mx-0">
+            {/*Announcements for new features */}
+            <AnnouncementModal />
+                <h1 className="title">To Do List</h1>
+                <form onSubmit={(e) => e.preventDefault()}>
+                    <input type="search" className="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
         // Display the calendar or the to-do list
         displayCalendar ? (
             <div class="container px-0 mt-5 mx-0">
@@ -258,33 +292,52 @@ function DashboardToDo() {
                     <input type="search" class="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
                     <button class="calendar-btn" onClick={switchViews} >{buttonText}</button>
                 </form>
-                    <table class="table" id="taskTableHeader">
+                    <table className="table" id="taskTableHeader">
                         <thead>
                             <tr>
-                                <th scope='col' class="todoTableBody">Due Date</th>
-                                <th scope='col' class="todoTableBody">Task Name</th>
-                                <th scope='col' class="todoTableBody">Category</th>
-                                <th scope='col' class="todoTableBody" >Project</th>
-                                <th scope='col' class="todoTableBody" >Progress</th>
-                                <th scope='col' class="todoTableBody" >Details</th>
+                                <th scope='col' className="todoTableBody">Due Date</th>
+                                <th scope='col' className="todoTableBody">Task Name</th>
+                                <th scope='col' className="todoTableBody">Category</th>
+                                <th scope='col' className="todoTableBody" >Project</th>
+                                <th scope='col' className="todoTableBody" >Progress</th>
+                                <th scope='col' className="todoTableBody" >Details</th>
                             </tr>
                         </thead>
                             <tbody className="table-group-divider" id="taskTableBody">
-                                {filterTasks().map(task => (
+                            {filterTasks().map((task, index) => (
                                     <React.Fragment key={task._id}>
-                                        {/* Originally visible task details */}
+                                        {/* Default visible row. */}
                                         <tr
+                                            {...index++}
                                             key={task._id}
-                                            className={`task-row ${expandedRow === task._id ? 'show' : ''}`}
+                                            id={`task-row ${index}`}
                                         >
                                             <td>{task.dueDatePretty}</td>
                                             <td>{task.taskTitle}</td>
                                             <td>{task.taskCategory}</td>
                                             <td>{task.projectName}</td>
                                             <td>{task.progress}</td>
-                                            <td><button className="taskBtn" onClick={actionButtonClick(task._id)}>...</button></td>
+                                            <td><button className="taskBtn" onClick={() => toggleExpandVisible(index)}>...</button></td>
                                         </tr>
-
+                                        {/* For making a row visible on click */}
+                                        <tr id={`task-row ${index} show`} style={{visibility: "collapse"}}>
+                                            <td colSpan="6" className="details-row">
+                                                <div>
+                                                    <h5><strong>Description:</strong></h5>
+                                                        <p dangerouslySetInnerHTML={{__html: task.description}}></p>
+                                                    <p>
+                                                        <span>
+                                                            {task.dueDatePretty === 'PAST DUE' ?
+                                                            `THIS TASK WAS DUE: ${task.dueDateActual}`
+                                                            : ''}
+                                                        </span>
+                                                    </p>
+                                                    <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task, index)}>
+                                                        Mark As {task.progress === "In-Progress" ? "Completed" : 'In-Progress'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
                                         {/* Expands row to show task description when clicking action button */}
                                         {expandedRow === task._id && (
                                             <tr>

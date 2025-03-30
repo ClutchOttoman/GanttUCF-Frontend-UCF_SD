@@ -225,62 +225,62 @@ function NavBar(props) {
   };
 
 
-  const handleInviteEmailChange = (e) => {
-    setInviteEmail(e.target.value);
-  };
+  // const handleInviteEmailChange = (e) => {
+  //   setInviteEmail(e.target.value);
+  // };
 
 
 
-  const handleInviteSubmit = async () => {
+  // const handleInviteSubmit = async () => {
 
-    if (!inviteEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setInviteMessage('Please enter a valid email address.');
-      return;
-    }
-
-
-    // Check if the user is already in the team
-    const isMember = teamMembers.some(member => member.email === inviteEmail);
-    if (isMember) {
-      setInviteMessage('User is already in the team.');
-      return;
-    }
+  //   if (!inviteEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+  //     setInviteMessage('Please enter a valid email address.');
+  //     return;
+  //   }
 
 
-    try {
-      const response = await fetch(buildPath('api/invite-user'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: inviteEmail, projectId }),
-      });
+  //   // Check if the user is already in the team
+  //   const isMember = teamMembers.some(member => member.email === inviteEmail);
+  //   if (isMember) {
+  //     setInviteMessage('User is already in the team.');
+  //     return;
+  //   }
 
 
-
-      const result = await response.json();
+  //   try {
+  //     const response = await fetch(buildPath('api/invite-user'), {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email: inviteEmail, projectId }),
+  //     });
 
 
 
-      if (response.ok) {
-        setInviteMessage('Invitation email sent successfully.');
-        setInviteEmail("");
-        setTimeout(() => {
-          setInviteMessage('');
-          closeInviteModal();
-        }, 3000);
-      } 
+  //     const result = await response.json();
+
+
+
+  //     if (response.ok) {
+  //       setInviteMessage('Invitation email sent successfully.');
+  //       setInviteEmail("");
+  //       setTimeout(() => {
+  //         setInviteMessage('');
+  //         closeInviteModal();
+  //       }, 3000);
+  //     } 
       
       
-      else {
-        setInviteMessage(result.error || 'An error occurred while sending the invitation.');
-      }
+  //     else {
+  //       setInviteMessage(result.error || 'An error occurred while sending the invitation.');
+  //     }
 
-    } 
+  //   } 
     
-    catch (error) {
-      console.error('Error sending invite:', error);
-      setInviteMessage('An error occurred while sending the invitation.');
-    }
-  };
+  //   catch (error) {
+  //     console.error('Error sending invite:', error);
+  //     setInviteMessage('An error occurred while sending the invitation.');
+  //   }
+  // };
 
 
   const handleAddTask = async (e) => {
@@ -485,7 +485,7 @@ function NavBar(props) {
     // For the GanttUCF user dashboard.
     return (
       <div id="navBarDiv" style={dashboardNav}>
-        <div class="container-fluid navbarDash">
+        <div className="container-fluid navbarDash">
           <a href="/dashboard" aria-label="Go back to dashboard">
             <img src={Logo} alt="GanttifyHomePage" className="logoDash" />
           </a>
