@@ -126,6 +126,7 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
                             dangerouslySetInnerHTML={{
                                 __html: text?.trim() ? text : 'Add a description here...',
                             }} 
+                            style={{ listStyleType: "disc ", paddingLeft: "20px" }}
                             />
                             }
                             </div>
