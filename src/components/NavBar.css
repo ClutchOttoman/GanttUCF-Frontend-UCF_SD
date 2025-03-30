@@ -46,14 +46,14 @@
     color: #DC6B2C;
 }
 
-ul.navbarOptionsDash{
+ul.navbarOptionsDash, ul.navbarOptions{
     flex: 1;
     list-style: none;
     text-align: right;
     
 }
 
-ul.navbarOptionsDash li{
+ul.navbarOptionsDash li, ul.navbarOptions li{
     display : inline-block;
     margin : 10px 20px;
     font-size: 18px;

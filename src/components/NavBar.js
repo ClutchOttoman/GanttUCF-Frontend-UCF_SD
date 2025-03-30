@@ -510,7 +510,6 @@ function NavBar(props) {
             </a>
             <ProjectTitle projectId={projectId} founderId={founderId}/>
             <ul className="navbarOptionsView">
-              {isEditor && (
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Team
@@ -523,7 +522,6 @@ function NavBar(props) {
                     <a className="dropdown-header" onClick={openInviteModal}>Invite Team Members</a>
                   </div>
                 </li>
-              )}
               <li><Link to="/dashboard"><button id="button" className="dashBoardButtons">Dashboard</button></Link></li>
               <li><button id="button" className="dashBoardButtons" onClick={Logout}>Sign Out</button></li>
             </ul>
@@ -643,16 +641,18 @@ function NavBar(props) {
                   </p>
                   {selectedMember && selectedMember._id === founderId ? (
                     <input type="text" className="form-control" value="Founder" readOnly />
-                  ) : (
+                  ) : isEditor ? (
                     <select className="form-select" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
                       <option value="member">Member</option>
                       <option value="editor">Editor</option>
                     </select>
-                  )}
+                  ) :
+                  <input type="text" className="form-control" value={selectedRole} readOnly />
+                  }
                   <div className="edit-message" style={{ textAlign: "center" }}>{editMessage}</div>
                 </div>
                 <div className="modal-footer">
-                  {selectedMember && selectedMember._id !== founderId && (
+                  {selectedMember && selectedMember._id !== founderId && isEditor  === true && (
                     <>
                       <button type="button" className="btn btn-secondary" onClick={handleDeleteMember}>Remove Member</button>
                       <button type="button" className="btn btn-secondary" onClick={handleEditMemberSubmit}>Update Role</button>
