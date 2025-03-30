@@ -3,7 +3,6 @@ import AnnouncementModal from './AnnouncementModal';
 import { buildPath } from './buildPath';
 import DashboardCalendar from './DashboardCalendar.js';
 import './DashboardToDo.css';
-import {buildPath} from './buildPath';
 import {toast} from 'react-toastify';
 import ToastSuccess from './ToastSuccess';
 import ToastError from './ToastError';
@@ -141,11 +140,15 @@ function DashboardToDo() {
             //get list of tasks user is assigned to 
             const response = await fetch(buildPath('api/readallprerequisites'),
                 { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
-
+    
             let txt = await response.text();
             let prequisites = JSON.parse(txt);
-
+    
             setPrerequisites(prequisites.allPrerequisitesOfTask || []);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     // Removes a row that whose task has been marked as complete.
     function dismissTaskFromList(rowNum){
@@ -156,21 +159,16 @@ function DashboardToDo() {
 
     // Toggles the visibility of a expanded row's content.
     function toggleExpandVisible(rowNum){
-        let rowToggle = document.getElementById(`task-row ${rowNum} show`);
-        if (rowToggle.style.visibility === "collapse"){
-            rowToggle.style.visibility = "visible";
-        } else if (rowToggle.style.visibility === "visible"){
-            rowToggle.style.visibility = "collapse";
+        try{
+            let rowToggle = document.getElementById(`task-row ${rowNum} show`);
+            if (rowToggle.style.visibility === "collapse"){
+                rowToggle.style.visibility = "visible";
+            } else if (rowToggle.style.visibility === "visible"){
+                rowToggle.style.visibility = "collapse";
+            }
         }
         catch (e) {
             console.log(e);
-        }
-    }
-    // Function to expand row when a task on the to-do list is clicked
-    function actionButtonClick(task){
-        return function (){
-            setExpandedRow(expandedRow === task ? null : task);
-            getPrerequisites(task)
         }
     }
    
@@ -198,9 +196,6 @@ function DashboardToDo() {
     const filterTasks = () => {
         return taskList.filter(task => !(task.dueDatePretty === "PAST DUE" && task.progress === "Completed"));
     };
-
-
-    const doMarkTaskStatus = async (task, index) => { 
 
     // Function to change the progress of a task within the to-do list
     const doMarkTaskStatus = async (task) => { 
@@ -263,12 +258,6 @@ function DashboardToDo() {
     };
 
     return (
-        <div className="container px-0 mt-5 mx-0">
-            {/*Announcements for new features */}
-            <AnnouncementModal />
-                <h1 className="title">To Do List</h1>
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <input type="search" className="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
         // Display the calendar or the to-do list
         displayCalendar ? (
             <div class="container px-0 mt-5 mx-0">
