@@ -111,7 +111,9 @@ function NavBar(props) {
   const [editMessage, setEditMessage] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
-
+  const [teamUserInfo, setTeamUserInfo] = useState(null);
+  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
+  
   const [taskData, setTaskData] = useState({
     taskTitle: "",
     description: "",
@@ -193,6 +195,21 @@ function NavBar(props) {
     }
   };
 
+  const fetchUserInfo = async (userId) => {
+    try {
+      const response = await fetch(buildPath(`api/user/${userId}`));
+      const user = await response.json();
+  
+      if (response.ok) {
+        setTeamUserInfo(user);
+        setShowUserInfoModal(true);
+      } else {
+        console.error('Error fetching user info:', user.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
 
   const filterValidUsers = (users) => {
     return users.filter(user => user !== null);
@@ -592,7 +609,38 @@ function NavBar(props) {
                   </button>
                 </div>
                 <div className="modal-body">
-                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name}`}</p>
+                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name} `} 
+                    <i className="fas fa-info-circle info-icon" onClick={(e) => { fetchUserInfo(selectedMember._id); }} ></i>
+                    {showUserInfoModal && (
+                        <div className="modal show" tabIndex="-1" role="dialog">
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title">User Information</h5>
+                                <button type="button" className="close" aria-label="Close" onClick={() => setShowUserInfoModal(false)}>
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div className="modal-body">
+                                {teamUserInfo ? (
+                                  <div>
+                                    {/* <p><strong>Name:</strong> {teamUserInfo.name}</p> */}
+                                    <p><strong>Email:</strong> {teamUserInfo.email}</p>
+                                    <p><strong>Username:</strong> {teamUserInfo.username}</p>
+                                    <p><strong>Discord:</strong> {teamUserInfo.discordAccount}</p>
+                                  </div>
+                                ) : (
+                                  <p>Loading...</p>
+                                )}
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowUserInfoModal(false)}>Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </p>
                   {selectedMember && selectedMember._id === founderId ? (
                     <input type="text" className="form-control" value="Founder" readOnly />
                   ) : (
@@ -607,7 +655,7 @@ function NavBar(props) {
                   {selectedMember && selectedMember._id !== founderId && (
                     <>
                       <button type="button" className="btn btn-secondary" onClick={handleDeleteMember}>Remove Member</button>
-                      <button type="button" className="btn btn-primary px-0 mx-0 mt-3 w-100" onClick={handleEditMemberSubmit}>Update Role</button>
+                      <button type="button" className="btn btn-secondary" onClick={handleEditMemberSubmit}>Update Role</button>
                     </>
                   )}
                 </div>

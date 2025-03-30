@@ -103,6 +103,15 @@ html.custom {
         color:#dc6b2c !important; 
       }
     }
+
+    
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  var(--buttons, #DC6B2C)  !important; 
+      &:hover{
+        color: var(--buttons-hover, #0056b3) !important;
+      }
+    }
   
     /* Dashboard sidebar + topbar */
     /* Background Ribbon colors */

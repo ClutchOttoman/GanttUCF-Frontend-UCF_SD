@@ -3,20 +3,11 @@ html.high-contrast {
     /* General CSS */
     /* General Buttons */
 
-    button.btn-close{
-      background-color: #fff !important;
-    }
-
-    button.close{
-      background-color: #fff !important;
-      color: #000;
-    }
-
     button.btn-outline-primary{
       color: #000;
     }
     
-    button, .btn.btn-primary, .btn, .cta-button,  .fc-daygrid-event-dot{
+    button, .btn.btn-primary, .btn, .cta-button,  .fc-daygrid-event-dot, button.close{
         background-color: #002238  !important;  /* Dark background for buttons */
         border-color: #002238  !important;
         color: #fff;  /* Light text */
@@ -62,6 +53,15 @@ html.high-contrast {
           visibility: visible;
         }
     }
+
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  #002238  !important; 
+      &:hover{
+        color: #1a4a75 !important;
+      }
+    }
+      
     /* Sidebar text color */
     .navBtnText, .navBtnTextSmall{
         color: white !important;

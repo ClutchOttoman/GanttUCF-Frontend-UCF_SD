@@ -5,30 +5,6 @@
   color: black;
 }
 
-@media (max-width: 1400px) {
-  .dashboardAccountContainer {
-      width: 90vw; 
-      transform: translateX(-45%)
-  }
-  .password-modal{
-    min-width: 500px;
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboardAccountContainer {
-      width: 95vw; 
-      transform: translateX(-25%);
-  }
-  .title{
-      margin-top: -60px;
-  }
-  .password-modal{
-    width: 70vw;
-    transform: translateX(12%)
-  }
-}
-
 .dashboardAccountContainer {
     width: 38vw;
     min-width: 350px;
@@ -39,6 +15,20 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: ease-in 3s ease;
     margin-left: 20vw;
+  }
+
+  @media (max-width: 1280px) {
+    .dashboardAccountContainer {
+        width: 50vw; 
+        margin-left: 10vw;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboardAccountContainer {
+        width: 60vw; 
+        margin-left: -5vw;
+    }
   }
   
   .dashboardTitle {
@@ -84,10 +74,21 @@
   .detailLabel {
     font-weight: bold;
     color: #555;
+    flex: 1;
+    text-align: left;
   }
   
   .detailValue {
     color: #333;
+    text-align: left;
+    flex: 2;
+    padding-left: 140px;
+  }
+
+  .detailIcon {
+    flex: 1;
+    text-align: right;
+    cursor: pointer;
   }
   
   .accountActions {
