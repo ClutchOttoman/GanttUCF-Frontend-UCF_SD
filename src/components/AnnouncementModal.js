@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { buildPath } from './buildPath.js';
 import RichTextEditor from './GanttChart/RichTextEditor.js'
+import {toast} from 'react-toastify';
+import ToastSuccess from './ToastSuccess';
 
 function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, editable}) {
     const [show, setShow] = useState(showAnnouncementModal ?? false);
@@ -70,7 +72,7 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
 
     const handleSave = async () => {
         setEditMode(false)
-        
+        toast.success("Announcement has been saved!")
         try{
             const response = await fetch(buildPath(`api/dashboard/account`), {
                 method: 'POST',
@@ -92,7 +94,7 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
 
     const handleUpload = async () => {
         setEditMode(false)
-        
+        toast.success("Announcement has sent out to users!")
         try{
             const response = await fetch(buildPath("api/dashboard/account/announce"), {
                 method: 'POST',
