@@ -152,6 +152,7 @@ function DashboardToDo() {
 
     // Removes a row that whose task has been marked as complete.
     function dismissTaskFromList(rowNum){
+        if (!rowNum){return;}
         console.log(`Inside of dismissTaskFromList(${rowNum})`);
         document.getElementById(`task-row ${rowNum}`).remove();
         document.getElementById(`task-row ${rowNum} show`).remove();
@@ -198,7 +199,7 @@ function DashboardToDo() {
     };
 
     // Function to change the progress of a task within the to-do list
-    const doMarkTaskStatus = async (task) => { 
+    const doMarkTaskStatus = async (task, index) => { 
         var error = "";
         var obj;
 
@@ -349,7 +350,7 @@ function DashboardToDo() {
                                                                 : ''}
                                                             </span>
                                                         </p>
-                                                        <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task)}>
+                                                        <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task, index)}>
                                                             Mark As {task.progress === "In-Progress" ? "Completed" : 'In-Progress'}
                                                         </button>
                                                     </div>
