@@ -325,9 +325,6 @@ export default function TimeTable({
     let taskPatterns = {};
     taskArray.map(task => {
         let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
-        if(!task.patternColor){
-            addPatternColorField(task._id);
-        }
         taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
         console.log(taskPatterns[task._id])
     });
