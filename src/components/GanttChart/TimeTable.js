@@ -9,9 +9,10 @@ import {
   getNextDateFromStr,
   monthDiff,
 } from '../../helpers/dateFunctions';
-import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.jsx?react';
-import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.svg?react';
-import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.svg?react';
+// Patterns for tasks
+import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.svg';
+import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.svg';
+import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.svg';
 import Hollow_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Square_Density_1.svg';
 import Hollow_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Star_Density_1.svg';
 import Hollow_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Triangle_Density_1.svg';
@@ -29,9 +30,10 @@ import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patt
 
 import TaskDetails from './TaskDetails';
 import './TimeTable.css';
-
 import { buildPath } from '../buildPath';
 import getPattern from './getPattern';
+import {toast} from 'react-toastify';
+import ToastConfirm from '../ToastConfirm';
 
 const debounce = (func, delay) => {
   let timeout;
@@ -1049,19 +1051,13 @@ export default function TimeTable({
                         <div
                           key={`${i}-${el?.task}`}
                           id={`${task._id}--pattern-target`}
-                    
                           className={`task-duration ${taskDurationElDraggedId === el?._id ? 'dragging' : ''}`}
-    
                           draggable={isEditable && !isResizing ? "true" : "false"}
-    
                           tabIndex="0"
                           onDragStart={isEditable && !isResizing ? () => handleDragStart(el?._id) : null}
                           onDragEnd={isEditable && !isResizing ? () => handleDragEnd(el?._id) : null}
                           onMouseMove={(e) => handleMouseMove(e)}
-    
-    
                           onMouseUp={handleResizeEnd}
-    
                           style={{
                             
                             ...taskDurationBaseStyle,
@@ -1077,7 +1073,6 @@ export default function TimeTable({
                           onKeyDown={isEditable ? (e) => deleteTaskDuration(e, el?.task) : null}
                           onClick={() => { setSelectedTask(task); setShowDetails(true); }}
                         >
-                          
                           {taskPattern}
                           {isEditable && (
                             <>
@@ -1169,17 +1164,27 @@ export default function TimeTable({
       setSelectedTask(null);
       setCurrentDayMarkerHeight(currentDayMarkerHeight - 1);
       console.log(currentDayMarkerHeight);
-      //console.log(projectId.tasks.length)
+      return true;
     } catch (error) {
       console.error('Error deleting task:', error);
+      return false;
     }
   };
 
   function deleteTaskDuration(e, id) {
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      if (window.confirm('Are you sure you want to delete?')) {
-        handleDelete(id, projectId);
-      }
+     toast.warn(ToastConfirm, {
+           data: {
+             title: "Are you sure you want to delete this task?", 
+           },  
+           draggable: false, closeButton: false, position: "top-center", ariaLabel: "Are you sure you want to delete this task?", autoClose: false,
+           onClose(reason){
+            switch (reason){
+              case "confirm":
+                handleDelete(id, projectId);
+            }
+           }
+      });
     }
   }
 

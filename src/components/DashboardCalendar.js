@@ -159,8 +159,8 @@ function DashboardCalendar({ taskList }) {
                                     ${eventsForDay.map(event => `
                                         <li class="task">
                                             ${event.progress === 'Completed' 
-                                                ? `<strong style="text-decoration: line-through;">&#8226; ${event.taskTitle}</strong><p>(${event.progress})</p>` 
-                                                : `<strong>&#8226; ${event.taskTitle}</strong><p>(${event.progress})</p>`}
+                                                ? `<strong style="text-decoration: line-through;"> ${event.taskTitle}</strong><p>(${event.progress})</p>` 
+                                                : `<strong> ${event.taskTitle}</strong><p>(${event.progress})</p>`}
                                             <br />
                                             <ul class="task-description">
                                                 <li class="task-description">
@@ -190,8 +190,8 @@ function DashboardCalendar({ taskList }) {
                                     ${eventsForDay.map(event => `
                                         <li class="task">
                                             ${event.progress === 'Completed' 
-                                                ? `<strong style="text-decoration: line-through;">&#8226; ${event.taskTitle}</strong><p>(${event.progress})</p>` 
-                                                : `<strong>&#8226; ${event.taskTitle}</strong><p>(${event.progress})</p>`}
+                                                ? `<strong style="text-decoration: line-through;"> ${event.taskTitle}</strong><p>(${event.progress})</p>` 
+                                                : `<strong> ${event.taskTitle}</strong><p>(${event.progress})</p>`}
                                             <br />
                                             <ul class="task-description">
                                                 <li class="task-description">

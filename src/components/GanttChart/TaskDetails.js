@@ -28,6 +28,9 @@ import getPattern from './getPattern.js'
 import forcePatternColorChange from './forcePatternColorChange.js'
 import { findParentNode } from '@tiptap/core';
 import * as ReactDOMServer from "react-dom/server";
+import {toast} from 'react-toastify';
+import ToastConfirm from '../ToastConfirm';
+import ToastError from '../ToastError';
 
 // Colors to choose from
 const colorOptions = [
@@ -449,9 +452,13 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   const handleStatusChange = async (newStatus) => {
     console.log("fetched task: " + fetchedTask.allPrerequisitesDone + "| task: " + task.allPrerequisitesDone);
     if(newStatus == "Completed" && (fetchedTask.prerequisiteTasks.length != 0 && !fetchedTask.allPrerequisitesDone)){
-        // List the tasks that need to be completed Here
-        let prequisiteTaskAlert = generatePrereqAlert();
-        window.alert(prequisiteTaskAlert);
+        toast.error(ToastError, {
+          data: {
+            title: "",
+            body: "You cannot finish this task while its prerequisite tasks are incomplete.", 
+          },  
+          draggable: false, autoClose: 3000, ariaLabel: "Error: Cannot mark task as complete. "
+        });
         return;
     }
     setStatus(newStatus);
@@ -679,15 +686,23 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   }
 
   const handleDeleteClick = () => {
-    if (window.confirm('Are you sure you want to delete?')) {
-      handleDelete(task._id, task.tiedProjectId);
-    }
+    toast.warn(ToastConfirm, {
+      data: {
+        title: "Are you sure you want to delete this task?", 
+      },  
+      draggable: false, closeButton: false, position: "top-center", ariaLabel: "Are you sure you want to delete this task?", autoClose: false,
+      onClose(reason){
+        switch (reason){
+            case "confirm":
+              handleDelete(task._id, task.tiedProjectId);
+        }
+      }
+    });
   };
 
 
 
   if (!show || !task || !fetchedTask) return null;
-  
 
   return (
 
@@ -781,9 +796,9 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
         <div className="col-4  dropdownDetails">
             <a className="nav-link dropdown-toggle" id="todoDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{status}</a>
             <div className="dropdown-menu" aria-labelledby="todoDropdown">
-            <a className="dropdown-item" onClick={() => handleStatusChange('Not Started')}>Not Started</a>
-            <a className="dropdown-item" onClick={() => handleStatusChange('In-Progress')}>In-Progress</a>
-            <a className="dropdown-item" onClick={() => handleStatusChange('Completed')}>Completed</a>:
+              <a className="dropdown-item" onClick={() => handleStatusChange('Not Started')}>Not Started</a>
+              <a className="dropdown-item" onClick={() => handleStatusChange('In-Progress')}>In-Progress</a>
+              <a className="dropdown-item" onClick={() => handleStatusChange('Completed')}>Completed</a>
             </div>
         </div> :
         <div className="col-4 dropdownDetails">
@@ -870,18 +885,18 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
                   <label htmlFor="noCategoryCheckbox">No category</label>
                 </div>
               </div>
+              {/* For selecting/deselecting prequsites */}
                     <div className="mb-4 dropup dropup-center d-grid gap-2">
                         <label htmlFor='prerequisiteTaskSelection' className="form-label text-align-start">Prerequisite Tasks</label>
                         <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" disabled = {isPrerequisiteDropdownDisabled()}>Select Prerequisite Tasks</button>
                         <ul class="dropdown-menu" id = "prerequisiteTaskDropdownMenu">
                             {projectTasks.map(preReqTask =>( (preReqTask._id == task._id || preReqTask.prerequisiteTasks.includes(task._id)) ? null : 
-                                    <a href={"#" + `${task._id}`} key={preReqTask._id} class ="dropdown-item">
-                                        <div class="form-check">
-                                            <input type ="checkbox" id={preReqTask._id} class ="form-check-input" value={preReqTask._id} onChange={(e) => handlePrerequisiteChange(e.target.value)} checked={prerequisiteTasks.includes(preReqTask._id) ? true : false}/>
-                                            <label htmlFor = {preReqTask._id} class = "form-check-label prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
-                                        </div>
-                                    </a>
-                               
+                                <a href={"#" + `${task._id}`} key={preReqTask._id} class ="dropdown-item">
+                                    <div class="form-check">
+                                        <input type ="checkbox" id={preReqTask._id} class ="form-check-input" value={preReqTask._id} onChange={(e) => handlePrerequisiteChange(e.target.value)} checked={prerequisiteTasks.includes(preReqTask._id) ? true : false}/>
+                                        <label htmlFor = {preReqTask._id} class = "form-check-label prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
+                                    </div>
+                                </a>
                             ))}
                            <>
                            </>
@@ -909,9 +924,11 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
                         <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" disabled = {task.prerequisiteTasks[0] ? false : true}>Show Prerequisite Tasks</button>
                         <ul class="dropdown-menu" id = "prerequisiteTaskDropdownMenu">
                             {projectTasks.map(preReqTask =>( prerequisiteTasks.includes(preReqTask._id) ?
-                                        <div key={preReqTask._id} class ="dropdown-item">
-                                            <label htmlFor = {preReqTask._id} class = "prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
-                                        </div> : null
+                                <div key={preReqTask._id} class ="dropdown-item">
+                                    {/*Indicates if the task was done or not. */}
+                                    <i className={`${preReqTask.progress === "Completed" ? 'fa-solid fa-check' : 'fa-regular fa-circle-xmark'}`} aria-describedby={`${preReqTask.progress === "Completed" ? 'Completed' : 'Incomplete'}`}></i>
+                                    <label htmlFor = {preReqTask._id} class = "prerequisiteTaskDropdownItem">{preReqTask.taskTitle} - <span style={{fontSize: "0.75em", fontStyle: "italic"}}>{preReqTask.progress === "Completed" ? 'Complete' : 'Incomplete'}</span></label>
+                                </div> : null
                             ))}
                         </ul>
                     </div>

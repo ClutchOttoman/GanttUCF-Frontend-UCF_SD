@@ -78,13 +78,12 @@
 
 .fc-daygrid-body {
     height: auto !important;
-    min-height: 600px !important;
+    min-height: 550px !important;
     /* background-color: rgb(220, 107, 44); */
     border-bottom-left-radius: 10px !important;
     border-bottom-right-radius: 10px !important;
     overflow-x: hidden !important;
     overflow: visible !important;
-    padding-bottom: 60vh;
     display: flex !important;
     flex-grow: 1 !important;
 }

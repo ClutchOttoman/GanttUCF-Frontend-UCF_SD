@@ -5,9 +5,9 @@ import Grid from './Grid';
 import TaskDetails from './TaskDetails';
 import Tasks from './Tasks';
 import TimeTable from './TimeTable';
-
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import {ToastContainer} from 'react-toastify';
 
 export default function GanttChart({ projectId, setUserRole, userRole }) {
   var _ud = localStorage.getItem('user_data');
@@ -316,6 +316,8 @@ const handleSearch = (event) =>{
 
   return (
     <div className="container-fluid main-container" >
+      {/* For toast deletion confirmations and alerts. */}
+      <ToastContainer limit={1}/> 
       <form onSubmit={(e) => e.preventDefault()}  >
           <input type="search" class="form-control searchForm" placeholder='Search tasks by name or category...' id="search-tasks" value ={searchTasks} onChange={handleSearch}/>
       </form >
