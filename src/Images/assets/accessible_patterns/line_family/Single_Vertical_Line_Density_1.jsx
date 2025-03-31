@@ -1,125 +1,26 @@
 // SVG converted to JSX using SVGR Playground.
 import * as React from "react"
-const Single_Vertical_Line_Density_1 = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    width={100}
-    height={100}
-    {...props}
-  >
-    <defs>
-      <clipPath id="c">
-        <path fill="#ff0" d="M0 0h100v100H0z" color="#000" />
-      </clipPath>
-    </defs>
-    <use xlinkHref="#a" width="100%" height="100%" opacity={0.3} />
-    <use xlinkHref="#b" width="100%" height="100%" opacity={0.3} />
-    <g clipPath="url(#c)">
-      <path
-        id="b"
-        d="M-64.074 104.47h145.72v3.423h-145.72z"
-        transform="matrix(0 1 1 0 -54.426 44.636)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(0 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100)"
-      />
-      <use xlinkHref="#a" width="100%" height="100%" />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100 100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(0 100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(0 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100)"
-      />
-      <use xlinkHref="#b" width="100%" height="100%" />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(0 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100 100)"
-      />
-    </g>
-  </svg>
-)
+const Single_Vertical_Line_Density_1 = ({stroke,patternWidth,patternId}) => {
+    const pattern = `${patternId}--SingleVerticalLineDensity1` 
+    const patternUrl = `url(#${pattern})`
+    return(
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={patternWidth}
+          height={30}
+        >
+          <defs>
+            <pattern
+              id={pattern}
+              width={20}
+              height={30}
+              patternUnits="userSpaceOnUse"
+            >
+                <line stroke={stroke} stroke-linecap="undefined" stroke-linejoin="undefined" id={patternId} y2="31.85844" x2="10" y1="-1.62826" x1="10" fill="none"/>
+            </pattern>
+          </defs>
+          <rect width={patternWidth} height={30} fill={patternUrl} />
+        </svg>
+      );
+}
 export default Single_Vertical_Line_Density_1

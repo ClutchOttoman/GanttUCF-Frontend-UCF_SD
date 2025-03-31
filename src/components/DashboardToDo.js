@@ -157,7 +157,6 @@ function DashboardToDo() {
         document.getElementById(`task-row ${rowNum}`).remove();
         document.getElementById(`task-row ${rowNum} show`).remove();
     }
-
     // Toggles the visibility of a expanded row's content.
     function toggleExpandVisible(rowNum){
         try{

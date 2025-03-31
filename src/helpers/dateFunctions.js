@@ -71,3 +71,9 @@ export function getNextDateFromStr(year,month,day){
 
     return createFormattedDateFromStr(year,month,day);
 }
+
+export function getDayLengthTask(startDate,endDate){
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const diffDays = Math.round(Math.abs((startDate - endDate) / oneDay));
+    return diffDays;
+}

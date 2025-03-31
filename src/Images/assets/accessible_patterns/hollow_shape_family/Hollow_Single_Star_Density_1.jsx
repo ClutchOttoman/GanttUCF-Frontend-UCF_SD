@@ -1,127 +1,33 @@
 // SVG converted to JSX using SVGR Playground.
 import * as React from "react"
-const Hollow_Single_Star_Density_1 = (props) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    xmlnsXlink="http://www.w3.org/1999/xlink"
-    width={100}
-    height={100}
-    {...props}
-  >
-    <defs>
-      <clipPath id="c">
-        <path fill="#ff0" d="M0 0h100v100H0z" color="#000" />
-      </clipPath>
-    </defs>
-    <use xlinkHref="#a" width="100%" height="100%" opacity={0.3} />
-    <use xlinkHref="#b" width="100%" height="100%" opacity={0.3} />
-    <g clipPath="url(#c)">
-      <path
-        id="b"
-        fill="none"
-        stroke="#000"
-        d="M47.846 60.362 24.788 44.966-.967 55.232l7.518-26.687-17.722-21.322 27.704-1.097 14.802-23.444L40.939 8.69l26.87 6.833L46.04 32.695z"
-        transform="translate(22.13 26.279)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(0 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100 -100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100)"
-      />
-      <use xlinkHref="#a" width="100%" height="100%" />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(-100 100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(0 100)"
-      />
-      <use
-        xlinkHref="#a"
-        width="100%"
-        height="100%"
-        transform="translate(100 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(0 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100 -100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100)"
-      />
-      <use xlinkHref="#b" width="100%" height="100%" />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(-100 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(0 100)"
-      />
-      <use
-        xlinkHref="#b"
-        width="100%"
-        height="100%"
-        transform="translate(100 100)"
-      />
-    </g>
-  </svg>
-)
+const Hollow_Single_Star_Density_1 = ({stroke,patternWidth,patternId}) => {
+    const pattern = `${patternId}--HollowSingleStarDensity1` 
+    const patternUrl = `url(#${pattern})`
+    return(
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+          width={patternWidth}
+          height={30}
+        >
+          <defs>
+            <pattern
+              id={pattern}
+              width={20}
+              height={30}
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                stroke={stroke}
+                strokeWidth={0.5}
+                id={patternId}
+                d="m1.43646,13.07952l6.54201,0l2.02153,-6.21488l2.02153,6.21488l6.542,0l-5.29258,3.84096l2.02163,6.21488l-5.29259,-3.84107l-5.29259,3.84107l2.02164,-6.21488l-5.29259,-3.84096z"
+                fill="none"
+              />
+            </pattern>
+          </defs>
+          <rect width={patternWidth} height={30} fill={patternUrl} />
+        </svg>
+      );
+}
 export default Hollow_Single_Star_Density_1

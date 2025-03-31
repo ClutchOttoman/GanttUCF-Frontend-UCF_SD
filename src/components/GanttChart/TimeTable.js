@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState, useLayoutEffect, act } from 'react';
 import { months } from '../../constants';
 import {
   createFormattedDateFromDate,
@@ -31,6 +31,7 @@ import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patt
 import TaskDetails from './TaskDetails';
 import './TimeTable.css';
 import { buildPath } from '../buildPath';
+import getPattern from './getPattern';
 import {toast} from 'react-toastify';
 import ToastConfirm from '../ToastConfirm';
 
@@ -79,7 +80,7 @@ export default function TimeTable({
     'Single_Vertical_Line_Density_1.svg':Single_Vertical_Line_Density_1,'Solid_Single_Circle_Density_1.svg':Solid_Single_Circle_Density_1,
     'Solid_Single_Dot_Density_1.svg':Solid_Single_Dot_Density_1,'Solid_Single_Rhombus_Density_1.svg':Solid_Single_Rhombus_Density_1,
     'Solid_Single_Square_Density_1.svg':Solid_Single_Square_Density_1,'Solid_Single_Star_Density_1.svg':Solid_Single_Star_Density_1,
-    'Solid_Single_Triangle_Density_1.svg':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.svg':Hollow_Single_Circle_Density_1,
+    'Solid_Single_Triangle_Density_1.svg':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.jsx':Hollow_Single_Circle_Density_1,
     'Hollow_Single_Dot_Density_1.svg':Hollow_Single_Dot_Density_1,'Hollow_Single_Rhombus_Density_1.svg':Hollow_Single_Rhombus_Density_1,
     'Hollow_Single_Square_Density_1.svg':Hollow_Single_Square_Density_1,'Hollow_Single_Star_Density_1.svg':Hollow_Single_Star_Density_1,
     'Hollow_Single_Triangle_Density_1.svg':Hollow_Single_Triangle_Density_1
@@ -112,7 +113,10 @@ export default function TimeTable({
   // For changing the selected view of the chart
   const [selectedRange, setSelectedRange] = useState("Days");
 
+  const [taskPatternDictionary, setTaskPatternDictionary] = useState({});
+
   const rangeSelector = document.getElementById('timeRangeDropdown');
+
 
   // If the rangeSelector (the dropdown for the chart views) changes,
   // then the view for the chart is changed
@@ -137,6 +141,7 @@ export default function TimeTable({
       }
 
       setArrayOfTasks(tasks);
+      initPatternDictionary(tasks);
 
       let lB = null;
       let rB = null;
@@ -311,6 +316,25 @@ export default function TimeTable({
       }
     }
   };
+
+  
+  const updatePatternDictionary = (taskId,taskPattern,taskPatternColor,state) => {
+    let taskPatterns = {...state};
+    taskPatterns[taskId] = {"pattern":taskPattern,"color":taskPatternColor} 
+    return taskPatterns;
+ }
+  const initPatternDictionary = (taskArray) =>{
+    let taskPatterns = {};
+    taskArray.map(task => {
+        let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
+        if(!task.patternColor){
+            addPatternColorField(task._id);
+        }
+        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
+        console.log(taskPatterns[task._id])
+    });
+    setTaskPatternDictionary(taskPatterns)
+  }
 
   // Styling
   const ganttTimePeriod = {
@@ -645,7 +669,7 @@ export default function TimeTable({
                           ...taskDurationBaseStyle,
                           width: `calc(${findTaskDuration(currentWeekStart, dueDate)} * 100% - 1px)`,
                           background: task.color || 'var(--color-primary-light)',
-                          backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                          //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                           backgroundSize: 'contain',
                         }}
                         onClick={() => {
@@ -852,7 +876,7 @@ export default function TimeTable({
                             ...taskDurationBaseStyle,
                             width: `calc(${findTaskDurationMonths(currentMonth, dueDate)} * 100% - 1px)`,
                             background: task.color || 'var(--color-primary-light)',
-                            backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                            //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                             backgroundSize: 'contain',
                           }}
                           onClick={() => {
@@ -984,6 +1008,7 @@ export default function TimeTable({
         tasks.forEach((task, index) => {
           const startDate = task.startDateTime;
           const dueDate = task.dueDateTime;
+          const taskPattern = taskPatternDictionary[task._id];
           let mnth = new Date(startMonth);
           for (let i = 0; i < numMonths; i++) {
             const curYear = mnth.getFullYear();
@@ -1042,7 +1067,7 @@ export default function TimeTable({
                             width: `calc(${dayDiff(el?.start, el?.end)} * 100% - 1px)`,
                             opacity: taskDurationElDraggedId === el?._id ? '0.5' : '1',
                             background: task.color || 'var(--color-primary-light)',
-                            backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                            //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                             backgroundSize: 'contain',
                             border: hoveredTask === el?._id && !isResizing ? '2px solid black' : 'none',
                             cursor: isEditable && !isResizing ? 'move' : 'default'
@@ -1051,6 +1076,7 @@ export default function TimeTable({
                           onKeyDown={isEditable ? (e) => deleteTaskDuration(e, el?.task) : null}
                           onClick={() => { setSelectedTask(task); setShowDetails(true); }}
                         >
+                          {taskPattern}
                           {isEditable && (
                             <>
                             
@@ -1074,7 +1100,7 @@ export default function TimeTable({
                               {`${el.start.split('T')[0].replace(/-/g, '/')}  -  ${el.end.split('T')[0].replace(/-/g, '/')}`}
                             </div>
                           )}
-
+                        
                         </div>
                       );
                     }
@@ -1096,6 +1122,7 @@ export default function TimeTable({
             taskRow = [];
             mnth.setMonth(mnth.getMonth() + 1);
           }
+          
         });
       }
 
@@ -1109,7 +1136,7 @@ export default function TimeTable({
         console.log("Task cant be found by id: " + `${taskId}--pattern-target` );
         return;
     }
-    taskDuration.style.backgroundImage = newPattern ? `url(${patterns[newPattern]})` : 'none';
+    //taskDuration.style.backgroundImage = newPattern ? `url(${patterns[newPattern]})` : 'none';
     taskDuration.style.backgroundColor = newColor;
   }
 
