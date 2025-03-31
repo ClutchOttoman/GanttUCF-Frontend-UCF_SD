@@ -171,3 +171,17 @@ tr.task-row.show{
 .details-row{
     text-align: left;
 }
+
+/* Reformatting lists inside table data cell to move vertically */
+td ul {
+    text-align: left;
+}
+
+td li {
+    color: black;
+    pointer-events: none;
+    pointer-events: none;
+    &:hover{
+        color: black;
+    }
+}

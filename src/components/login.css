@@ -165,8 +165,3 @@ body{
     justify-content: center;
     text-align: center;
   }
-
-  .background-tile-repeat {
-    background-image: url("../Images/assets/backgrounds/Fade_Tilable_Background.svg");
-    background-repeat: repeat;
-  }

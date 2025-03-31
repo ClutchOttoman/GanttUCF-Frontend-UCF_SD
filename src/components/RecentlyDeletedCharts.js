@@ -1,11 +1,9 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import './DashboardCharts.css';
 import DashboardProjectCard from './DashboardProjectCard.js';
-
-
 import {buildPath} from './buildPath';
-
-
+import {toast} from 'react-toastify';
+import ToastSuccess from './ToastSuccess';
 
 function RecentlyDeletedCharts({ projects,triggerReSearch }) {
     var _ud = localStorage.getItem('user_data');
@@ -100,18 +98,21 @@ function RecentlyDeletedCharts({ projects,triggerReSearch }) {
         
     }
     const setProjectToRestoreChart = async (project) =>{
-       try{
+        try {
             const response = await fetch(buildPath('api/restore-project/'+project._id.toString()),{method:'POST',headers:{'Content-Type': 'application/json'}});
 
             var txt = await response.text();
             var res = JSON.parse(txt);
             console.log(res);
             triggerReSearch();
-            alert("Your project has been restored succsessfully!");
+            toast.success(ToastSuccess, {data: {title: "", body: "Your project has been restored succsessfully!"},
+                draggable: false, autoClose: 2000, ariaLabel: "Your project has been restored succsessfully!",
+            });
 
-       }
-       catch(e){
-            alert(e);
+        } catch(e){
+            toast.error(ToastError, {data: {title: "", body: e},
+                draggable: false, autoClose: 2000, ariaLabel: e,
+            });
        }
     }
 
