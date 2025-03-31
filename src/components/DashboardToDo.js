@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import AnnouncementModal from './AnnouncementModal';
+import { buildPath } from './buildPath';
+import DashboardCalendar from './DashboardCalendar.js';
 import './DashboardToDo.css';
-// import DOMPurify from 'dompurify';
-import {buildPath} from './buildPath';
 import {toast} from 'react-toastify';
 import ToastSuccess from './ToastSuccess';
 import ToastError from './ToastError';
-
-var i, task,tasks = [];
+var i, j, task,tasks = [];
 
 function toDate(timestanp) {
     var i = 0;
@@ -15,6 +14,7 @@ function toDate(timestanp) {
     date += timestanp.slice(5, 7) + "/" + timestanp.slice(8, 10) + "/" + timestanp.slice(0, 4);
     return date;
 }
+
 // Function used to show task date as MM/DD/YYYY
 function toDisplayDate(date) {
     const today = new Date();
@@ -42,16 +42,22 @@ function DashboardToDo() {
     var displayedTasks = [];
 
     const [taskList, setTaskList] = useState([])
+    const [prerequisites, setPrerequisites] = useState([]);
     const [expandedRow, setExpandedRow] = useState(null);
+    const [displayCalendar, setDisplayCalendar] = useState(false);
+    const [calendar, setCalendar] = useState(<div></div>);
+    const [buttonText, setButtonText] = useState("Calendar View");
 
     useEffect(() => { 
         const fetchTasks = async () => {
             getTasks();
-        };
 
+        };
         fetchTasks();
+
     }, []);
 
+    // Function to get all the tasks assigned to the user
     const getTasks = async event => {
         var obj = { userId: userId };
         var js = JSON.stringify(obj);
@@ -93,6 +99,7 @@ function DashboardToDo() {
                 let currTaskProgress = usersTasks[i].progress
                 let currTaskCategory = usersTasks[i].taskCategory;
                 let currTaskCategoryId = usersTasks[i].taskCategoryId;
+                let prerequisiteTasks = usersTasks[i].prerequisiteTasks;
                 let currProject = allProjects.filter(project => project._id === currProjectId);
                 var currProjectName;
                 var currProjectOwnerId;
@@ -100,6 +107,7 @@ function DashboardToDo() {
                     currProjectName = currProject[0].nameProject;
                     currProjectOwnerId = currProject[0].founderId;
                 }
+
                 task = {
                     _id: currTaskId,
                     taskTitle: currTaskTitle,
@@ -112,7 +120,7 @@ function DashboardToDo() {
                     progress: currTaskProgress,
                     projectOwnerId: currProjectOwnerId,
                     taskCategory: currTaskCategory,
-                    taskCategoryId: currTaskCategoryId,
+                    taskCategoryId: currTaskCategoryId
                 };
                 tasks.push(task);
             };
@@ -123,9 +131,28 @@ function DashboardToDo() {
             console.log(e);
         }
     }
+    
+    const getPrerequisites = async (taskId) =>{
+        console.log(taskId);
+        let obj = { id: taskId };
+        let js = JSON.stringify(obj);
+        try {
+            //get list of tasks user is assigned to 
+            const response = await fetch(buildPath('api/readallprerequisites'),
+                { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+    
+            let txt = await response.text();
+            let prequisites = JSON.parse(txt);
+    
+            setPrerequisites(prequisites.allPrerequisitesOfTask || []);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
     // Removes a row that whose task has been marked as complete.
     function dismissTaskFromList(rowNum){
+        if (!rowNum){return;}
         console.log(`Inside of dismissTaskFromList(${rowNum})`);
         document.getElementById(`task-row ${rowNum}`).remove();
         document.getElementById(`task-row ${rowNum} show`).remove();
@@ -133,17 +160,24 @@ function DashboardToDo() {
 
     // Toggles the visibility of a expanded row's content.
     function toggleExpandVisible(rowNum){
-        let rowToggle = document.getElementById(`task-row ${rowNum} show`);
-        if (rowToggle.style.visibility === "collapse"){
-            rowToggle.style.visibility = "visible";
-        } else if (rowToggle.style.visibility === "visible"){
-            rowToggle.style.visibility = "collapse";
+        try{
+            let rowToggle = document.getElementById(`task-row ${rowNum} show`);
+            if (rowToggle.style.visibility === "collapse"){
+                rowToggle.style.visibility = "visible";
+            } else if (rowToggle.style.visibility === "visible"){
+                rowToggle.style.visibility = "collapse";
+            }
+        }
+        catch (e) {
+            console.log(e);
         }
     }
    
+    // Function for task searching on to-do list
     function doTaskSearch() {
         let value = search.value.toLowerCase();
         let rows = document.getElementById("taskTableBody").getElementsByTagName("tr");
+        setExpandedRow(null)
 
         for (var i = 0; i < rows.length; i++) {
             let taskCol = rows[i].getElementsByTagName("td")[1].textContent.toLowerCase();
@@ -159,14 +193,17 @@ function DashboardToDo() {
 
     }
 
+    //Removes tasks from the todo list that are completed AND are past due date (Doesn't show old tasks)
     const filterTasks = () => {
         return taskList.filter(task => !(task.dueDatePretty === "PAST DUE" && task.progress === "Completed"));
     };
 
+    // Function to change the progress of a task within the to-do list
     const doMarkTaskStatus = async (task, index) => { 
         var error = "";
         var obj;
 
+        // Only switch between in-progress and completed
         if(task.progress == "In-Progress"){
             var obj = { progress: "Completed" };
         }
@@ -176,6 +213,7 @@ function DashboardToDo() {
 
         var js = JSON.stringify(obj);
     
+        // Change the progress of the task in the DB
         try {
             console.log("Editing task in to-do list; " + task._id);
             const response = await fetch(buildPath(`api/to-do-tasks/${task._id}`),
@@ -208,13 +246,41 @@ function DashboardToDo() {
         }
     }
 
+    // Function to help swithcing to the calendar view
+    const switchViews = () => {
+        setDisplayCalendar(!displayCalendar);
+        
+        // Change the button text based on the current view
+        if (buttonText === "Calendar View") {
+            setButtonText("List View");
+        } else {
+            setButtonText("Calendar View");
+        }
+    };
+
     return (
-        <div className="container px-0 mt-5 mx-0">
+        // Display the calendar or the to-do list
+        displayCalendar ? (
+            <div class="container px-0 mt-5 mx-0">
+                <h1 class="title">Calendar</h1>
+                <form class="search-bar-calendar-btn" onSubmit={(e) => e.preventDefault()}>
+                    <input type="search" class="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
+                    <button id="calendar-btn" class="calendar-btn" onClick={switchViews} >{buttonText}</button>
+                </form>
+                <div>
+                    {/* Render the calendar using the already fetched task list */}
+                    <DashboardCalendar taskList={taskList} />
+                </div>
+            </div>
+        ) : (
+        <div class="container px-0 mt-5 mx-0">
             {/*Announcements for new features */}
             <AnnouncementModal />
-                <h1 className="title">To Do List</h1>
-                <form onSubmit={(e) => e.preventDefault()}>
-                    <input type="search" className="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
+
+                <h1 class="title">To Do List</h1>
+                <form class="search-bar-calendar-btn" onSubmit={(e) => e.preventDefault()}>
+                    <input type="search" class="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
+                    <button class="calendar-btn" onClick={switchViews} >{buttonText}</button>
                 </form>
                     <table className="table" id="taskTableHeader">
                         <thead>
@@ -243,15 +309,12 @@ function DashboardToDo() {
                                             <td>{task.progress}</td>
                                             <td><button className="taskBtn" onClick={() => toggleExpandVisible(index)}>...</button></td>
                                         </tr>
-
                                         {/* For making a row visible on click */}
                                         <tr id={`task-row ${index} show`} style={{visibility: "collapse"}}>
                                             <td colSpan="6" className="details-row">
                                                 <div>
                                                     <h5><strong>Description:</strong></h5>
-                                                    {/* <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(task.description, {USE_PROFILES: {html: true}})}}></div> */}
-                                                    <p dangerouslySetInnerHTML={{__html: task.description}}></p>
-
+                                                        <p dangerouslySetInnerHTML={{__html: task.description}}></p>
                                                     <p>
                                                         <span>
                                                             {task.dueDatePretty === 'PAST DUE' ?
@@ -265,12 +328,41 @@ function DashboardToDo() {
                                                 </div>
                                             </td>
                                         </tr>
+                                        {/* Expands row to show task description when clicking action button */}
+                                        {expandedRow === task._id && (
+                                            <tr>
+                                                <td colSpan="6" className="details-row">
+                                                    <div>
+                                                        <h5><strong>Description:</strong></h5>
+                                                        <p dangerouslySetInnerHTML={{ __html: task.description }}></p>
+                                                        <h5><strong>Prerequisite Tasks:</strong></h5>
+                                                        <ul className="prerequsisite-list">
+                                                            {prerequisites.map((prereq, index) => (
+                                                                <li key={index}>
+                                                                    {prereq.taskTitle} - {prereq.progress}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                        <p>
+                                                            <span>
+                                                                {task.dueDatePretty === 'PAST DUE' ?
+                                                                `THIS TASK WAS DUE: ${task.dueDateActual}`
+                                                                : ''}
+                                                            </span>
+                                                        </p>
+                                                        <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task, index)}>
+                                                            Mark As {task.progress === "In-Progress" ? "Completed" : 'In-Progress'}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
                                     </React.Fragment>
                                 ))}
                             </tbody>
                     </table>
         </div>
-    );
+        ));
 };
 
 export default DashboardToDo;
