@@ -33,9 +33,13 @@ jobs:
           SSH_USERNAME : ${{secrets.SSH_USERNAME}}
         run: |
           sshpass -p "${SSH_KEY}" ssh -o StrictHostKeyChecking=no ${SSH_USERNAME}@${SSH_HOST} << 'EOF'
-          cd /var/www/GanttUCF.com/html
+
+          pm2 stop all
+          cd /var/www/GanttifyUCF.com/html
           git pull origin master
           npm install
           npm run build
           systemctl restart nginx
+          cd ~/Ganttify
+          pm2 start ecosystem.config.js
           EOF
