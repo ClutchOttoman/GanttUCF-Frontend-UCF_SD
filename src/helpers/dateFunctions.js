@@ -13,6 +13,65 @@ export function dayDiff(startDate, endDate) {
   return days;
 }
 
+export function weekDiff(startMonth,startDate,endDate){
+    
+    var i = 0;
+    var startWeek = new Date(startDate)
+    while(true){
+        const currentWeekStart = new Date(startMonth)
+        currentWeekStart.setDate(currentWeekStart.getDate() + i * 7)
+        const currentWeekEnd = new Date(currentWeekStart);
+        currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+        currentWeekEnd.setHours(23, 59, 59, 999);
+        if(isTaskHappeningInWeek(startDate,endDate,currentWeekStart,currentWeekEnd)){
+            startWeek.setDate(currentWeekStart.getDate());
+            break;
+        }
+        else{
+            i++;
+        }
+    }
+    let weekDiff = findTaskWeekDuration(startWeek,endDate);
+    return weekDiff;
+
+}
+
+function isTaskHappeningInWeek(taskStart, taskEnd, weekStart, weekEnd) {
+    taskStart = new Date(taskStart);
+    taskEnd = new Date(taskEnd);
+    weekStart = new Date(weekStart);
+    weekEnd = new Date(weekEnd);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    return (
+      (taskStart >= weekStart && taskStart <= weekEnd) ||
+      (taskEnd >= weekStart && taskEnd <= weekEnd) ||
+      (taskStart < weekStart && taskEnd > weekEnd)
+    );
+  }
+  function findTaskWeekDuration(currentWeekStart, endDate){
+    const currentWeekEnd = new Date(currentWeekStart);
+    currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+    console.log("dateHelper: " + currentWeekStart);
+    let weekDif = 0;
+
+    do{
+      weekDif++;
+      currentWeekStart.setDate(currentWeekEnd.getDate() + 1);
+      currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+    }while(endDate > currentWeekEnd)
+
+    if(endDate > currentWeekStart){
+      weekDif++;
+    }
+
+    return weekDif;
+  }
+
+export function monthDiffPattern(startDate,endDate){
+    console.log
+}
+
 export function getDaysInMonth(year, month) {
   return new Date(year, month, 0).getDate();
 }
@@ -72,8 +131,3 @@ export function getNextDateFromStr(year,month,day){
     return createFormattedDateFromStr(year,month,day);
 }
 
-export function getDayLengthTask(startDate,endDate){
-    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
-    const diffDays = Math.round(Math.abs((startDate - endDate) / oneDay));
-    return diffDays;
-}

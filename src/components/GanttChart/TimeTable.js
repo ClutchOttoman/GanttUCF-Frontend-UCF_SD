@@ -8,6 +8,7 @@ import {
   getDaysInMonth,
   getNextDateFromStr,
   monthDiff,
+  weekDiff,
 } from '../../helpers/dateFunctions';
 // Patterns for tasks
 import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.svg';
@@ -113,7 +114,10 @@ export default function TimeTable({
   // For changing the selected view of the chart
   const [selectedRange, setSelectedRange] = useState("Days");
 
-  const [taskPatternDictionary, setTaskPatternDictionary] = useState({});
+  const [taskPatternDictionaryDays, setTaskPatternDictionaryDays] = useState({});
+  const [taskPatternDictionaryWeeks, setTaskPatternDictionaryWeeks] = useState({});
+  const [taskPatternDictionaryMonths, setTaskPatternDictionaryMonths] = useState({});
+
 
   const rangeSelector = document.getElementById('timeRangeDropdown');
 
@@ -141,7 +145,10 @@ export default function TimeTable({
       }
 
       setArrayOfTasks(tasks);
-      initPatternDictionary(tasks);
+      initPatternDictionaryDays(tasks);
+      initPatternDictionaryWeeks(tasks);
+      initPatternDictionaryMonths(tasks);
+
 
       let lB = null;
       let rB = null;
@@ -317,13 +324,7 @@ export default function TimeTable({
     }
   };
 
-  
-  const updatePatternDictionary = (taskId,taskPattern,taskPatternColor,state) => {
-    let taskPatterns = {...state};
-    taskPatterns[taskId] = {"pattern":taskPattern,"color":taskPatternColor} 
-    return taskPatterns;
- }
-  const initPatternDictionary = (taskArray) =>{
+  const initPatternDictionaryDays = (taskArray) =>{
     let taskPatterns = {};
     taskArray.map(task => {
         let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
@@ -333,9 +334,28 @@ export default function TimeTable({
         taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
         console.log(taskPatterns[task._id])
     });
-    setTaskPatternDictionary(taskPatterns)
+    setTaskPatternDictionaryDays(taskPatterns)
   }
-
+  const initPatternDictionaryWeeks = (taskArray) =>{
+    let startMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 6);
+    let taskPatterns = {};
+    taskArray.map(task => {
+        let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
+        //Math.abs(weekDiff(startMonth,new Date(task.startDateTime),new Date(task.dueDateTime)))
+        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,0,`${task._id}--week-pattern-target`)
+        //console.log(taskPatterns[task._id])
+    });
+    setTaskPatternDictionaryWeeks(taskPatterns);
+  }
+  const initPatternDictionaryMonths = (taskArray) =>{
+    let taskPatterns = {};
+    taskArray.map(task => {
+        let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
+        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,(Math.abs(monthDiff(new Date(task.startDateTime),new Date(task.dueDateTime))) + 1)*180 - 1,`${task._id}--month-pattern-target`)
+        console.log(taskPatterns[task._id])
+    });
+    setTaskPatternDictionaryMonths(taskPatterns)
+  }
   // Styling
   const ganttTimePeriod = {
     display: 'grid',
@@ -589,6 +609,7 @@ export default function TimeTable({
       function findTaskDuration(currentWeekStart, endDate){
         const currentWeekEnd = new Date(currentWeekStart);
         currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+        //console.log("timeTable: " + currentWeekStart);
         let weekDif = 0;
 
         do{
@@ -609,7 +630,7 @@ export default function TimeTable({
         tasks.forEach((task, index) => {
           const startDate = new Date(task.startDateTime);
           const dueDate = new Date(task.dueDateTime);
-          
+          const taskPattern = taskPatternDictionaryWeeks[task._id];
           for (let weekIndex = 0; weekIndex < numWeeks; weekIndex++) {
             const currentWeekStart = new Date(startMonth);
             currentWeekStart.setDate(currentWeekStart.getDate() + weekIndex * 7);
@@ -676,7 +697,9 @@ export default function TimeTable({
                           setSelectedTask(task);
                           setShowDetails(true);
                         }}
-                      ></div>
+                      >
+                    {taskPattern}
+                    </div>
                     );
                   }
                 })}
@@ -819,6 +842,7 @@ export default function TimeTable({
 
             const startDate = new Date(task.startDateTime);
             const dueDate = new Date(task.dueDateTime);
+            const taskPattern = taskPatternDictionaryMonths[task._id];
                   
             for (let monthIndex = 0; monthIndex < numMonths; monthIndex++) {
               let currentMonth = new Date(startMonth.getFullYear(), startMonth.getMonth() + monthIndex, 1);
@@ -883,7 +907,9 @@ export default function TimeTable({
                             setSelectedTask(task);
                             setShowDetails(true);
                           }}
-                        ></div>
+                        >
+                                                  {taskPattern}
+                                                  </div>
                       );
                     }
                   })}
@@ -1008,7 +1034,7 @@ export default function TimeTable({
         tasks.forEach((task, index) => {
           const startDate = task.startDateTime;
           const dueDate = task.dueDateTime;
-          const taskPattern = taskPatternDictionary[task._id];
+          const taskPattern = taskPatternDictionaryDays[task._id];
           let mnth = new Date(startMonth);
           for (let i = 0; i < numMonths; i++) {
             const curYear = mnth.getFullYear();

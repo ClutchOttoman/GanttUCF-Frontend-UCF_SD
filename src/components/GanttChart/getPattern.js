@@ -85,63 +85,64 @@ const Assemble_Single_Vertical_Line_Density_1 = (color,width,patternId) => {
     return <Single_Vertical_Line_Density_1 stroke={color} patternWidth={width} patternId={patternId}/>;
 }
 const getPattern = (patternFileName, patternColor,totalwidth,patternId) => {
-    if (!patternColor || !patternFileName){
-        console.error("Error getting pattern: missing name or color")
+    if (!patternFileName){
+        console.error("Error getting pattern: missing name")
         return;
     }
+    const patternColorToAssemble = patternColor ? patternColor : "#000000";
     console.log("Assembling "+patternFileName+" with color: " + patternColor +" and width: " + totalwidth)
 
 
     if(patternFileName.localeCompare("Hollow_Single_Circle_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Circle_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Circle_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Hollow_Single_Dot_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Dot_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Dot_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Hollow_Single_Rhombus_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Rhombus_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Rhombus_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Hollow_Single_Square_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Square_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Square_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Hollow_Single_Star_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Star_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Star_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Hollow_Single_Triangle_Density_1.jsx") == 0){
-        return Assemble_Hollow_Single_Triangle_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Hollow_Single_Triangle_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Circle_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Circle_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Circle_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Dot_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Dot_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Dot_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Rhombus_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Rhombus_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Rhombus_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Square_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Square_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Square_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Star_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Star_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Star_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Solid_Single_Triangle_Density_1.jsx") == 0){
-        return Assemble_Solid_Single_Triangle_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Solid_Single_Triangle_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Diagonal_Left_Single_Line_Density_1.jsx") == 0){
-        return Assemble_Diagonal_Left_Single_Line_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Diagonal_Left_Single_Line_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Diagonal_Right_Single_Line_Density_1.jsx") == 0){
-        return Assemble_Diagonal_Right_Single_Line_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Diagonal_Right_Single_Line_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Diagonal_Woven_Line_Density_1.jsx") == 0){
-        return Assemble_Diagonal_Woven_Line_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Diagonal_Woven_Line_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Single_Horizontal_Line_Density_1.jsx") == 0){
-        return Assemble_Single_Horizontal_Line_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Single_Horizontal_Line_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     else if(patternFileName.localeCompare("Single_Vertical_Line_Density_1.jsx") == 0){
-        return Assemble_Single_Vertical_Line_Density_1(patternColor,totalwidth,patternId);
+        return Assemble_Single_Vertical_Line_Density_1(patternColorToAssemble,totalwidth,patternId);
     }
     
 
