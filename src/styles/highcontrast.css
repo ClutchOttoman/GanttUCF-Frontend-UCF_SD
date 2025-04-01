@@ -3,21 +3,21 @@ html.high-contrast {
     /* General CSS */
     /* General Buttons */
 
-    button.btn-close{
-      background-color: #fff !important;
-    }
-
-    button.close{
-      background-color: #fff !important;
-      color: #000;
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
     }
 
     button.btn-outline-primary{
       color: #000;
     }
     
-    button, .btn.btn-primary, .btn, .cta-button{
+    button, .btn.btn-primary, .btn, .cta-button,  .fc-daygrid-event-dot, button.close{
         background-color: #002238  !important;  /* Dark background for buttons */
+        border-color: #002238  !important;
         color: #fff;  /* Light text */
         transition: ease-in 0.1s;
         visibility: visible;
@@ -30,7 +30,7 @@ html.high-contrast {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container{
+    div.task-title-container, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
       color: black;
       background-color: white !important;
       visibility: visible;
@@ -61,6 +61,15 @@ html.high-contrast {
           visibility: visible;
         }
     }
+
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  #002238  !important; 
+      &:hover{
+        color: #1a4a75 !important;
+      }
+    }
+      
     /* Sidebar text color */
     .navBtnText, .navBtnTextSmall{
         color: white !important;
@@ -162,11 +171,16 @@ html.high-contrast {
   
     /* To Do/todo List Page */
     /* Table background*/
-    th.todoTableBody{ 
+    th.todoTableBody, .fc-header-toolbar.fc-toolbar{ 
         background-color: #6B2B00;
         border-color: #6B2B00;
         color:rgb(255, 255, 255);
         visibility: visible;
+    }
+
+    /* calender table text */
+    .fc-event-title, a.fc-col-header-cell-cushion{
+      color: #002238  !important
     }
     /*Table scrollbar */
     div.table-responsive-xxl{ 
@@ -311,6 +325,9 @@ html.high-contrast {
               visibility: visible;
               &:hover{
                 background-color: #d3d3d3 !important;
+              }
+              &.active{
+                background-color: #6B2B00  !important;
               }
             }
             .dropdown-toggle{

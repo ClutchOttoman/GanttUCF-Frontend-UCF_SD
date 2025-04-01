@@ -1,29 +1,36 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import './TaskDetails.css';
 import './RichTextEditor.js';
 import DeleteTaskButton from '../../Images/assets/action_buttons/Delete_Task_or_Chart.svg';
 import EditTaskButton from '../../Images/assets/action_buttons/Edit_Task.svg';
 import {buildPath} from '../buildPath';
 import RichTextEditor from './RichTextEditor.js';
-import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.svg';
-import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.svg';
-import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.svg';
-import Hollow_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Square_Density_1.svg';
-import Hollow_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Star_Density_1.svg';
-import Hollow_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Triangle_Density_1.svg';
-import Diagonal_Left_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Left_Single_Line_Density_1.svg';
-import Diagonal_Right_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Right_Single_Line_Density_1.svg';
-import Diagonal_Woven_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Woven_Line_Density_1.svg';
-import Single_Horizontal_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Horizontal_Line_Density_1.svg';
-import Single_Vertical_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Vertical_Line_Density_1.svg';
-import Solid_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Circle_Density_1.svg';
-import Solid_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Dot_Density_1.svg';
-import Solid_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Rhombus_Density_1.svg';
-import Solid_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Square_Density_1.svg';
-import Solid_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Star_Density_1.svg';
-import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Triangle_Density_1.svg';
+import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.jsx?react';
+import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.jsx?react';
+import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.jsx?react';
+import Hollow_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Square_Density_1.jsx?react';
+import Hollow_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Star_Density_1.jsx?react';
+import Hollow_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Triangle_Density_1.jsx?react';
+import Diagonal_Left_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Left_Single_Line_Density_1.jsx?react';
+import Diagonal_Right_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Right_Single_Line_Density_1.jsx?react';
+import Diagonal_Woven_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Woven_Line_Density_1.jsx?react';
+import Single_Horizontal_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Horizontal_Line_Density_1.jsx?react';
+import Single_Vertical_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Vertical_Line_Density_1.jsx?react';
+import Solid_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Circle_Density_1.jsx?react';
+import Solid_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Dot_Density_1.jsx?react';
+import Solid_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Rhombus_Density_1.jsx?react';
+import Solid_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Square_Density_1.jsx?react';
+import Solid_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Star_Density_1.jsx?react';
+import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Triangle_Density_1.jsx?react';
 import './TimeTable.css';
 import './Patterns.css';
+import getPattern from './getPattern.js'
+import forcePatternColorChange from './forcePatternColorChange.js'
+import { findParentNode } from '@tiptap/core';
+import * as ReactDOMServer from "react-dom/server";
+import {toast} from 'react-toastify';
+import ToastConfirm from '../ToastConfirm';
+import ToastError from '../ToastError';
 
 // Colors to choose from
 const colorOptions = [
@@ -31,46 +38,47 @@ const colorOptions = [
   '#f47474', '#ffd580', '#fff77e','#b2e687', '#8fb9f9', '#9a86cc', '#b27fc6'
 ];
 const patternDisplayNames = {
-	'Hollow_Single_Circle_Density_1.svg':'Hollow Circles',
-	'Hollow_Single_Dot_Density_1.svg':'Hollow Dots',
-	'Hollow_Single_Rhombus_Density_1.svg':'Hollow Rhombuses',
-	'Hollow_Single_Square_Density_1.svg':'Hollow Squares',
-	'Hollow_Single_Star_Density_1.svg':'Hollow Stars',
-	'Hollow_Single_Triangle_Density_1.svg':'Hollow Triangles',
-	'Diagonal_Left_Single_Line_Density_1.svg':'Left Diagonal Lines',
-	'Diagonal_Right_Single_Line_Density_1.svg':'Right Diagonal Lines',
-	'Diagonal_Woven_Line_Density_1.svg':'Woven Diagonal Lines',
-	'Single_Horizontal_Line_Density_1.svg':'Horizontal Line',
-	'Single_Vertical_Line_Density_1.svg':'Vertical Line',
-	'Solid_Single_Circle_Density_1.svg':'Solid Circles',
-	'Solid_Single_Dot_Density_1.svg':'Solid Dots',
-	'Solid_Single_Rhombus_Density_1.svg':'Solid Rhombuses',
-	'Solid_Single_Square_Density_1.svg':'Solid Squares',
-	'Solid_Single_Star_Density_1.svg':'Solid Stars',
-	'Solid_Single_Triangle_Density_1.svg':'Solid Triangles',
+	'Hollow_Single_Circle_Density_1.jsx':'Hollow Circles',
+	'Hollow_Single_Dot_Density_1.jsx':'Hollow Dots',
+	'Hollow_Single_Rhombus_Density_1.jsx':'Hollow Rhombuses',
+	'Hollow_Single_Square_Density_1.jsx':'Hollow Squares',
+	'Hollow_Single_Star_Density_1.jsx':'Hollow Stars',
+	'Hollow_Single_Triangle_Density_1.jsx':'Hollow Triangles',
+	'Diagonal_Left_Single_Line_Density_1.jsx':'Left Diagonal Lines',
+	'Diagonal_Right_Single_Line_Density_1.jsx':'Right Diagonal Lines',
+	'Diagonal_Woven_Line_Density_1.jsx':'Woven Diagonal Lines',
+	'Single_Horizontal_Line_Density_1.jsx':'Horizontal Line',
+	'Single_Vertical_Line_Density_1.jsx':'Vertical Line',
+	'Solid_Single_Circle_Density_1.jsx':'Solid Circles',
+	'Solid_Single_Dot_Density_1.jsx':'Solid Dots',
+	'Solid_Single_Rhombus_Density_1.jsx':'Solid Rhombuses',
+	'Solid_Single_Square_Density_1.jsx':'Solid Squares',
+	'Solid_Single_Star_Density_1.jsx':'Solid Stars',
+	'Solid_Single_Triangle_Density_1.jsx':'Solid Triangles',
     'No Pattern':'No Pattern'
 }
 const patterns = {
-    'Diagonal_Right_Single_Line_Density_1.svg':Diagonal_Right_Single_Line_Density_1,
-    'Diagonal_Left_Single_Line_Density_1.svg':Diagonal_Left_Single_Line_Density_1, 'Diagonal_Left_Single_Line_Density_1.svg':Diagonal_Left_Single_Line_Density_1,
-    'Diagonal_Woven_Line_Density_1.svg':Diagonal_Woven_Line_Density_1, 'Single_Horizontal_Line_Density_1.svg':Single_Horizontal_Line_Density_1,
-    'Single_Vertical_Line_Density_1.svg':Single_Vertical_Line_Density_1,'Solid_Single_Circle_Density_1.svg':Solid_Single_Circle_Density_1,
-    'Solid_Single_Dot_Density_1.svg':Solid_Single_Dot_Density_1,'Solid_Single_Rhombus_Density_1.svg':Solid_Single_Rhombus_Density_1,
-    'Solid_Single_Square_Density_1.svg':Solid_Single_Square_Density_1,'Solid_Single_Star_Density_1.svg':Solid_Single_Star_Density_1,
-    'Solid_Single_Triangle_Density_1.svg':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.svg':Hollow_Single_Circle_Density_1,
-    'Hollow_Single_Dot_Density_1.svg':Hollow_Single_Dot_Density_1,'Hollow_Single_Rhombus_Density_1.svg':Hollow_Single_Rhombus_Density_1,
-    'Hollow_Single_Square_Density_1.svg':Hollow_Single_Square_Density_1,'Hollow_Single_Star_Density_1.svg':Hollow_Single_Star_Density_1,
-    'Hollow_Single_Triangle_Density_1.svg':Hollow_Single_Triangle_Density_1
+    'Diagonal_Right_Single_Line_Density_1.jsx':Diagonal_Right_Single_Line_Density_1,
+    'Diagonal_Left_Single_Line_Density_1.jsx':Diagonal_Left_Single_Line_Density_1, 'Diagonal_Left_Single_Line_Density_1.jsx':Diagonal_Left_Single_Line_Density_1,
+    'Diagonal_Woven_Line_Density_1.jsx':Diagonal_Woven_Line_Density_1, 'Single_Horizontal_Line_Density_1.jsx':Single_Horizontal_Line_Density_1,
+    'Single_Vertical_Line_Density_1.jsx':Single_Vertical_Line_Density_1,'Solid_Single_Circle_Density_1.jsx':Solid_Single_Circle_Density_1,
+    'Solid_Single_Dot_Density_1.jsx':Solid_Single_Dot_Density_1,'Solid_Single_Rhombus_Density_1.jsx':Solid_Single_Rhombus_Density_1,
+    'Solid_Single_Square_Density_1.jsx':Solid_Single_Square_Density_1,'Solid_Single_Star_Density_1.jsx':Solid_Single_Star_Density_1,
+    'Solid_Single_Triangle_Density_1.jsx':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.jsx':Hollow_Single_Circle_Density_1,
+    'Hollow_Single_Dot_Density_1.jsx':Hollow_Single_Dot_Density_1,'Hollow_Single_Rhombus_Density_1.jsx':Hollow_Single_Rhombus_Density_1,
+    'Hollow_Single_Square_Density_1.jsx':Hollow_Single_Square_Density_1,'Hollow_Single_Star_Density_1.jsx':Hollow_Single_Star_Density_1,
+    'Hollow_Single_Triangle_Density_1.jsx':Hollow_Single_Triangle_Density_1
   }
+
 
 // Initializes variables
 const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) => {
   const [status, setStatus] = useState('');
   const [newCategory, setNewCategory] = useState(''); // Added  
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [color, setColor] = useState('white'); // Default color
-  const [patternColor, setPatternColor] = useState('black'); // Default color
-  const [patternPreview, setPatternPreview] = useState('');
+  const [color, setColor] = useState('#FFFFFF'); // Default color
+  const [patternColor, setPatternColor] = useState('#000000'); // Default color
+  const [patternPreview, setPatternPreview] = useState(null);
   const [pattern,setPattern] = useState('No Pattern');
   const [patternToDisplay,setPatternToDisplay] = useState('No Pattern');
   const [taskCreatorName, setTaskCreatorName] = useState('');
@@ -106,13 +114,13 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
     };
   };
 
-  
+
   useEffect(() => {
     if (task && show) {
       setProgressEditPermission(false);
       setStatus(task.progress);
       setColor(task.color);
-      setPatternColor(task.patternColor ? task.patternColor : 'black')
+      setPatternColor(task.patternColor ? task.patternColor : '#000000')
       setTaskCategory(task.taskCategory || 'No category'); //added
       fetchTaskCreator(task.taskCreatorId);
       fetchAssignedUsers(task.assignedTasksUsers);
@@ -124,10 +132,10 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
       setDueDate(task.dueDateTime);
       setPattern(task.pattern);
       setPatternToDisplay(patternDisplayNames[task.pattern]);
-      setPatternPreview("url(" + `${patterns[task.pattern]})`)
       setDependentTasks(task.dependentTasks);
       setPrerequisiteTasks(task.prerequisiteTasks);
       setAllPrerequisitesDone(task.allPrerequisitesDone);
+      setPatternPreview(getPattern(task.pattern,task.patternColor ? task.patternColor:"#000000",200,"taskDetailsPreview"))
 
       setOriginalTask({
         progress: task.progress,
@@ -180,9 +188,8 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
     setProgressEditPermission(false);
     setStatus(fetchedTask.progress);
     setColor(fetchedTask.color);
-    setPatternColor(fetchedTask.patternColor ? fetchedTask.patternColor : 'black')
+    setPatternColor(fetchedTask.patternColor ? fetchedTask.patternColor : '#000000')
     setPattern(fetchedTask.pattern);
-    setPatternPreview("url(" + `${patterns[fetchedTask.pattern]})`);
     setTaskCategory(fetchedTask.taskCategory || 'No category'); //added
     fetchTaskCreator(fetchedTask.taskCreatorId);
     fetchAssignedUsers(fetchedTask.assignedTasksUsers);
@@ -196,6 +203,8 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
     setDependentTasks(fetchedTask.dependentTasks);
     setPrerequisiteTasks(fetchedTask.prerequisiteTasks);
     setAllPrerequisitesDone(fetchedTask.allPrerequisitesDone);
+    setPatternPreview(getPattern(fetchedTask.pattern,fetchedTask.patternColor ? fetchedTask.patternColor:null,200,"taskDetailsPreview"))
+
 
     setOriginalTask({
       progress: fetchedTask.progress,
@@ -228,7 +237,7 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
     if (originalTask) {
       setStatus(originalTask.progress);
       setColor(originalTask.color);
-      setPatternColor(originalTask.patternColor ? originalTask.patternColor : 'black')
+      setPatternColor(originalTask.patternColor ? originalTask.patternColor : '#000000')
       setTaskTitle(originalTask.taskTitle);
       setTaskDescription(originalTask.description);
       setCreatedDate(originalTask.taskCreated);
@@ -238,6 +247,7 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
       setDependentTasks(originalTask.dependentTasks);
       setPrerequisiteTasks(originalTask.prerequisiteTasks);
       setAllPrerequisitesDone(originalTask.allPrerequisitesDone);
+      setPatternPreview(getPattern(originalTask.pattern,originalTask.patternColor ? originalTask.patternColor:"#000000",200,"taskDetailsPreview"))
     }
   };
 
@@ -284,7 +294,6 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   
       fetchCategories();
     }, []);
-
 
   const getProjectData = async (projectId) => {
     try {
@@ -443,9 +452,13 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   const handleStatusChange = async (newStatus) => {
     console.log("fetched task: " + fetchedTask.allPrerequisitesDone + "| task: " + task.allPrerequisitesDone);
     if(newStatus == "Completed" && (fetchedTask.prerequisiteTasks.length != 0 && !fetchedTask.allPrerequisitesDone)){
-        // List the tasks that need to be completed Here
-        let prequisiteTaskAlert = generatePrereqAlert();
-        window.alert(prequisiteTaskAlert);
+        toast.error(ToastError, {
+          data: {
+            title: "",
+            body: "You cannot finish this task while its prerequisite tasks are incomplete.", 
+          },  
+          draggable: false, autoClose: 3000, ariaLabel: "Error: Cannot mark task as complete. "
+        });
         return;
     }
     setStatus(newStatus);
@@ -478,7 +491,9 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   };
 
   const handlePatternColorChange = (newColor) => {
-    setPatternColor(newColor);
+    setPatternColor(newColor? newColor : '#000000');
+    var patternId = "taskDetailsPreview";
+    forcePatternColorChange(newColor,pattern,patternId);
     //change color of task bar
   }
 
@@ -486,8 +501,8 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   const handlePatternChange = async (newPattern,newPatternToDisplay) => {
     console.log(newPattern);
     setPatternToDisplay(newPatternToDisplay)
-    setPatternPreview("url(" + `${patterns[newPattern]})`);
     setPattern(newPattern);
+    setPatternPreview(getPattern(newPattern,patternColor ? patternColor:"#000000",200,"taskDetailsPreview"));
   }
   
   
@@ -580,6 +595,7 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
           startDateTime: startDate,
           dueDateTime: dueDate,
           pattern: pattern,
+          patternColor: patternColor,
           prerequisiteTasks: prerequisiteTasks,
           dependentTasks: dependentTasks,
           allPrerequisitesDone : allPrerequisitesDone,
@@ -670,13 +686,23 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
   }
 
   const handleDeleteClick = () => {
-    if (window.confirm('Are you sure you want to delete?')) {
-      handleDelete(task._id, task.tiedProjectId);
-    }
+    toast.warn(ToastConfirm, {
+      data: {
+        title: "Are you sure you want to delete this task?", 
+      },  
+      draggable: false, closeButton: false, position: "top-center", ariaLabel: "Are you sure you want to delete this task?", autoClose: false,
+      onClose(reason){
+        switch (reason){
+            case "confirm":
+              handleDelete(task._id, task.tiedProjectId);
+        }
+      }
+    });
   };
 
+
+
   if (!show || !task || !fetchedTask) return null;
- 
 
   return (
 
@@ -724,39 +750,41 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
                                     {patternToDisplay}
                                 </button>
                                 <ul class="dropdown-menu">
-                                <a onClick={()=>handlePatternChange('Hollow_Single_Circle_Density_1.svg','Hollow Circles')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Circles</a>
-                                    <a onClick={()=>handlePatternChange('Hollow_Single_Dot_Density_1.svg','Hollow Dots')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Dots</a>
-                                    <a onClick={()=>handlePatternChange('Hollow_Single_Rhombus_Density_1.svg','Hollow Rhombuses')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Rhombuses</a>
-                                    <a onClick={()=>handlePatternChange('Hollow_Single_Square_Density_1.svg','Hollow Squares')} class = "dropdown-item patternDropdownItem">Hollow Squares</a>
-                                    <a onClick={()=>handlePatternChange('Hollow_Single_Star_Density_1.svg','Hollow Stars')} class = "dropdown-item patternDropdownItem">Hollow Stars</a>
-                                    <a onClick={()=>handlePatternChange('Hollow_Single_Triangle_Density_1.svg','Hollow Triangles')} class = "dropdown-item patternDropdownItem">Hollow Triangles</a>
-                                    <a onClick={()=>handlePatternChange('Diagonal_Left_Single_Line_Density_1.svg','Left Diagonal Lines')} class = "dropdown-item patternDropdownItem">Left Diagonal Lines</a>
-                                    <a onClick={()=>handlePatternChange('Diagonal_Right_Single_Line_Density_1.svg','Right Diagonal Lines')} class = "dropdown-item patternDropdownItem">Right Diagonal Lines</a>
-                                    <a onClick={()=>handlePatternChange('Diagonal_Woven_Line_Density_1.svg','Woven Diagonal Lines')} class = "dropdown-item patternDropdownItem">Woven Diagonal Lines</a>
-                                    <a onClick={()=>handlePatternChange('Single_Horizontal_Line_Density_1.svg','Horizontal Line')} class = "dropdown-item patternDropdownItem">Horizontal Line</a>
-                                    <a onClick={()=>handlePatternChange('Single_Vertical_Line_Density_1.svg','Vertical Line')} class = "dropdown-item patternDropdownItem">Vertical Lines</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Circle_Density_1.svg','Solid Circles')} class = "dropdown-item patternDropdownItem">Solid Circles</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Dot_Density_1.svg','Solid Dots')} class = "dropdown-item patternDropdownItem">Solid Dots</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Rhombus_Density_1.svg','Solid Rhombuses')} class = "dropdown-item patternDropdownItem">Solid Rhombuses</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Square_Density_1.svg','Solid Squares')} class = "dropdown-item patternDropdownItem">Solid Squares</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Star_Density_1.svg','Solid Stars')} class = "dropdown-item patternDropdownItem">Solid Stars</a>
-                                    <a onClick={()=>handlePatternChange('Solid_Single_Triangle_Density_1.svg','Solid Triangles')} class = "dropdown-item patternDropdownItem">Solid Triangles</a>
+                                <a onClick={()=>handlePatternChange('Hollow_Single_Circle_Density_1.jsx','Hollow Circles')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Circles</a>
+                                    <a onClick={()=>handlePatternChange('Hollow_Single_Dot_Density_1.jsx','Hollow Dots')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Dots</a>
+                                    <a onClick={()=>handlePatternChange('Hollow_Single_Rhombus_Density_1.jsx','Hollow Rhombuses')} class = "dropdown-item patternDropdownItem patternDropdownItem">Hollow Rhombuses</a>
+                                    <a onClick={()=>handlePatternChange('Hollow_Single_Square_Density_1.jsx','Hollow Squares')} class = "dropdown-item patternDropdownItem">Hollow Squares</a>
+                                    <a onClick={()=>handlePatternChange('Hollow_Single_Star_Density_1.jsx','Hollow Stars')} class = "dropdown-item patternDropdownItem">Hollow Stars</a>
+                                    <a onClick={()=>handlePatternChange('Hollow_Single_Triangle_Density_1.jsx','Hollow Triangles')} class = "dropdown-item patternDropdownItem">Hollow Triangles</a>
+                                    <a onClick={()=>handlePatternChange('Diagonal_Left_Single_Line_Density_1.jsx','Left Diagonal Lines')} class = "dropdown-item patternDropdownItem">Left Diagonal Lines</a>
+                                    <a onClick={()=>handlePatternChange('Diagonal_Right_Single_Line_Density_1.jsx','Right Diagonal Lines')} class = "dropdown-item patternDropdownItem">Right Diagonal Lines</a>
+                                    <a onClick={()=>handlePatternChange('Diagonal_Woven_Line_Density_1.jsx','Woven Diagonal Lines')} class = "dropdown-item patternDropdownItem">Woven Diagonal Lines</a>
+                                    <a onClick={()=>handlePatternChange('Single_Horizontal_Line_Density_1.jsx','Horizontal Line')} class = "dropdown-item patternDropdownItem">Horizontal Line</a>
+                                    <a onClick={()=>handlePatternChange('Single_Vertical_Line_Density_1.jsx','Vertical Line')} class = "dropdown-item patternDropdownItem">Vertical Lines</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Circle_Density_1.jsx','Solid Circles')} class = "dropdown-item patternDropdownItem">Solid Circles</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Dot_Density_1.jsx','Solid Dots')} class = "dropdown-item patternDropdownItem">Solid Dots</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Rhombus_Density_1.jsx','Solid Rhombuses')} class = "dropdown-item patternDropdownItem">Solid Rhombuses</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Square_Density_1.jsx','Solid Squares')} class = "dropdown-item patternDropdownItem">Solid Squares</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Star_Density_1.jsx','Solid Stars')} class = "dropdown-item patternDropdownItem">Solid Stars</a>
+                                    <a onClick={()=>handlePatternChange('Solid_Single_Triangle_Density_1.jsx','Solid Triangles')} class = "dropdown-item patternDropdownItem">Solid Triangles</a>
                                     <a onClick={()=>handlePatternChange('No Pattern','No Pattern')} class = "dropdown-item patternDropdownItem">No Pattern</a>
                                     </ul>
                         </div>
                 </div>
                 <div class ="row mt-5">
-                    {/* PATTERN COLOR -- DOES NOT WORK YET
+                    {/* PATTERN COLOR -- DOES NOT WORK YET*/}
                     <div class ="col-7 d-flex align-items-center">
                         <label>Pattern Color</label>
                     </div>
                     <div class ="col-5">
                         <input type="color" className="form-control form-control-color color-sidebar-color-picker" id="myColor" value={patternColor} title="Choose a color" onChange={(e) => handlePatternColorChange(e.target.value)} />
-                    </div>*/}
+                    </div>
                 </div>
                 <div class="row mt-4 justify-content-center">
                     <div class="col-12 d-flex align-items-center">
-                        <div class="task-appearance-preview" draggable="false" style={{backgroundColor:`${color}`,backgroundImage:patternPreview,backgroundSize: 'contain'}}></div>
+                        <div id="task-appearance-preview" class="task-appearance-preview" draggable="false" style={{backgroundColor:`${color}`}}>
+                            {patternPreview}
+                        </div>
                     </div>
                 </div>
             </form>
@@ -768,9 +796,9 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
         <div className="col-4  dropdownDetails">
             <a className="nav-link dropdown-toggle" id="todoDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{status}</a>
             <div className="dropdown-menu" aria-labelledby="todoDropdown">
-            <a className="dropdown-item" onClick={() => handleStatusChange('Not Started')}>Not Started</a>
-            <a className="dropdown-item" onClick={() => handleStatusChange('In-Progress')}>In-Progress</a>
-            <a className="dropdown-item" onClick={() => handleStatusChange('Completed')}>Completed</a>:
+              <a className="dropdown-item" onClick={() => handleStatusChange('Not Started')}>Not Started</a>
+              <a className="dropdown-item" onClick={() => handleStatusChange('In-Progress')}>In-Progress</a>
+              <a className="dropdown-item" onClick={() => handleStatusChange('Completed')}>Completed</a>
             </div>
         </div> :
         <div className="col-4 dropdownDetails">
@@ -857,18 +885,18 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
                   <label htmlFor="noCategoryCheckbox">No category</label>
                 </div>
               </div>
+              {/* For selecting/deselecting prequsites */}
                     <div className="mb-4 dropup dropup-center d-grid gap-2">
                         <label htmlFor='prerequisiteTaskSelection' className="form-label text-align-start">Prerequisite Tasks</label>
                         <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" disabled = {isPrerequisiteDropdownDisabled()}>Select Prerequisite Tasks</button>
                         <ul class="dropdown-menu" id = "prerequisiteTaskDropdownMenu">
                             {projectTasks.map(preReqTask =>( (preReqTask._id == task._id || preReqTask.prerequisiteTasks.includes(task._id)) ? null : 
-                                    <a href={"#" + `${task._id}`} key={preReqTask._id} class ="dropdown-item">
-                                        <div class="form-check">
-                                            <input type ="checkbox" id={preReqTask._id} class ="form-check-input" value={preReqTask._id} onChange={(e) => handlePrerequisiteChange(e.target.value)} checked={prerequisiteTasks.includes(preReqTask._id) ? true : false}/>
-                                            <label htmlFor = {preReqTask._id} class = "form-check-label prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
-                                        </div>
-                                    </a>
-                               
+                                <a href={"#" + `${task._id}`} key={preReqTask._id} class ="dropdown-item">
+                                    <div class="form-check">
+                                        <input type ="checkbox" id={preReqTask._id} class ="form-check-input" value={preReqTask._id} onChange={(e) => handlePrerequisiteChange(e.target.value)} checked={prerequisiteTasks.includes(preReqTask._id) ? true : false}/>
+                                        <label htmlFor = {preReqTask._id} class = "form-check-label prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
+                                    </div>
+                                </a>
                             ))}
                            <>
                            </>
@@ -896,9 +924,11 @@ const TaskDetails = ({ show, onHide, task, handleDelete, userId, projectTasks}) 
                         <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" disabled = {task.prerequisiteTasks[0] ? false : true}>Show Prerequisite Tasks</button>
                         <ul class="dropdown-menu" id = "prerequisiteTaskDropdownMenu">
                             {projectTasks.map(preReqTask =>( prerequisiteTasks.includes(preReqTask._id) ?
-                                        <div key={preReqTask._id} class ="dropdown-item">
-                                            <label htmlFor = {preReqTask._id} class = "prerequisiteTaskDropdownItem">{preReqTask.taskTitle}</label>
-                                        </div> : null
+                                <div key={preReqTask._id} class ="dropdown-item">
+                                    {/*Indicates if the task was done or not. */}
+                                    <i className={`${preReqTask.progress === "Completed" ? 'fa-solid fa-check' : 'fa-regular fa-circle-xmark'}`} aria-describedby={`${preReqTask.progress === "Completed" ? 'Completed' : 'Incomplete'}`}></i>
+                                    <label htmlFor = {preReqTask._id} class = "prerequisiteTaskDropdownItem">{preReqTask.taskTitle} - <span style={{fontSize: "0.75em", fontStyle: "italic"}}>{preReqTask.progress === "Completed" ? 'Complete' : 'Incomplete'}</span></label>
+                                </div> : null
                             ))}
                         </ul>
                     </div>

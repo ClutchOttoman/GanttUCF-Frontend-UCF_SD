@@ -4,8 +4,9 @@ import { ThemeContext } from './ThemeProvider';
 import './UIsettings.css'
 import DashboardPreview  from '../Images/assets/setting_previews/dashboard_preview.svg?react';
 import TimetablePreview  from '../Images/assets/setting_previews/timetable_preview.svg?react';
-import tinycolor from "tinycolor2"; 
-import ContrastChecker from './ContrastChecker';
+
+import * as wcagContrast from 'wcag-contrast';
+
 
 const debounce = (func, delay) => {
   const timeoutRef = useRef(null);  // This will persist across renders
@@ -24,118 +25,138 @@ const debounce = (func, delay) => {
 const UISettings = () => {
   const { theme, setTheme, customColors, setCustomColors, fontStyle, setFontStyle, activeCVD, setActiveCVD } = useContext(ThemeContext);
   const [pendingColors, setPendingColors] = useState(customColors);
-  const [contrastWarnings, setContrastWarnings] = useState([]);
+
+  const [contrastWarnings, setContrastWarnings] = useState({}); //added
+
   const [message, setMessage] = useState('');
 
+  const customLabels = {
+    background: "Background Color",
+    text: "Text",
+    contentarea: "Content Area",
+    cardcolor: "Chart",
+    timetable: "Time Table",
+    texteditor: "Text Editor",
+    navbar: "Navigation Bar",
+    sidebar: "Dashboard Bar",
+    buttons: "Buttons",
+    dropdowns: "Dropdown Menu",
+    todolist: "To-Do List",
+    scrollbar: "Scrollbar",
+    sidebarbtn: "Sidebar Buttons",
+  };
+
+// Function to calculate contrast ratio
+const getContrastRatio = (color1, color2) => {
+  return wcagContrast.hex(color1, color2);
+};
+
+// Function to validate contrast and show warnings
+const validateContrast = (id, newColor) => {
+  let newWarnings = { ...contrastWarnings };
+
+  // Define key UI elements to check contrast against
+  const elementsToCheck = {
+    cardcolor: ["text", "buttons", "background"],
+    text: ["background", "sidebarbtn", "contentarea", "cardcolor", "timetable", "texteditor", "navbar", "buttons", "dropdown", "todolist"],
+    background: ["text", "buttons", "timetable", "contentarea", "navbar", "sidebar", "todolist", "card"],
+    contentarea: ["text", "buttons", "background", "texteditor"],
+    timetable: ["text", "buttons", "background"],
+    texteditor: ["text", "contentarea"],
+    navbar: ["text", "background"],
+    buttons: ["background", "text", "contentarea", "cardcolor", "timetable", "todolist"],
+    dropdowns: ["text"],
+    todolist: ["text", "buttons", "background"],
+    sidebarbtn: ["text", "sidebar"],
+    sidebar: ["text", "sidebarbtn", "background"],
+  };
+
+
+  const contrastRequirements = {
+    default: 4.5,
+    highContrast: 7.0,
+  };
+  
+
+  if (elementsToCheck[id]) {
+    elementsToCheck[id].forEach((element) => {
+      const color1 = newColor;
+      const color2 = customColors[element];
+
+      if (!color2) return;
+
+      const ratio = getContrastRatio(color1, color2);
+
+      if (ratio < contrastRequirements.default) {
+        newWarnings[id] = ``;
+        newWarnings[element] = `⚠️ Minimum contrast of 4.5:1 is recommended for ${customLabels[id]}. You have ${ratio.toFixed(1)}:1.`;
+      } else if (ratio < contrastRequirements.highContrast) {
+        newWarnings[id] = ``;
+        newWarnings[element] = `✅ ${customLabels[id]}${customLabels[id].endsWith('s') ? ' meet' : ' meets'} the default contrast (4.5:1). If you want high contrast, you have ${ratio.toFixed(1)}:1, and you need 7:1.`;
+      } else {
+        newWarnings[id] = ``;
+        newWarnings[element] = `✅ ${customLabels[id]}${customLabels[id].endsWith('s') ? ' meet' : ' meets'}  the high contrast requirement (7:1).`;
+      }
+
+      console.log(newWarnings)
+    });
+  }
+
+  setContrastWarnings(newWarnings);
+};
+
+
     // Assuming theme values are 'dark', 'custom', or 'high-contrast'
-    let backgroundColor = theme === 'dark' ? "#121212" : theme === 'high-contrast' ? "white" : theme === 'custom' ? customColors.background : "white";
+    let backgroundColor = theme === 'dark' ? "#121212" : theme === 'high-contrast' ? "white" : theme === 'custom' ? pendingColors.background : "white";
     let borderColor = theme === 'dark' ? "#FFF" : theme === 'high-contrast' ? "#000000" : "#000000";
-    let navbarColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#6B2B00" : theme === 'custom' ? customColors.navbar : "#FDDC87";
+    let navbarColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#6B2B00" : theme === 'custom' ? pendingColors.navbar : "#FDDC87";
 
     // Dashboard related svgs
-    let sideBarColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#f3b35b" : theme === 'custom' ? customColors.sidebar : "#DC6B2C";
-    let sideBarButtonColor = theme === 'dark' ? "#424242" : theme === 'high-contrast' ? "#402C12" : theme === 'custom' ? customColors?.buttons || "#FFFFFF" : "#FFFFFF";
-    let viewButtonColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#002238" : theme === 'custom' ? customColors?.buttons || "#135C91" : "#135C91";
-    let projectCardColor = theme === 'dark' ? "#424242" : theme === 'high-contrast' ? "#f3b35b" : theme === 'custom' ? customColors.cardcolor : "#fddc87";
-    let projectCardBorderColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#402C12" : theme === 'custom' ? customColors.cardbordercolor : "#DC6B2C";
+    let sideBarColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#f3b35b" : theme === 'custom' ? pendingColors.sidebar : "#DC6B2C";
+    let sideBarButtonColor = theme === 'dark' ? "#424242" : theme === 'high-contrast' ? "#402C12" : theme === 'custom' ? pendingColors?.sidebarbtn || "#FFFFFF" : "#FFFFFF";
+    let viewButtonColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#002238" : theme === 'custom' ? pendingColors?.buttons || "#DC6B2C" : "#DC6B2C"; //changed color
+    let projectCardColor = theme === 'dark' ? "#424242" : theme === 'high-contrast' ? "#f3b35b" : theme === 'custom' ? pendingColors.cardcolor : "#fddc87";
+    let projectCardBorderColor = theme === 'dark' ? "#2f2f2f" : theme === 'high-contrast' ? "#402C12" : theme === 'custom' ? pendingColors.cardbordercolor : "#DC6B2C";
 
     // Timetable related svgs
-    let timetableColor = theme === 'dark' ? "#222" : theme === 'high-contrast' ? "white" : theme === 'custom' ? customColors.timetable : "white";
-    let timetableInnerColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#FFF" : theme === 'custom' ? customColors.timetableinner : "#FFF";
-    let timetableBorderColor = theme === 'dark' ? "#FFF" : theme === 'high-contrast' ? "#000000" : theme === 'custom' ? customColors.timetableborder : "#000000";
+    let timetableColor = theme === 'dark' ? "#222" : theme === 'high-contrast' ? "white" : theme === 'custom' ? pendingColors.timetable : "white";
+    let timetableInnerColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#FFF" : theme === 'custom' ? pendingColors.timetableinner : "#FFF";
+    let timetableBorderColor = theme === 'dark' ? "#FFF" : theme === 'high-contrast' ? "#000000" : theme === 'custom' ? pendingColors.timetableborder : "#000000";
     let gridColor = theme === 'dark' ? "white" : theme === 'high-contrast' ? "black" : "black";
-    let addTaskButtonColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#002238" : theme === 'custom' ? customColors?.buttons || "#DC6B2C" : "#DC6B2C";
+    let addTaskButtonColor = theme === 'dark' ? "#333" : theme === 'high-contrast' ? "#002238" : theme === 'custom' ? pendingColors?.buttons || "#DC6B2C" : "#DC6B2C";
 
-    const toggleDarkMode = async () => {
-      setTheme((prevTheme) => {
-        const newTheme = prevTheme === 'dark' ? 'default' : 'dark';
+    const toggleTheme = async (newTheme) => {
+      const savedUserInfo = localStorage.getItem('user_data');
+      const savedUserId = JSON.parse(savedUserInfo)._id;
 
-        const savedUserInfo = localStorage.getItem('user_data');
-        const savedUserId = JSON.parse(savedUserInfo)._id; 
+      const updatedTheme = (theme === newTheme ? 'default' : newTheme); //Need to have const variable to use newTheme result immediately.
+      setTheme(updatedTheme)
 
-        const response = fetch(buildPath(`api/toggle-theme/${savedUserId}`), {
+      try {
+        const response = await fetch(buildPath(`api/toggle-theme/${savedUserId}/${updatedTheme}`), {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mode: newTheme, 
-          }),
         });
     
-        response.then(async (res) => {
-          if (!res.ok) {
-            setMessage("Unable to toggle to dark mode");
-          } else {
-            const message = await res.json();
-            setMessage(message);
-          }
-        });
-    
-        return newTheme;
-      });
+        if (!response.ok) {
+          setMessage("Unable to toggle to dark mode");
+        } else {
+          const message = await response.json();
+          setMessage(message);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+        setMessage("An error occurred while toggling");
+      }
     };
-  
-    const toggleHighContrastMode = async () => {
-      setTheme((prevTheme) => {
-        const newTheme = prevTheme === 'high-contrast' ? 'default' : 'high-contrast';
-
-        const savedUserInfo = localStorage.getItem('user_data');
-        const savedUserId = JSON.parse(savedUserInfo)._id; 
-    
-        const response = fetch(buildPath(`api/toggle-theme/${savedUserId}`), {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mode: newTheme, 
-          }),
-        });
-    
-        response.then(async (res) => {
-          if (!res.ok) {
-            setMessage("Unable to toggle to contrast mode");
-          } else {
-            const message = await res.json();
-            setMessage(message);
-          }
-        });
-    
-        return newTheme; 
-      });
-    };
-
-    const toggleCustomMode = () => {
-      setTheme((prevTheme) => {
-        const newTheme = prevTheme === 'custom' ? 'default' : 'custom';
-        const savedUserInfo = localStorage.getItem('user_data');
-        const savedUserId = JSON.parse(savedUserInfo)._id; 
-    
-        const response = fetch(buildPath(`api/toggle-theme/${savedUserId}`), {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mode: newTheme, 
-          }),
-        });
-    
-        response.then(async (res) => {
-          if (!res.ok) {
-            setMessage("Unable to toggle to custom mode");
-          } else {
-            const message = await res.json();
-            setMessage(message);
-          }
-        });
-    
-        return newTheme; 
-      });
-    }
 
     // Handles Font Changes
     const handleFontChange = async (event) => {
 
       // Handle localStorage.
-      setFontStyle(event.target.value)
       const selectedFont = event.target.value;
       document.body.style.fontFamily = selectedFont;
+      setFontStyle(selectedFont)
 
       let savedUserInfo = localStorage.getItem('user_data');
       const savedUserId = JSON.parse(savedUserInfo)._id; // use user id to query database.
@@ -249,15 +270,18 @@ const UISettings = () => {
       ...prevColors,
       [id]: value, 
       ...(id === "buttons" && { buttonshover: brightenColor(value, 15) }),
-      ...(id === "dropdowns" && { dropdownshover: brightenColor(value, 15) }),
+      ...(id === "sidebarbtn" && { sidebarbtnhover: brightenColor(value, 15) }),
+      ...(id === "text" && { texthover: brightenColor(value, 15) }),
+      ...(id === "dropdowns" && { dropdownhover: brightenColor(value, 15) }),
       ...(id === "cardcolor" && { cardbordercolor: darkenColor(value, 15) }), // Generate a darker border for cards
       ...(id === "timetable" && { timetableborder: darkenColor(value, 15), timetableinner: brightenColor(value, 15) }), // Generate a darker border for timetable
       ...(id === "texteditor" && { texteditorinner: brightenColor(value, 15) }),
       ...(id === "todolist" && { todolistinner: brightenColor(value, 15) }),
-      ...(id === "scrollbar" && { scrollbarinner: brightenColor(value, 15) })
       
-    }))
-  }
+    }));
+
+    validateContrast(id, value);
+  };
 
   const brightenColor = (hex, percent) => {
     if(hex === undefined) 
@@ -294,7 +318,7 @@ const UISettings = () => {
   };
   
 
-  //Will apply custom colors to the entire website, for now only the UI settings page.
+  //Will apply custom colors to the entire website
   const applyCustomColorChange = () =>{
     let userData = JSON.parse(localStorage.getItem("user_data"))
     userData.uiOptions.custom = { ...pendingColors };
@@ -318,14 +342,17 @@ const UISettings = () => {
       } else {
         const message = await res.json();
         setMessage(message);
+        Object.entries(pendingColors).map(([key, value]) => validateContrast(key, value))
       }
     });
 
   }
 
-  const applyReset = () =>{
-    let userData = JSON.parse(localStorage.getItem("user_data"))
-    setPendingColors({
+  const applyReset = () => {
+    let userData = JSON.parse(localStorage.getItem("user_data"));
+
+    // Default color values
+    const defaultColors = {
       background: "#ffffff",
       text: "#000000",
       contentarea: "#ffffff",
@@ -336,21 +363,26 @@ const UISettings = () => {
       timetableborder: "#000000",
       navbar: "#FDDC87",
       sidebar: "#DC6B2C",
-      buttons: "",
-      buttonshover:"",
+      buttons: "#dc6b2c",
+      buttonshover:"#f08b4f",
       texteditor:"#f0f0f0",
       texteditorinner:"#fff",
       dropdowns:"#ffffff",
       dropdownshover:"#ffffff",
       todolist:"#dc6b2c",
       todolistinner:"#ffffff",
-      scrollbar:"#888",
-      scrollbarinner:"#FDDC87",
-    })
-    userData.uiOptions.custom = { ...pendingColors };
-    localStorage.setItem("user_data", JSON.stringify(userData))
-    setCustomColors(pendingColors)
-    
+      sidebarbtn:"#ffffff",
+      texthover:"#dc6b2c",
+      sidebarbtnhover: "#F0F0F0"
+    };
+
+    setPendingColors(defaultColors);
+    setCustomColors(defaultColors);
+    setContrastWarnings({}); // Clear all contrast warnings
+
+    userData.uiOptions.custom = { ...defaultColors };
+    localStorage.setItem("user_data", JSON.stringify(userData));
+
     const savedUserInfo = localStorage.getItem('user_data');
     const savedUserId = JSON.parse(savedUserInfo)._id; 
 
@@ -358,7 +390,7 @@ const UISettings = () => {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        custom: pendingColors, 
+        custom: defaultColors, 
       }),
     });
 
@@ -370,36 +402,8 @@ const UISettings = () => {
         setMessage(message);
       }
     });
+};
 
-  }
-
-   // Function to check contrast ratios and set warnings
-   useEffect(() => {
-    let userData = JSON.parse(localStorage.getItem("user_data"))
-    const minContrast = 4.5; // WCAG standard for normal text
-    const minLargeTextContrast = 3.0; // For large text (bold 14pt+, normal 18pt+)
-
-    const contrastChecks = [
-      { label: "Text vs. Content Area", color1:customColors.background, color2: customColors.contentarea },
-
-    ];
-
-    console.log(contrastChecks)
-    const newWarnings = contrastChecks
-      .map(({ label, color1, color2 }) => {
-        const contrastRatio = tinycolor.readability(color1, color2).toFixed(2);
-        if (contrastRatio < minContrast) {
-          return `⚠️ ${label} has low contrast: ${contrastRatio}:1 (Needs at least ${minContrast}:1)`;
-        } else if (contrastRatio < minLargeTextContrast) {
-          return `⚠️ ${label} is only suitable for large text: ${contrastRatio}:1`;
-        }
-        return null;
-      })
-      .filter(Boolean);
-
-    setContrastWarnings(newWarnings);
-    console.log(newWarnings)
-  }, [customColors.background, customColors.contentarea]);
       
     return(
       <div>
@@ -429,6 +433,7 @@ const UISettings = () => {
                       '--view-btn-color': viewButtonColor,
                       '--project-color': projectCardColor,
                       '--project-border-color': projectCardBorderColor,
+                      
                   }} />
                   <TimetablePreview className="timetable-preview" style={{
                       '--background-color': backgroundColor,
@@ -445,7 +450,7 @@ const UISettings = () => {
                 <div class="default-colorbar">
                   <div>
                         <button
-                            onClick={toggleDarkMode}
+                            onClick={() => toggleTheme("dark")}
                             className={`dark-mode-toggle ${theme === 'dark' ? "dark" : ""}`}
                             aria-label="Toggle dark mode"
                         >
@@ -455,7 +460,7 @@ const UISettings = () => {
                   </div>
                   <div>
                         <button
-                            onClick={toggleHighContrastMode}
+                            onClick={() => toggleTheme("high-contrast")}
                             className={`high-contrast-mode-toggle ${theme === 'high-contrast' ? "high-contrast" : ""}`}
                             aria-label="Toggle high-contrast mode"
                         >
@@ -465,7 +470,7 @@ const UISettings = () => {
                   </div>
                   <div>
                         <button
-                            onClick={toggleCustomMode}
+                            onClick={() => toggleTheme("custom")}
                             className={`custom-mode-toggle ${theme === 'custom' ? "custom" : ""}`}
                             aria-label="Toggle high-contrast mode"
                         >
@@ -474,9 +479,32 @@ const UISettings = () => {
                         <span>Custom</span>
                   </div>
                 </div>
+
                 {/* Custom Mode */}
                 <div className ={`custom-settings-container ${theme === 'custom' ? "visible": ""}`}>
-                  <ContrastChecker/>
+                {Object.entries(customColors)
+                  .filter(([key]) => !['timetableinner', 'timetableborder', 'cardbordercolor',  'todolistinner', 'texteditorinner','dropdownshover', 'buttonshover', 'scrollbarinner',
+                                       'texthover', 'sidebarbtnhover',
+                  ].includes(key))
+                  .map(([key]) => (
+                  <div className ="custom-settings-btn">
+                    <input 
+                        type="color" 
+                        id={key} 
+                        value={pendingColors[key]} 
+                        onChange={handleCustomColorChange} 
+                        className="custom-color-selector" 
+                      />
+                      <span>{customLabels[key]}</span>
+                      {contrastWarnings[key] && <p style={{ color: "red" }}>{contrastWarnings[key]}</p>}
+                  </div>
+                ))}
+      
+                <div class="d-flex gap-2 ">
+                  <button type="button" className="btn btn-secondary" onClick={applyCustomColorChange}>Apply</button>
+                  <button type="button" className="btn btn-primary" onClick={applyReset}>Reset</button>        
+                </div>
+
                 </div>
 
               <h3>CVD Filters</h3>

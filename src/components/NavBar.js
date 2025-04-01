@@ -111,7 +111,9 @@ function NavBar(props) {
   const [editMessage, setEditMessage] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [selectedRole, setSelectedRole] = useState("");
-
+  const [teamUserInfo, setTeamUserInfo] = useState(null);
+  const [showUserInfoModal, setShowUserInfoModal] = useState(false);
+  
   const [taskData, setTaskData] = useState({
     taskTitle: "",
     description: "",
@@ -193,6 +195,21 @@ function NavBar(props) {
     }
   };
 
+  const fetchUserInfo = async (userId) => {
+    try {
+      const response = await fetch(buildPath(`api/user/${userId}`));
+      const user = await response.json();
+  
+      if (response.ok) {
+        setTeamUserInfo(user);
+        setShowUserInfoModal(true);
+      } else {
+        console.error('Error fetching user info:', user.error);
+      }
+    } catch (error) {
+      console.error('Error fetching user info:', error);
+    }
+  };
 
   const filterValidUsers = (users) => {
     return users.filter(user => user !== null);
@@ -208,62 +225,62 @@ function NavBar(props) {
   };
 
 
-  const handleInviteEmailChange = (e) => {
-    setInviteEmail(e.target.value);
-  };
+  // const handleInviteEmailChange = (e) => {
+  //   setInviteEmail(e.target.value);
+  // };
 
 
 
-  const handleInviteSubmit = async () => {
+  // const handleInviteSubmit = async () => {
 
-    if (!inviteEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setInviteMessage('Please enter a valid email address.');
-      return;
-    }
-
-
-    // Check if the user is already in the team
-    const isMember = teamMembers.some(member => member.email === inviteEmail);
-    if (isMember) {
-      setInviteMessage('User is already in the team.');
-      return;
-    }
+  //   if (!inviteEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+  //     setInviteMessage('Please enter a valid email address.');
+  //     return;
+  //   }
 
 
-    try {
-      const response = await fetch(buildPath('api/invite-user'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: inviteEmail, projectId }),
-      });
+  //   // Check if the user is already in the team
+  //   const isMember = teamMembers.some(member => member.email === inviteEmail);
+  //   if (isMember) {
+  //     setInviteMessage('User is already in the team.');
+  //     return;
+  //   }
 
 
-
-      const result = await response.json();
+  //   try {
+  //     const response = await fetch(buildPath('api/invite-user'), {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email: inviteEmail, projectId }),
+  //     });
 
 
 
-      if (response.ok) {
-        setInviteMessage('Invitation email sent successfully.');
-        setInviteEmail("");
-        setTimeout(() => {
-          setInviteMessage('');
-          closeInviteModal();
-        }, 3000);
-      } 
+  //     const result = await response.json();
+
+
+
+  //     if (response.ok) {
+  //       setInviteMessage('Invitation email sent successfully.');
+  //       setInviteEmail("");
+  //       setTimeout(() => {
+  //         setInviteMessage('');
+  //         closeInviteModal();
+  //       }, 3000);
+  //     } 
       
       
-      else {
-        setInviteMessage(result.error || 'An error occurred while sending the invitation.');
-      }
+  //     else {
+  //       setInviteMessage(result.error || 'An error occurred while sending the invitation.');
+  //     }
 
-    } 
+  //   } 
     
-    catch (error) {
-      console.error('Error sending invite:', error);
-      setInviteMessage('An error occurred while sending the invitation.');
-    }
-  };
+  //   catch (error) {
+  //     console.error('Error sending invite:', error);
+  //     setInviteMessage('An error occurred while sending the invitation.');
+  //   }
+  // };
 
 
   const handleAddTask = async (e) => {
@@ -468,7 +485,7 @@ function NavBar(props) {
     // For the GanttUCF user dashboard.
     return (
       <div id="navBarDiv" style={dashboardNav}>
-        <div class="container-fluid navbarDash">
+        <div className="container-fluid navbarDash">
           <a href="/dashboard" aria-label="Go back to dashboard">
             <img src={Logo} alt="GanttifyHomePage" className="logoDash" />
           </a>
@@ -493,7 +510,6 @@ function NavBar(props) {
             </a>
             <ProjectTitle projectId={projectId} founderId={founderId}/>
             <ul className="navbarOptionsView">
-              {isEditor && (
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Team
@@ -506,7 +522,6 @@ function NavBar(props) {
                     <a className="dropdown-header" onClick={openInviteModal}>Invite Team Members</a>
                   </div>
                 </li>
-              )}
               <li><Link to="/dashboard"><button id="button" className="dashBoardButtons">Dashboard</button></Link></li>
               <li><button id="button" className="dashBoardButtons" onClick={Logout}>Sign Out</button></li>
             </ul>
@@ -592,22 +607,55 @@ function NavBar(props) {
                   </button>
                 </div>
                 <div className="modal-body">
-                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name}`}</p>
+                  <p>{selectedMember && selectedMember._id === founderId ? `The founder is ${selectedMember.name}` : `Edit role for ${selectedMember && selectedMember.name} `} 
+                    <i className="fas fa-info-circle info-icon" onClick={(e) => { fetchUserInfo(selectedMember._id); }} ></i>
+                    {showUserInfoModal && (
+                        <div className="modal show" tabIndex="-1" role="dialog">
+                          <div className="modal-dialog" role="document">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <h5 className="modal-title">User Information</h5>
+                                <button type="button" className="close" aria-label="Close" onClick={() => setShowUserInfoModal(false)}>
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div className="modal-body">
+                                {teamUserInfo ? (
+                                  <div>
+                                    {/* <p><strong>Name:</strong> {teamUserInfo.name}</p> */}
+                                    <p><strong>Email:</strong> {teamUserInfo.email}</p>
+                                    <p><strong>Username:</strong> {teamUserInfo.username}</p>
+                                    <p><strong>Discord:</strong> {teamUserInfo.discordAccount}</p>
+                                  </div>
+                                ) : (
+                                  <p>Loading...</p>
+                                )}
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" onClick={() => setShowUserInfoModal(false)}>Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                  </p>
                   {selectedMember && selectedMember._id === founderId ? (
                     <input type="text" className="form-control" value="Founder" readOnly />
-                  ) : (
+                  ) : isEditor ? (
                     <select className="form-select" value={selectedRole} onChange={(e) => setSelectedRole(e.target.value)}>
                       <option value="member">Member</option>
                       <option value="editor">Editor</option>
                     </select>
-                  )}
+                  ) :
+                  <input type="text" className="form-control" value={selectedRole} readOnly />
+                  }
                   <div className="edit-message" style={{ textAlign: "center" }}>{editMessage}</div>
                 </div>
                 <div className="modal-footer">
-                  {selectedMember && selectedMember._id !== founderId && (
+                  {selectedMember && selectedMember._id !== founderId && isEditor  === true && (
                     <>
                       <button type="button" className="btn btn-secondary" onClick={handleDeleteMember}>Remove Member</button>
-                      <button type="button" className="btn btn-primary px-0 mx-0 mt-3 w-100" onClick={handleEditMemberSubmit}>Update Role</button>
+                      <button type="button" className="btn btn-secondary" onClick={handleEditMemberSubmit}>Update Role</button>
                     </>
                   )}
                 </div>

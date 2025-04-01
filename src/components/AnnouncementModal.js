@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { buildPath } from './buildPath.js';
 import RichTextEditor from './GanttChart/RichTextEditor.js'
+import {toast} from 'react-toastify';
+import ToastSuccess from './ToastSuccess';
 
 function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, editable}) {
     const [show, setShow] = useState(showAnnouncementModal ?? false);
-    const [editMode, setEditMode] = useState(false);
+    const [editMode, setEditMode] = useState(false); //Edit actions
     const[text, setText] = useState('')
+    const[title, setTitle] = useState('')
+    const [check, setCheck] = useState(false)
+
+
     useEffect(() => {
         const fetchAnnouncement = async () => {
             try {
@@ -15,6 +21,7 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
                   });
                 const data = await response.json();
                 setText(data.text || 'Add a description here...');
+                setTitle(data.title || 'Announcements')
             } catch (error) {
                 console.error("Error fetching announcement:", error);
             }
@@ -23,18 +30,40 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
         fetchAnnouncement();
 
         const userData = localStorage.getItem('user_data');
+        const parsedData = JSON.parse(userData)
         const modalShown = localStorage.getItem('modalShown');
-        if (userData && !modalShown) {
+
+
+        if ((!modalShown && parsedData.showAnnouncement) || editable) {
           setShow(true);
           localStorage.setItem('modalShown', 'true');
         }
       }, []);
     
-    const handleCloseModal = () => {
-        setShow(false);
 
-        if(showAnnouncementModal)
-            setShowAnnouncementModal(false);
+    const handleCloseModal = async() => {
+        setShow(false) //Closses Modal
+        if (check) {
+            try {
+                const userData = localStorage.getItem('user_data');
+                const user = JSON.parse(userData)
+    
+                if (user && user._id) {
+                    await fetch(buildPath(`api/announcement/hide/${user._id}`), {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                    });
+    
+                } else {
+                    console.error("User data is missing or invalid");
+                }
+            } catch (error) {
+                console.error("Error hiding announcement:", error);
+            }
+        }
+
+        if(showAnnouncementModal) //Closes modal in admin account page
+            setShowAnnouncementModal(false)
     };
 
     const handleEditModal = () => {
@@ -43,12 +72,12 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
 
     const handleSave = async () => {
         setEditMode(false)
-        
+        toast.success("Announcement has been saved!")
         try{
             const response = await fetch(buildPath(`api/dashboard/account`), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: text }),
+                body: JSON.stringify({ text: text, title: title }),
               });
               if (response.ok) {
 
@@ -63,6 +92,19 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
         }
     }
 
+    const handleUpload = async () => {
+        setEditMode(false)
+        toast.success("Announcement has sent out to users!")
+        try{
+            const response = await fetch(buildPath("api/dashboard/account/announce"), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+              });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return(
         <div>
             {show && (
@@ -70,7 +112,9 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
                     <div className="modal-dialog">
                         <div className="modal-content" style={{maxHeight: '1000px'}}>
                             <div className="modal-header">
-                                <h3 className="modal-title" id="announcementModalLabel">What's New</h3>
+                            <h1 className="modal-title" id="announcementModalLabel">
+                                {editMode ? <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} /> : title}
+                            </h1>
                             </div>
                             <div className="modal-body">
                             {editMode ?
@@ -84,13 +128,58 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
                             dangerouslySetInnerHTML={{
                                 __html: text?.trim() ? text : 'Add a description here...',
                             }} 
+                            style={{ listStyleType: "disc ", paddingLeft: "20px" }}
                             />
                             }
                             </div>
-                            <div className="" style={{ display: 'flex',justifyContent: 'center', }}>
-                                { editable ? (<button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={editMode ? handleSave: handleEditModal}>{editMode ? 'Save' : 'Edit'}</button>) : <></>}
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={handleCloseModal}>Close</button>
-                            </div>
+                            
+                            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}>
+                                {editable && editMode && (
+                                    <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    data-bs-dismiss="modal" 
+                                    onClick={handleUpload}
+                                    style={{ minWidth: "100px" }}
+                                    >
+                                    Upload
+                                    </button>
+                                )}
+                                
+                                {editable && (
+                                    <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    data-bs-dismiss="modal" 
+                                    onClick={editMode ? handleSave : handleEditModal}
+                                    style={{ minWidth: "100px" }}
+                                    >
+                                    {editMode ? 'Save' : 'Edit'}
+                                    </button>
+                                )}
+
+                                {!editable && (
+                                    <div style={{ display: 'flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
+                                    <input 
+                                        style={{ width: "20px", height: "25px" }} 
+                                        type="checkbox" 
+                                        onChange={() => setCheck(prev => !prev)}
+                                    />
+                                    <label style={{ margin: "0px 10px" }}>Don't display again until the next announcement.</label>
+                                    </div>
+                                )}
+
+                                <button 
+                                    type="button" 
+                                    className="btn btn-secondary" 
+                                    data-bs-dismiss="modal" 
+                                    onClick={handleCloseModal}
+                                    style={{ minWidth: "100px" }}
+                                >
+                                    Close
+                                </button>
+                                </div>
+
                          </div>
                         </div>
                         </div>

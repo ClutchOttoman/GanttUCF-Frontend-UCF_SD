@@ -24,6 +24,7 @@
   opacity: 0.5;
 }
 
+/* Buttons CSS */
 .task-buttons {
   display: flex;
   position: absolute;
@@ -70,9 +71,6 @@
 .non-editable {
   cursor: default;
 }
-
-
-
 
 /* Default Light Mode Styles */
 .task-tooltip {

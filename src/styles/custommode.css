@@ -5,7 +5,17 @@ html.custom {
     /* Background/Wallpaper Colors  */
     body{
       background-color: var(--background-color, #ffffff) !important;
+
     } 
+
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      color: var(--text, #000000);
+      background-color:  var(--contentarea, #ffffff) !important;
+      border-radius: 8px;
+    }
+        
     /* Need to make these transparent */
     div.loginContainer.mt-5, div.forgot-password-container, .registerContainer, .verify-email-container{ 
       background-color: transparent  ;
@@ -13,7 +23,7 @@ html.custom {
     }
 
     /* Text */
-    h1, h2, h3, h4, h4, h5, h6, p, a, li, text, span,
+    h1, h2, h3, h4, h4, h5, h6, p, a, li, text, span, em, strong, .fa-redo, .fa-undo, u, i.fas.fa-eye-dropper, s, i.fas.fa-list-ul, i.fas.fa-list-ol,
     span.detailValue, label.detailLabel, label{
         color: var(--text, #000000) !important;  /* High-contrast white for headers */
         visibility: visible;
@@ -55,13 +65,13 @@ html.custom {
       background-color: var(--buttons) !important;
     }
     
-    button, .btn.btn-primary, .btn, .cta-button{
+    button, .btn.btn-primary, .btn, .cta-button, button.fc-today-button.fc-button.fc-button-primary{
         background-color: var(--buttons, #dc6b2c)  !important;  /* Dark background for buttons */
         color: var(--text, #FFFFFF);  /* Light text */
         transition: ease-in 0.1s;
         visibility: visible;
         &:hover{
-          background-color: #f08b4f;
+          background-color: var(--buttons-hover, #f08b4f) !important;
         }
       }
 
@@ -69,7 +79,7 @@ html.custom {
     .modal-body, .modal-header, .modal-footer, div.modal-content, 
     div.task-details-footer, div.task-details-header, div.task-details-body,
     div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
-    div.task-title-container, input#myColor{
+    div.task-title-container, input#myColor, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
       color: var(--text, #000000);
       background-color:  var(--contentarea, #ffffff) !important;
       visibility: visible;
@@ -90,7 +100,7 @@ html.custom {
         color: var(--text) !important;  /* Light text */
         visibility: visible;
         &:hover{
-            color: #dc6b2c !important;  /* WORK (Sign out) Slightly lighter on hover */
+            color: var(--text-hover, #dc6b2c) !important;  /* WORK (Sign out) Slightly lighter on hover */
             visibility: visible;
         }
     }
@@ -103,6 +113,15 @@ html.custom {
         color:#dc6b2c !important; 
       }
     }
+
+    
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  var(--buttons, #DC6B2C)  !important; 
+      &:hover{
+        color: var(--buttons-hover, #0056b3) !important;
+      }
+    }
   
     /* Dashboard sidebar + topbar */
     /* Background Ribbon colors */
@@ -112,12 +131,15 @@ html.custom {
     }
 
     /* Sidebar buttons */
-    a#ToDo\ List, a#Charts, a#Recently\ Deleted, button#Create\ Project, a#Account, a#UI\ Settings{
-      background-color: var(--buttons, #ffffff) !important;
+    a#ToDo\ List, a#Charts, a#Recently\ Deleted, button#Create\ Project, a#Account, a#UI\ Settings, a#Create\ Project, a#Settings{
+      background-color: var(--sidebar-btn-color, #ffffff) !important;
+      visibility: visible;
       &:hover{
-        background-color: #f0f0f0 !important;
+        background-color: var(--sidebar-btn-hover, #f08b4f) !important;
       }
     }
+
+    
 
     /* Home Page/Landing Page */
     /* Content Boxes */
@@ -196,14 +218,14 @@ html.custom {
   
     /* To Do/todo List Page */
     /* Table background*/
-    th.todoTableBody  { 
+    th.todoTableBody,.fc-scrollgrid-sync-inner,  .fc-daygrid-day-frame.fc-scrollgrid-sync-inner, table.fc-scrollgrid{ 
         background-color: var(--todolist, #dc6b2c);
         border-color:var(--todolist, #dc6b2c);
         color:var(--text, rgb(255, 255, 255));
         visibility: visible;
         
     }
-    table tbody, td{
+    table tbody, td, .fc-header-toolbar.fc-toolbar{
       background-color: var(--todolistinner, #ffffff);
       color: var(--text, black);
     }
@@ -240,7 +262,7 @@ html.custom {
     
     /* View Chart Button */
     .btn.viewChartBtn{
-        background-color:  var(--buttons, #135c91) !important; /* WORK (View Chart) Dark background */
+        background-color:  var(--buttons, #DC6B2C) !important; /* WORK (View Chart) Dark background */
         color: var(--text,#ffffff) !important;
         visibility: visible;
         &:hover{
@@ -324,7 +346,7 @@ html.custom {
 
     /* Category */
     .gantt-task-row .task-category {
-      background: linear-gradient(135deg,#828d92,#8f969f);
+      background: linear-gradient(135deg,#b2b8ba,#b5bcbf);
       visibility: visible;
     }
 
@@ -385,6 +407,11 @@ html.custom {
       background-color: transparent;
       visibility: visible;
     }
+    #editor-wrapper #editor-toolbar {
+      .toolbar-btn:active {
+      background-color: #d3d3d3 !important;
+    }
+  }
     /*Color Selector */
     .highlight-picker-sidebar, .color-picker-sidebar{
       background-color: var(--contentarea, #f0f0f0) !important;
@@ -404,11 +431,17 @@ html.custom {
         background-color: transparent !important;
         visibility: visible;
         &:hover{
-          background-color:#d3d3d3 !important;
+          background-color:var(--texteditorinner,#d3d3d3) !important;
+          &.active{
+            background-color: var(--texteditorinner, #d3d3d3)  !important;
+          }
+        }
+        &.active{
+          background-color: var(--texteditorinner, #d3d3d3)  !important;
         }
       }
       .dropdown-toggle{
-        background-color: var(--dropdowns, #f0f0f0);
+        background-color: var(--dropdowns, #f0f0f0) !important;
         border-color:var(--dropdowns, #f0f0f0);
         color: var(--text, black) !important;
         visibility: visible;

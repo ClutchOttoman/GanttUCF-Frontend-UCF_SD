@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './DashboardAccount.css';
 import { buildPath } from './buildPath';
+import {toast} from 'react-toastify';
+import ToastNotify from './ToastNotify';
+import ToastConfirm from './ToastConfirm';
+import ToastSuccess from './ToastSuccess';
+import ToastError from './ToastError';
 import AnnouncementModal from './AnnouncementModal';
 
 function DashboardAccount() {
@@ -12,6 +17,16 @@ function DashboardAccount() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [visibility, setVisibility] = useState({
+    name: false,
+    email: false,
+    username: false,
+    organization: false,
+    phone: false,
+    discordAccount: false,
+    pronouns: false,
+    timezone: false,
+  });
   const [editAnnouncement, setEditAnnouncement] = useState(false);
   const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
 
@@ -91,22 +106,40 @@ function DashboardAccount() {
         const result = await response.json();
         setUser(result);
         setIsEditing(false);
-        alert('Account details updated successfully.');
+        toast.success(ToastSuccess, {data: {title: "Account details updated successfully."},
+          draggable: false, autoClose: 2000, ariaLabel: "Account details updated successfully.",
+        });
+
       } else {
         const result = await response.json();
-        alert(result.error || 'Failed to update account details.');
+        toast.error(ToastError, {data: {title: result.error || 'Failed to update account details.'},
+          draggable: false, closeButton: false, autoClose: 2000, ariaLabel: result.error || 'Failed to update account details.',
+        });
       }
     } catch (err) {
-      console.error('Error updating account details:', err);
-      alert('An error occurred while updating your account.');
+      const errString = "Error updating account details: " + err;
+      toast.error(ToastError, {data: {title: errString},
+        draggable: false, closeButton: false, autoClose: 2000, ariaLabel: errString,
+      });
     }
   };
 
   const handleDeleteAccount = () => {
-    if (!window.confirm('Are you sure you want to delete your account? You will receive a confirmation email to proceed.')) {
-      return;
-    }
-    setShowPasswordModal(true);
+    toast.warn(ToastConfirm, {
+      data: {
+        title: "Are you sure you want to delete your account?", 
+        body: "You will receive a confirmation email to proceed."
+      },  
+      draggable: false, closeButton: false, position: "top-center", autoClose: false,
+      ariaLabel: "Are you sure you want to delete your account? You will receive a confirmation email to proceed.",
+      onClose(reason){
+        switch (reason){
+          case "confirm":
+            setShowPasswordModal(true);
+        }
+      }
+    });
+
   };
 
   const handlePasswordSubmit = async () => {
@@ -123,7 +156,9 @@ function DashboardAccount() {
       });
 
       if (response.ok) {
-        alert('A confirmation email has been sent to your email address. Please follow the instructions to confirm account deletion.');
+        toast.info(ToastNotify, {data: {title: "A confirmation email has been sent to your email address. Please follow the instructions to confirm account deletion."},
+          draggable: false, closeButton: false, position: "top-center", ariaLabel: "A confirmation email has been sent to your email address. Please follow the instructions to confirm account deletion.",
+        });
         window.location.href = '/';
       } else {
         const result = await response.json();
@@ -136,14 +171,34 @@ function DashboardAccount() {
   };
 
   const handleResetPassword = () => {
-    if (window.confirm('Are you sure you want to reset your password?')) {
-      window.location.href = `/reset-password/${user._id}/:token`; 
-    }
+    toast.warn(ToastConfirm, {
+      data: {
+        title: "Are you sure you want to reset your password?", 
+      },  
+      draggable: false, closeButton: false, position: "top-center", ariaLabel: "Are you sure you want to reset your password?", autoClose: false,
+      onClose(reason){
+        switch (reason){
+          case "confirm":
+            window.location.href = `/reset-password/${user._id}/:token`; 
+        }
+      }
+    });
   };
 
-  const handleEditAnnoucnement = () => {
+  const toggleVisibility = (field) => {
+    setVisibility((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
+  };
+
+  const getHiddenValue = (value) => {
+    return '*'.repeat(value.length);
+  };
+
+
+  const handleEditAnnouncement = () => {
     setShowAnnouncementModal(true)
-    const modalShown = localStorage.getItem('modalShown');
     localStorage.setItem('modalShown', 'false');
   }
 
@@ -151,6 +206,14 @@ function DashboardAccount() {
     <div>
       <h1 class="title"></h1>
     <div class= "container position-relative d-inline-flex flex-row ">
+    { showAnnouncementModal && (
+        <AnnouncementModal showAnnouncementModal={showAnnouncementModal}
+                          setShowAnnouncementModal={setShowAnnouncementModal}
+                          editable={editAnnouncement}
+        />
+
+      )
+      }
     <div className="dashboardAccountContainer">
       <h1 className="dashboardTitle">Account Information</h1>
       {user ? (
@@ -159,114 +222,190 @@ function DashboardAccount() {
             <div className="detailItem">
               <label className="detailLabel">Full Name:</label>
               {isEditing ? (
-                <input
-                  type="text"
-                  name="name"
-                  value={updatedUser.name || ''}
-                  onChange={handleInputChange}
-                  className="editInput"
-                />
+                   <input
+                   type="text"
+                   name="name"
+                   value={updatedUser.name || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.name ? user.name : getHiddenValue(user.name)}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.name ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('name')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Email:</label>
+               <span className="detailValue">
+                 {visibility.email ? user.email : getHiddenValue(user.email)}
+               </span>
+               <i
+                 className={`fas ${visibility.email ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('email')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Username:</label>
+               {isEditing ? (
+                 <input
+                   type="text"
+                   name="username"
+                   value={updatedUser.username || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.username ? user.username || 'N/A' : getHiddenValue(user.username || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.username ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('username')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Organization:</label>
+               {isEditing ? (
+                 <input
+                   type="text"
+                   name="organization"
+                   value={updatedUser.organization || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.organization ? user.organization || 'N/A' : getHiddenValue(user.organization || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.organization ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('organization')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Phone Number:</label>
+               {isEditing ? (
+                 <input
+                   type="text"
+                   name="phone"
+                   value={updatedUser.phone || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.phone ? user.phone || 'N/A' : getHiddenValue(user.phone || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.phone ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('phone')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Discord Account:</label>
+               {isEditing ? (
+                 <input
+                   type="text"
+                   name="discordAccount"
+                   value={updatedUser.discordAccount || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.discordAccount ? user.discordAccount || 'N/A' : getHiddenValue(user.discordAccount || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.discordAccount ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('discordAccount')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Pronouns:</label>
+               {isEditing ? (
+                 <input
+                   type="text"
+                   name="pronouns"
+                   value={updatedUser.pronouns || ''}
+                   onChange={handleInputChange}
+                   className="editInput"
+                 />
+               ) : (
+                 <span className="detailValue">
+                   {visibility.pronouns ? user.pronouns || 'N/A' : getHiddenValue(user.pronouns || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.pronouns ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('pronouns')}
+               ></i>
+             </div>
+             <div className="detailItem">
+               <label className="detailLabel">Timezone: </label>
+               {isEditing ? (
+                 <select className="editSelect" name="timezone" value={updatedUser.timezone || ''} onChange={handleInputChange} >
+                   <option value="" disabled>Select your timezone</option>
+                   {timezones.map((zone, index) => (
+                     <option key={index} value={zone}>
+                       {zone}
+                     </option>
+                   ))}
+                 </select>
+               ) : (
+                 <span className="detailValue">
+                   {visibility.timezone ? user.timezone || 'N/A' : getHiddenValue(user.timezone || 'N/A')}
+                 </span>
+               )}
+               <i
+                 className={`fas ${visibility.timezone ? 'fa-eye-slash' : 'fa-eye'} detailIcon`}
+                 onClick={() => toggleVisibility('timezone')}
+               ></i>
+             </div>
+           </div>
+           <div className="accountActions">
+             <button className="btn resetPasswordBtn" onClick={handleResetPassword}>
+               Reset Password
+             </button>
+             {isEditing ? (
+               <button className="btn saveBtn" onClick={handleSave}>
+                 Save
+               </button>
+             ) : (
+               <button className="btn editBtn" onClick={handleEditToggle}>
+                 Edit
+               </button>
+             )}
+             {isEditing ? (
+               <button className="btn deleteBtn" onClick={handleCancelEdit}>
+                 Cancel
+               </button>
+             ) : (
+               <button className="btn deleteBtn" onClick={handleDeleteAccount}>
+                 Delete Account
+               </button>
+             )}
+            {editAnnouncement ? (
+                <button className="btn deleteBtn" onClick={handleEditAnnouncement}>
+                  Edit Announcement
+                </button>
               ) : (
-                <span className="detailValue">{user.name}</span>
+                <></>
               )}
-            </div>
-            <div className="detailItem">
-              <label className="detailLabel">Email:</label>
-              <span className="detailValue">{user.email}</span>
-            </div>
-            <div className="detailItem">
-              <label className="detailLabel">Phone Number:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="phone"
-                  value={updatedUser.phone || ''}
-                  onChange={handleInputChange}
-                  className="editInput"
-                />
-              ) : (
-                <span className="detailValue">{user.phone || 'N/A'}</span>
-              )}
-            </div>
-            <div className="detailItem">
-              <label className="detailLabel">Discord Account:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="discordAccount"
-                  value={updatedUser.discordAccount || ''}
-                  onChange={handleInputChange}
-                  className="editInput"
-                />
-              ) : (
-                <span className="detailValue">{user.discordAccount || 'N/A'}</span>
-              )}
-            </div>
-            <div className="detailItem">
-              <label className="detailLabel">Pronouns:</label>
-              {isEditing ? (
-                <input
-                  type="text"
-                  name="pronouns"
-                  value={updatedUser.pronouns || ''}
-                  onChange={handleInputChange}
-                  className="editInput"
-                />
-              ) : (
-                <span className="detailValue">{user.pronouns || 'N/A'}</span>
-              )}
-            </div>
-            <div className="detailItem">
-              <label className="detailLabel">Timezone: </label>
-              {isEditing ? (
-                <select className="editSelect" name="timezone" value={updatedUser.timezone || ''} onChange={handleInputChange} >
-                  <option value="" disabled>Select your timezone</option>
-                  {timezones.map((zone, index) => (
-                    <option key={index} value={zone}>
-                      {zone}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <span className="detailValue">{user.timezone || 'N/A'}</span>
-              )}
-            </div>
-          </div>
-          <div className="accountActions">
-            <button className="btn resetPasswordBtn" onClick={handleResetPassword}>
-              Reset Password
-            </button>
-            {isEditing ? (
-              <button className="btn saveBtn" onClick={handleSave}>
-                Save
-              </button>
-            ) : (
-              <button className="btn editBtn" onClick={handleEditToggle}>
-                Edit
-              </button>
-            )}
-            {isEditing ? (
-              <button className="btn deleteBtn" onClick={handleCancelEdit}>
-                Cancel
-              </button>
-            ) : (
-              <button className="btn deleteBtn" onClick={handleDeleteAccount}>
-                Delete Account
-              </button>
-            )}
-           {editAnnouncement ? (
-              <button className="btn deleteBtn" onClick={handleEditAnnoucnement}>
-                Edit Announcement
-              </button>
-            ) : (
-              <></>
-            )}
-          </div>
-        </>
-      ) : (
-        <p>{error || 'Loading your account details...'}</p>
-      )}
-      {showPasswordModal && (
+           </div>
+         </>
+       ) : (
+         <p>{error || 'Loading your account details...'}</p>
+       )}
+       {showPasswordModal && (
         <div className="password-modal">
           <div className="modal-content">
             <h2>Confirm Account Deletion</h2>
@@ -282,14 +421,6 @@ function DashboardAccount() {
           </div>
         </div>
       )}
-      { showAnnouncementModal && (
-        <AnnouncementModal showAnnouncementModal={showAnnouncementModal}
-                          setShowAnnouncementModal={setShowAnnouncementModal}
-                          editable={editAnnouncement}
-        />
-
-      )
-      }
     </div>
 
     </div>

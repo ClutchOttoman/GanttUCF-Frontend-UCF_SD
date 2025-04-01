@@ -46,21 +46,18 @@
     color: #DC6B2C;
 }
 
-ul{
+ul.navbarOptionsDash, ul.navbarOptions{
     flex: 1;
     list-style: none;
     text-align: right;
     
 }
 
-ul li{
+ul.navbarOptionsDash li, ul.navbarOptions li{
     display : inline-block;
     margin : 10px 20px;
     font-size: 18px;
     cursor: pointer;
-    &:hover{
-        color: #DC6B2C;
-    }
 }
 
 
@@ -179,10 +176,20 @@ ul li{
 .modal-footer{
     .btn.btn-secondary {
         width: 200px;
-        margin-right: 170px;
     }
+    justify-content: center;
 }
 
 .modal-title{
     margin-left: 0px !important;
+}
+
+.info-icon {
+    margin-left: 10px;
+    color: #DC6B2C; 
+    cursor: pointer;
+}
+
+.info-icon:hover {
+    color: #0056b3; 
 }

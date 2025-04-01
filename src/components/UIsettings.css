@@ -17,6 +17,7 @@
     .settings-container{
         transform: translateX(-10%);
         width: 83vw; 
+        
     }
 }
 
@@ -66,29 +67,101 @@
     flex-wrap: wrap;
     gap: 100px;
     justify-content: center;
-    height: auto;
+    height: 100%;
+    width: 100%;
   }
   
 .dashboard-preview,
 .timetable-preview {
     max-width: 100%;
-    max-height: auto; 
+    max-height: 100%; 
+    
 }
 
-.custom-settings-container{
+
+.custom-settings-container {
     margin-top: 20px;
-    max-height: 0; /* Initially set to 0 to hide the container */
-    overflow: hidden; 
-    opacity: 0; /* First three to hide container when not active */
-    transition: height 0.3s ease, opacity 0.3s ease;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive Grid */
+    gap: 15px; /* Spacing between elements */
+    padding: 15px;
+    background: var(--contentarea) !important; /* Use content area color */
+    border-radius: 8px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+    opacity: 0;
+    max-height: 0;
+    padding: 0; /* Ensures no extra space when hidden */
+    overflow-y: auto; /* Enables vertical scrollbar when needed */
 }
 
+/* Ensure visibility and restore padding when active */
 .custom-settings-container.visible {
-    margin-top: 20px;
-    max-height: 1000px; /* Initially set to 0 to hide the container */
     opacity: 1;
-    margin-bottom: 15px;
+    max-height: 800px;
+    padding: 15px; /* Restore padding */
 }
+
+/* Custom scrollbar styles */
+.custom-settings-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-settings-container::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+}
+
+.custom-settings-container::-webkit-scrollbar-track {
+    background-color: #f0f0f0;
+}
+
+/* Keep alert text black at all times */
+.warning-text {
+    color: black !important; /* Force black color */
+    font-size: 12px;
+    margin-top: 4px;
+    text-align: center;
+    transition: opacity 0.3s ease-in-out; /* Smooth hide/show transition */
+}
+
+
+.custom-settings-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5px;
+    background: var(--contentarea); /* Default color if --contentarea is not set */
+    border-radius: 8px; /* Slightly more rounded corners */
+    box-shadow: 0 5px 9px rgba(0, 0, 0, 0.15); /* More noticeable shadow */
+    
+}
+
+.custom-color-selector {
+    width: 40px;
+    height: 40px;
+    border: 1px !important;
+    background-color: #e0e0e0;
+    cursor: pointer;
+}
+
+.button.btn.btn-primary{
+    margin-top: 10px !important;
+    background-color: #fff !important;
+}
+
+
+.contrast-warnings {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.custom-settings-actions {
+    margin-top: 20px;
+    text-align: center;
+}
+
+
 
 .font-container{
     display: flex;
