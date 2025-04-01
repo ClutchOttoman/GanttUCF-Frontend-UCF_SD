@@ -18,28 +18,31 @@ function AnnouncementModal({showAnnouncementModal, setShowAnnouncementModal, edi
                 const response = await fetch(buildPath(`api/dashboard/account`), {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
-                  });
+                });
                 const data = await response.json();
                 setText(data.text || 'Add a description here...');
-                setTitle(data.title || 'Announcements')
+                setTitle(data.title || 'Announcements');
+    
+                const userData = localStorage.getItem('user_data');
+                if (userData) {
+                    const parsedData = JSON.parse(userData);
+                    const modalShown = localStorage.getItem('modalShown');
+    
+                    if ((modalShown === "false" && parsedData.showAnnouncement) || editable) {
+                        setShow(true);
+                        localStorage.setItem('modalShown', 'true');
+                    }
+                    else{
+                        localStorage.setItem('modalShown', 'true');     
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching announcement:", error);
             }
         };
-
-        fetchAnnouncement();
-
-        const userData = localStorage.getItem('user_data');
-        const parsedData = JSON.parse(userData)
-        const modalShown = localStorage.getItem('modalShown');
-
-
-        if ((!modalShown && parsedData.showAnnouncement) || editable) {
-          setShow(true);
-          localStorage.setItem('modalShown', 'true');
-        }
-      }, []);
     
+        fetchAnnouncement();
+    }, []);    
 
     const handleCloseModal = async() => {
         setShow(false) //Closses Modal
