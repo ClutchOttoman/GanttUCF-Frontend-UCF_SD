@@ -54,6 +54,7 @@ function Login() {
         };
         console.log(JSON.stringify(user));
         localStorage.setItem('user_data', JSON.stringify(user));
+        localStorage.setItem('modalShown', 'false');
         setMessage('');
         window.location.href = '/dashboard';
       }

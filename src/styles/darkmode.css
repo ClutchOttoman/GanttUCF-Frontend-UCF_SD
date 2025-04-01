@@ -356,7 +356,7 @@ html.dark {
 
     /*Task Dropdowns */
     /* Dropdown buttons */
-    #assignedUsers.dropdownBtnAdd.dropdown-toggle, #prerequisiteTasks, button#pattern.dropdownBtnAdd.dropdown-toggle, .taskPatternDropdown, #todoDropdown.nav-link.dropdown-toggle{
+    #assignedUsers.dropdownBtnAdd.dropdown-toggle, #prerequisiteTasks, button#pattern.dropdownBtnAdd.dropdown-toggle, .taskPatternDropdown, #todoDropdown.nav-link.dropdown-toggle, a#todoDropdown{
       background-color: rgb(50, 49, 49) !important;
       color:rgb(255, 255, 255) !important;
       visibility: visible;
