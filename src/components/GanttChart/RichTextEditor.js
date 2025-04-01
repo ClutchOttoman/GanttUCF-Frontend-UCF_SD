@@ -264,7 +264,7 @@ const RichTextEditor = ({ taskDescription, setTaskDescription}) => {
             </button>
             
           {showColorPicker && (
-          <div id="highlight-picker-sidebar" className="highlight-picker-sidebar">
+          <div className="highlight-picker-sidebar">
           <div
             className="no-highlight"
             onClick={() => handleColorChange('rgba(255, 255, 0, 0)', 1)}
@@ -274,11 +274,11 @@ const RichTextEditor = ({ taskDescription, setTaskDescription}) => {
           {colorOptions.map((colorOption) => (
             <div key={colorOption} className="highlight-option-sidebar" style={{ backgroundColor: colorOption }} onClick={() => handleColorChange(colorOption, 1)} />
           ))}
-          <div className="highlight-picker-wrapper">
+          {/* Commeting out to fix bugs later <div className="highlight-picker-wrapper">
           <i className="fas fa-eye-dropper"></i>
-            <input type="color" className="form-control form-control-color-sidebar" id="myColor" value={color} title="Choose a color" onChange={(e) => handleColorChange(e.target.value, 2)} />
-          </div>
-        </div>
+            <input type="color" className="form-control form-control-color-sidebar-RTE" value={color} title="Choose a color" onChange={(e) => handleColorChange(e.target.value, 2)} />
+          </div>*/}
+        </div> 
           )}
             </div>
             

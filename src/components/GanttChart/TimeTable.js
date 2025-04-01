@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState } from 'react';
+import { React, useEffect, useRef, useState, useLayoutEffect, act } from 'react';
 import { months } from '../../constants';
 import {
   createFormattedDateFromDate,
@@ -9,6 +9,7 @@ import {
   getNextDateFromStr,
   monthDiff,
 } from '../../helpers/dateFunctions';
+// Patterns for tasks
 import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.svg';
 import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.svg';
 import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.svg';
@@ -26,10 +27,13 @@ import Solid_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patte
 import Solid_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Square_Density_1.svg';
 import Solid_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Star_Density_1.svg';
 import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Triangle_Density_1.svg';
+
 import TaskDetails from './TaskDetails';
 import './TimeTable.css';
-
 import { buildPath } from '../buildPath';
+import getPattern from './getPattern';
+import {toast} from 'react-toastify';
+import ToastConfirm from '../ToastConfirm';
 
 const debounce = (func, delay) => {
   let timeout;
@@ -39,6 +43,7 @@ const debounce = (func, delay) => {
   };
 };
 
+// Function to determine if a task is happeneing during a certain date
 function isTaskHappeningNow(startDate,dueDate,dateToCheck){
     const timestamp = new Date(dateToCheck+"T00:00:00.000Z");
     const start = new Date(startDate);
@@ -49,6 +54,7 @@ function isTaskHappeningNow(startDate,dueDate,dateToCheck){
     return true;
 }
 
+// Adding days to a given date
 Date.prototype.addDays = function(days) {
     var date = new Date(this.valueOf());
     date.setDate(date.getDate() + days);
@@ -74,7 +80,7 @@ export default function TimeTable({
     'Single_Vertical_Line_Density_1.svg':Single_Vertical_Line_Density_1,'Solid_Single_Circle_Density_1.svg':Solid_Single_Circle_Density_1,
     'Solid_Single_Dot_Density_1.svg':Solid_Single_Dot_Density_1,'Solid_Single_Rhombus_Density_1.svg':Solid_Single_Rhombus_Density_1,
     'Solid_Single_Square_Density_1.svg':Solid_Single_Square_Density_1,'Solid_Single_Star_Density_1.svg':Solid_Single_Star_Density_1,
-    'Solid_Single_Triangle_Density_1.svg':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.svg':Hollow_Single_Circle_Density_1,
+    'Solid_Single_Triangle_Density_1.svg':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.jsx':Hollow_Single_Circle_Density_1,
     'Hollow_Single_Dot_Density_1.svg':Hollow_Single_Dot_Density_1,'Hollow_Single_Rhombus_Density_1.svg':Hollow_Single_Rhombus_Density_1,
     'Hollow_Single_Square_Density_1.svg':Hollow_Single_Square_Density_1,'Hollow_Single_Star_Density_1.svg':Hollow_Single_Star_Density_1,
     'Hollow_Single_Triangle_Density_1.svg':Hollow_Single_Triangle_Density_1
@@ -97,15 +103,23 @@ export default function TimeTable({
   const [showDetails, setShowDetails] = useState(false);
   const [currentDayMarkerHeight,setCurrentDayMarkerHeight] = useState(0);
 
+  // Used for creating the left and right boundaries of the chart
   const [leftBoundary, setLeftBoundary] = useState(new Date(null));
   const [rightBoundary, setRightBoundary] = useState(new Date(null));
-  const [numberOfTasks, setNumberOfTasks] = useState(0);
 
+  const [numberOfTasks, setNumberOfTasks] = useState(0);
   const [numWeeks, setNumWeeks] = useState(0);
+  
+  // For changing the selected view of the chart
   const [selectedRange, setSelectedRange] = useState("Days");
+
+  const [taskPatternDictionary, setTaskPatternDictionary] = useState({});
 
   const rangeSelector = document.getElementById('timeRangeDropdown');
 
+
+  // If the rangeSelector (the dropdown for the chart views) changes,
+  // then the view for the chart is changed
   if (rangeSelector) {
     rangeSelector.addEventListener('change', (event) => {
       const selectedValue = event.target.value;
@@ -113,33 +127,43 @@ export default function TimeTable({
     });
   }
 
+  // The number of tasks has changed
   useEffect(() => {
     setNumberOfTasks(arrayOfTasks.length);
   }, [arrayOfTasks]);
 
   // Gets the project's details
   useEffect(() => { 
+      // The currentDay marker height is based on the number of tasks
       setCurrentDayMarkerHeight(tasks.length)
       if(userRole === 'founder' || 'editor'){
         setIsEditable(true);
       }
 
       setArrayOfTasks(tasks);
+      initPatternDictionary(tasks);
 
       let lB = null;
       let rB = null;
     
-      for(let i in tasks){
-        if(lB == null || tasks[i].startDateTime < lB){
-          lB = tasks[i].startDateTime;
+      // Determining where to set the left/right boundaries
+      for(let i in tasks){        
+        // Set the left boundary to the earliest start date of all tasks
+        // But only if that task is not already completed
+        if(lB == null || ((tasks[i].startDateTime < lB.startDateTime) || ((tasks[i].progress !== "Completed") && (lB.progress === "Completed")))){
+          lB = tasks[i];
         }
           
         if(rB == null || rB < tasks[i].dueDateTime){
           rB = tasks[i].dueDateTime;
         }
       }
-    
-      setLeftBoundary(lB);
+
+      if(lB == null){
+        lB = tasks[0];
+      }
+
+      setLeftBoundary(lB?.startDateTime);
       setRightBoundary(rB);
 
 
@@ -166,7 +190,8 @@ export default function TimeTable({
   }, []);
 
 
-  // Handles the "resizing" of a singular task
+  // Handles the "resizing" of a singular task 
+  // Only when the start (left side) of a task is dragged
   const handleResizeStart = (e, taskDurationId, direction) => {
     console.log("starting resize");
     e.stopPropagation();
@@ -177,8 +202,8 @@ export default function TimeTable({
     setShowDetails(false);
   };
 
-
-
+  // Handles the "resizing" of a singular task 
+  // Only when the end (right side) of a task is dragged
   const handleResizeEnd = async () => {
     if (resizingTask && resizeDirection) {
       const taskDuration = taskDurations.find(
@@ -201,6 +226,7 @@ export default function TimeTable({
 
   // Updates the task's dates based off of the user's mouse's position 
   const handleMouseMove = (e) => {
+    // If the user is resizing a task
     if (resizingTask && resizeDirection) {
       const taskDuration = taskDurations.find(
         (taskDuration) => taskDuration._id === resizingTask
@@ -226,6 +252,7 @@ export default function TimeTable({
         const newDate = closestDateCell.cell.getAttribute('data-date');
         const id = taskDuration._id.slice(0,24);
 
+        // Determining the direction the user is dragging in
         if (resizeDirection === 'left') {
           if (new Date(newDate) <= new Date(taskDuration.end)) {
             taskDuration.start = newDate;
@@ -236,6 +263,7 @@ export default function TimeTable({
           }
         }
         
+        // Set the new task duration
         setTaskDurations((prevDurations) =>
           prevDurations.map((duration) =>
             duration._id === taskDuration._id ? { ...taskDuration } : duration
@@ -244,6 +272,7 @@ export default function TimeTable({
       }
     }
 
+    // If the user is dragging the entire task instead of dragging one side
     if (isDragging) {
       const taskDuration = taskDurations.find(
         (taskDuration) => taskDuration._id === taskDurationElDraggedId
@@ -278,6 +307,7 @@ export default function TimeTable({
         taskDuration.start = newStartDate;
         taskDuration.end = createFormattedDateFromDate(newEndDate);
 
+        // Set the new task duration
         setTaskDurations((prevDurations) =>
           prevDurations.map((duration) =>
             duration._id === taskDuration._id ? { ...taskDuration } : duration
@@ -286,6 +316,25 @@ export default function TimeTable({
       }
     }
   };
+
+  
+  const updatePatternDictionary = (taskId,taskPattern,taskPatternColor,state) => {
+    let taskPatterns = {...state};
+    taskPatterns[taskId] = {"pattern":taskPattern,"color":taskPatternColor} 
+    return taskPatterns;
+ }
+  const initPatternDictionary = (taskArray) =>{
+    let taskPatterns = {};
+    taskArray.map(task => {
+        let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
+        if(!task.patternColor){
+            addPatternColorField(task._id);
+        }
+        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
+        console.log(taskPatterns[task._id])
+    });
+    setTaskPatternDictionary(taskPatterns)
+  }
 
   // Styling
   const ganttTimePeriod = {
@@ -373,6 +422,7 @@ export default function TimeTable({
 
   const currentDate = new Date();
 
+  // Function to call to make sure the dates are in the correct format
   function ensureDate(value) {
     if (value instanceof Date) {
       return value;
@@ -385,17 +435,20 @@ export default function TimeTable({
     }
   }
 
+  // Initializing of important dates
   let startMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 6);
   let endMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 6);
   let earliestTaskStartDate = currentDate;
   let latestTaskDueDate = currentDate;
   let earliestTaskStartWeek = null;
   let earliestTaskStartWeekIndex = 0;
+  let earliestTaskStartWeekProgress = "";
   let earliestTaskStartMonth = null;
   let earliestTaskStartMonthIndex = 0;
-
+  let earliestTaskStartMonthProgress = "";
 
   if(arrayOfTasks.length > 0){
+    //Make the chart render with the left boundary at the earliest task start date
     earliestTaskStartDate = leftBoundary;
     latestTaskDueDate = rightBoundary;
 
@@ -410,6 +463,7 @@ export default function TimeTable({
   const numMonths = monthDiff(startMonth, endMonth) + 1;
   let month = new Date(startMonth);
 
+  // Arrays to hold things for the months/weeks/days/tasks
   let monthRows = [];
   let dayRows = [];
   let dayRow = [];
@@ -417,6 +471,7 @@ export default function TimeTable({
   let weekRow = [];
   let taskRows = [];
   let taskRow = [];
+  //Index helpers
   let currentDayIndex = 0;
   let dayCounter = -1;
   let numDaysForBoundaries = 0;
@@ -426,11 +481,13 @@ export default function TimeTable({
     return ["st", "nd", "rd"][((n + 90) % 100 - 10) % 10 - 1] || "th";
   }
 
+  // Change the view based on the selected view, default being the day view
   switch(selectedRange){
     case "weeks":
       let tempDateHolder = new Date(startMonth.getFullYear(), startMonth.getMonth(), 1);
       let numWeeks = 0;
 
+      // Decides if the task is occurring in a specified week
       function isTaskHappeningInWeek(taskStart, taskEnd, weekStart, weekEnd) {
         taskStart = new Date(taskStart);
         taskEnd = new Date(taskEnd);
@@ -446,7 +503,7 @@ export default function TimeTable({
       }
 
       for (let i = 0; i < numMonths; i++) {
-
+        // For each month, push the Month + Year to the top of the chart
         monthRows.push(
           <div key={i} style={{ ...ganttTimePeriod, outline: 'none' }}>
             <span style={ganttTimePeriodSpan}>
@@ -456,7 +513,6 @@ export default function TimeTable({
         );
 
         let currentWorkingDate = new Date(tempDateHolder);
-
         let lastDate = new Date(currentWorkingDate.getFullYear(), currentWorkingDate.getMonth() + 1, 0);
 
         while(currentWorkingDate <= lastDate){
@@ -474,7 +530,9 @@ export default function TimeTable({
 
           let currentDateInWeek = isTaskHappeningInWeek(currentDate, currentDate, currentWorkingDate, nextWorkingDate);
 
-          currentDateInWeek ?  
+          // If the current Date is a part of the week, push it with the 
+          // CurrentDayMarker, if not, only push the grid without it
+          currentDateInWeek ?
             dayRow.push(
               <div>
                 <div key={currentWorkingDate.toISOString()} style={{ ...ganttTimePeriod, outline: 'none' }}>
@@ -490,6 +548,8 @@ export default function TimeTable({
               </div>
             )
             :
+            // Push the row with the names for the Weeks (e.g -> Feb 27th - Mar 5th)
+            //Day Row is used for weeks in the weeks view
             dayRow.push(
               <div key={currentWorkingDate.toISOString()} style={{ ...ganttTimePeriod, outline: 'none' }}>
                 <span style={{ ...ganttTimePeriodSpanMonths, color: '#3E455B' }}>
@@ -498,6 +558,7 @@ export default function TimeTable({
               </div>
             );;
 
+          // Incrementing the current week
           currentWorkingDate.setDate(currentWorkingDate.getDate() + 7);
 
           numWeeks++;
@@ -510,18 +571,21 @@ export default function TimeTable({
           }
         }
 
+        // Push the weeks for this month to another container
         dayRows.push(
           <div key={i} style={{ ...ganttTimePeriodWeeks, outline: 'none' }}>
             {dayRow}
           </div>
         );
 
+        // Reset containers and increment month
         dayRow = [];
         weekRow = [];
 
         month.setMonth(month.getMonth() + 1);
       }
 
+      // Finding the task duration for the task bars 
       function findTaskDuration(currentWeekStart, endDate){
         const currentWeekEnd = new Date(currentWeekStart);
         currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
@@ -541,6 +605,7 @@ export default function TimeTable({
       }
 
       if (tasks) {
+        // Push the tasks in the same manner as the rows of Dates/Weeks/Months
         tasks.forEach((task, index) => {
           const startDate = new Date(task.startDateTime);
           const dueDate = new Date(task.dueDateTime);
@@ -559,12 +624,16 @@ export default function TimeTable({
               currentWeekStart,
               currentWeekEnd
             );
-            
-            if(isTaskInWeek && (earliestTaskStartWeek == null || currentWeekStart < earliestTaskStartWeek)){
+
+            // Determine where the left side of the chart will render to
+            // Sets to earliest task that is NOT complete
+            if(isTaskInWeek && (earliestTaskStartWeek == null || ((currentWeekStart < earliestTaskStartWeek) || ((task.progress !== "Completed") && (earliestTaskStartWeekProgress === "Completed")) ))){
               earliestTaskStartWeek = currentWeekStart;
+              earliestTaskStartWeekProgress = task.progress;
               earliestTaskStartWeekIndex = weekIndex;
             }
       
+            // Push individual task to the row
             taskRow.push(
               <div
                 key={`${task._id}-${currentWeekStart.toISOString()}-${index}`}
@@ -600,7 +669,7 @@ export default function TimeTable({
                           ...taskDurationBaseStyle,
                           width: `calc(${findTaskDuration(currentWeekStart, dueDate)} * 100% - 1px)`,
                           background: task.color || 'var(--color-primary-light)',
-                          backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                          //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                           backgroundSize: 'contain',
                         }}
                         onClick={() => {
@@ -621,6 +690,7 @@ export default function TimeTable({
             </div>
           );
 
+          // Reset for next task
           taskRow = [];
         });
       }
@@ -629,6 +699,7 @@ export default function TimeTable({
 
       case "months":
 
+        // Decides if the task is occurring in a specified month
         function isTaskHappeningInMonth(taskStart, taskEnd, monthStart, monthEnd, index) {
           taskStart = new Date(taskStart);
           taskEnd = new Date(taskEnd);
@@ -649,6 +720,7 @@ export default function TimeTable({
         do{
         dayRow = [];
 
+        //Pushing each YEAR for the top of the chart
           monthRows.push(
             <div key={i} style={{ ...ganttTimePeriod, outline: 'none' }}>
               <span style={ganttTimePeriodSpan}>
@@ -674,6 +746,10 @@ export default function TimeTable({
           let lastDayOfMonth = new Date(currentWorkingMonth.getFullYear(), currentWorkingMonth.getMonth() + 1, 0);
           let currentDateInMonth = isTaskHappeningInMonth(currentDate, currentDate, currentWorkingMonth, lastDayOfMonth);
           
+          // Pushing each MONTH for the top of the chart
+          // Day Row is used for months in the month view
+          // Same pushing of the currentDayMarker or not depending
+          // On if the current date is within the month
           currentDateInMonth ?
           dayRow.push(
             <div>
@@ -698,6 +774,7 @@ export default function TimeTable({
           );;
           
 
+          // Increment Month
           currentWorkingMonth.setMonth(currentWorkingMonth.getMonth() + 1);
         }
 
@@ -707,12 +784,14 @@ export default function TimeTable({
           </div>
         );
 
+          // Reset container and increment year
           dayRow = [];
   
           i++;
           startYear++;
         }while(i < numYears + 1);
   
+        // Finding task duration for task bars
         function findTaskDurationMonths(currentMonthStart, endDate) {
           let monthDif = 0;
         
@@ -731,10 +810,9 @@ export default function TimeTable({
         
           return monthDif;
         }
-        
-        
   
         if (tasks) {
+          // Pushing task bars for their specific task durations
           tasks.forEach((task, index) => {
             // taskRows = [];
             taskRow = [];
@@ -755,8 +833,11 @@ export default function TimeTable({
                 index
               );
 
-              if(isTaskInMonth && (earliestTaskStartMonth == null || currentMonth < earliestTaskStartMonth)){
+              // Determine where the left side of the chart will render to
+              // Sets to earliest task that is NOT complete
+              if(isTaskInMonth && (earliestTaskStartMonth == null || ((currentMonth < earliestTaskStartMonth) || ((task.progress !== "Completed") && (earliestTaskStartMonthProgress === "Completed"))))){
                 earliestTaskStartMonth = currentMonth;
+                earliestTaskStartMonthProgress = task.progress;
                 earliestTaskStartMonthIndex = monthIndex;
               }
 
@@ -795,7 +876,7 @@ export default function TimeTable({
                             ...taskDurationBaseStyle,
                             width: `calc(${findTaskDurationMonths(currentMonth, dueDate)} * 100% - 1px)`,
                             background: task.color || 'var(--color-primary-light)',
-                            backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                            //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                             backgroundSize: 'contain',
                           }}
                           onClick={() => {
@@ -810,12 +891,14 @@ export default function TimeTable({
               );
             }
         
+            // Push the tasks into their larger containers
             taskRows.push(
               <div key={`${task._id}-month-index-${index}`} style={ganttTimePeriodMonths}>
                 {taskRow}
               </div>
             );
     
+            // Reset the container for next Task
             taskRow = [];
           });
         }
@@ -823,6 +906,7 @@ export default function TimeTable({
       break;
 
     default:
+      // Determining where the chart will render to based on earliest task
       if(earliestTaskStartDate <= currentDate){
         for (let countMonths = new Date(startMonth.getFullYear(), startMonth.getMonth(), 1); countMonths < earliestTaskStartDate; countMonths.setDate(countMonths.getDate() + 1)) {
           numDaysForBoundaries++;
@@ -835,6 +919,7 @@ export default function TimeTable({
       }
 
       for (let i = 0; i < numMonths; i++) {
+        // Pushing months for the top part of the chart
         monthRows.push(
           <div key={i} style={{ ...ganttTimePeriod, outline: 'none' }}>
             <span style={ganttTimePeriodSpan}>
@@ -842,7 +927,6 @@ export default function TimeTable({
             </span>
           </div>
         );
-
 
         const numDays = getDaysInMonth(month.getFullYear(), month.getMonth() + 1);
         const currYear = month.getFullYear();
@@ -856,7 +940,9 @@ export default function TimeTable({
           if (new Date(formattedDate).toDateString() === currentDate.toDateString()) {
             currentDayIndex = dayCounter;
             }
+            // Pushing the day with the current day marker 
             if(new Date(nextDate).toDateString() === currentDate.toDateString()){
+                // Push each day to the day row when on the day view
                 dayRow.push(
                     <div>
                     <div key={j} style={{ ...ganttTimePeriod, outline: 'none' }}>
@@ -872,6 +958,7 @@ export default function TimeTable({
                     </div>
                   );
                   
+            // Pushing the day without the current day marker 
             }
             else{
                 dayRow.push(
@@ -886,7 +973,6 @@ export default function TimeTable({
             }
 
           weekRow.push(
-            
             <div key={j} style={{ ...ganttTimePeriod, outline: 'none' }}>
               <span style={{ ...ganttTimePeriodSpanMonths, color: '#3E455B' }}>
                 {getDayOfWeek(currYear, currMonth - 1, j - 1)}
@@ -898,6 +984,7 @@ export default function TimeTable({
           dayCounter++;
         }
 
+        //Pushing them into their respective containers
         dayRows.push(
           <div key={i} style={{ ...ganttTimePeriod, outline: 'none' }}>
             {dayRow}
@@ -910,15 +997,18 @@ export default function TimeTable({
           </div>
         );
 
+        // Reset for next Day/Week and increment for next month
         dayRow = [];
         weekRow = [];
         month.setMonth(month.getMonth() + 1);
       }
 
       if (tasks) {
+        // Push every task as above
         tasks.forEach((task, index) => {
           const startDate = task.startDateTime;
           const dueDate = task.dueDateTime;
+          const taskPattern = taskPatternDictionary[task._id];
           let mnth = new Date(startMonth);
           for (let i = 0; i < numMonths; i++) {
             const curYear = mnth.getFullYear();
@@ -964,26 +1054,20 @@ export default function TimeTable({
                         <div
                           key={`${i}-${el?.task}`}
                           id={`${task._id}--pattern-target`}
-                    
                           className={`task-duration ${taskDurationElDraggedId === el?._id ? 'dragging' : ''}`}
-    
                           draggable={isEditable && !isResizing ? "true" : "false"}
-    
                           tabIndex="0"
                           onDragStart={isEditable && !isResizing ? () => handleDragStart(el?._id) : null}
                           onDragEnd={isEditable && !isResizing ? () => handleDragEnd(el?._id) : null}
                           onMouseMove={(e) => handleMouseMove(e)}
-    
-    
                           onMouseUp={handleResizeEnd}
-    
                           style={{
                             
                             ...taskDurationBaseStyle,
                             width: `calc(${dayDiff(el?.start, el?.end)} * 100% - 1px)`,
                             opacity: taskDurationElDraggedId === el?._id ? '0.5' : '1',
                             background: task.color || 'var(--color-primary-light)',
-                            backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
+                            //backgroundImage: patterns[task.pattern] ? `url(${patterns[task.pattern]})` : 'none',
                             backgroundSize: 'contain',
                             border: hoveredTask === el?._id && !isResizing ? '2px solid black' : 'none',
                             cursor: isEditable && !isResizing ? 'move' : 'default'
@@ -992,7 +1076,7 @@ export default function TimeTable({
                           onKeyDown={isEditable ? (e) => deleteTaskDuration(e, el?.task) : null}
                           onClick={() => { setSelectedTask(task); setShowDetails(true); }}
                         >
-    
+                          {taskPattern}
                           {isEditable && (
                             <>
                             
@@ -1016,7 +1100,7 @@ export default function TimeTable({
                               {`${el.start.split('T')[0].replace(/-/g, '/')}  -  ${el.end.split('T')[0].replace(/-/g, '/')}`}
                             </div>
                           )}
-
+                        
                         </div>
                       );
                     }
@@ -1025,6 +1109,7 @@ export default function TimeTable({
               );
             }
     
+            // Push tasks into their container
             taskRows.push(
               
               <div key={`${i}-${task?._id}`} style={ganttTimePeriod}>
@@ -1033,25 +1118,29 @@ export default function TimeTable({
     
             );
     
+            // Reset for next tasks and increment for next month
             taskRow = [];
             mnth.setMonth(mnth.getMonth() + 1);
           }
+          
         });
       }
 
       break;
   }
 
+  // Re-rendering of tasks for their new pattern/color
   const forceTaskVisualUpdate = (taskId,newPattern,newColor) => {
     let taskDuration = document.getElementById(`${taskId}--pattern-target`)
     if(!taskDuration){
         console.log("Task cant be found by id: " + `${taskId}--pattern-target` );
         return;
     }
-    taskDuration.style.backgroundImage = newPattern ? `url(${patterns[newPattern]})` : 'none';
+    //taskDuration.style.backgroundImage = newPattern ? `url(${patterns[newPattern]})` : 'none';
     taskDuration.style.backgroundColor = newColor;
   }
 
+  // Deleting Task
   const handleDelete = async (taskId, projectId) => {
     try {
       const response = await fetch(buildPath(`api/tasks/${taskId}`), {
@@ -1078,20 +1167,31 @@ export default function TimeTable({
       setSelectedTask(null);
       setCurrentDayMarkerHeight(currentDayMarkerHeight - 1);
       console.log(currentDayMarkerHeight);
-      //console.log(projectId.tasks.length)
+      return true;
     } catch (error) {
       console.error('Error deleting task:', error);
+      return false;
     }
   };
 
   function deleteTaskDuration(e, id) {
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      if (window.confirm('Are you sure you want to delete?')) {
-        handleDelete(id, projectId);
-      }
+     toast.warn(ToastConfirm, {
+           data: {
+             title: "Are you sure you want to delete this task?", 
+           },  
+           draggable: false, closeButton: false, position: "top-center", ariaLabel: "Are you sure you want to delete this task?", autoClose: false,
+           onClose(reason){
+            switch (reason){
+              case "confirm":
+                handleDelete(id, projectId);
+            }
+           }
+      });
     }
   }
 
+  // Dragging a tasks start date
   function handleDragStart(taskDurationId) {
     if (!resizingTask) {
       
@@ -1102,7 +1202,7 @@ export default function TimeTable({
     }
   }
 
-
+  // Dragging a tasks end date
   function handleDragEnd(taskDurationId) {
 
     if (!resizingTask) {
@@ -1198,6 +1298,8 @@ export default function TimeTable({
     setTaskDurationElDraggedId(null);
   }
 
+  // Determining the rendering position of the chart based on the
+  // selected view and the tasks
   useEffect(() => {
     monthRows = [];
     dayRows = [];
@@ -1213,6 +1315,7 @@ export default function TimeTable({
       let cellWidth = 60;
       let scrollPosition = numDaysForBoundaries * cellWidth;
 
+      // Week View
       if(selectedRange == "weeks"){
         const timeDifference = endMonth.getTime() - startMonth.getTime();
         let daysDifference = timeDifference / (1000 * 60 * 60 * 24);
@@ -1231,6 +1334,7 @@ export default function TimeTable({
           ganttRef.current.scrollLeft = scrollPosition;
         }
       }
+      // Month View
       else if(selectedRange == "months"){
         if(arrayOfTasks.length > 0){
           cellWidth = 180;
@@ -1246,6 +1350,7 @@ export default function TimeTable({
           ganttRef.current.scrollLeft = scrollPosition;
         }
       }
+      // Day View
       else{
         if(arrayOfTasks.length > 0){
     
@@ -1264,7 +1369,10 @@ export default function TimeTable({
   let tasksHolder = null;
   let gridRows = null;
 
+  // Based on the chosen view,
+  // Change the number of columns, the task bars, and the number of rows
   switch(selectedRange){
+    // Week View
     case "weeks":
       gridColumns = `repeat(${numWeeks}, 1fr)`;
 
@@ -1295,6 +1403,7 @@ export default function TimeTable({
 
       break;
 
+    // Month View
     case "months":
       gridColumns = `repeat(${numMonths}, 1fr)`;
 
@@ -1325,6 +1434,7 @@ export default function TimeTable({
 
       break;
     
+    // Day View
     default:
       gridColumns = `repeat(${numMonths}, 1fr)`;
 
@@ -1349,7 +1459,7 @@ export default function TimeTable({
       break;
   }
   
-
+    // Return the full chart
     return (
 
       <div

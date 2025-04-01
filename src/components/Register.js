@@ -5,7 +5,7 @@ import {buildPath} from './buildPath';
 
 function Register() {
   const [regName, setRegName] = useState('');
-  const regUser = "username"
+  const [regUsername, setUsername] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regPasswordVerify, setRegPasswordVerify] = useState('');
   const [regPhone, setRegPhone] = useState('');
@@ -62,6 +62,12 @@ function Register() {
     event.preventDefault();
     setDisable(true);
 
+    if (!regUsername) {
+      setMessage("*** Please enter a Username ***");
+      setDisable(false);
+      return;
+    }
+
     if (!validPhone.test(regPhone)) {
       setMessage("*** Please enter a valid 10 digit phone number ***");
       setDisable(false);
@@ -100,7 +106,7 @@ function Register() {
       return;
     }
 
-    var obj = { email: regEmail.toLowerCase(), name: regName, phone: regPhone, password: regPassword, username: regUser };
+    var obj = { email: regEmail.toLowerCase(), name: regName, phone: regPhone, password: regPassword, username: regUsername };
     var js = JSON.stringify(obj);
     try {
       const response = await fetch(buildPath('api/register'), {
@@ -256,6 +262,14 @@ function Register() {
                               <label class = "formLabel" for="nameForm">Full name</label>
                               <div>
                                 <input id="nameForm" type="text" class="formItem mx-0 mt-0" placeholder='Firstname Lastname' value={regName} onChange={(e) => setRegName(e.target.value)} required></input>
+                              </div>
+                            </div>
+
+                            {/* Username */}
+                            <div>
+                              <label class = "formLabel" for="nameForm">Username</label>
+                              <div>
+                                <input id="usernameForm" type="text" class="formItem mx-0 mt-0" placeholder='username' value={regUsername} onChange={(e) => setUsername(e.target.value)} required></input>
                               </div>
                             </div>
 
