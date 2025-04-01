@@ -3,7 +3,7 @@ import './ProjectHeader.css';
 import { buildPath } from '../buildPath';
 
 
-function ProjectHeader({ projectName, setProjectName, projectId }) {
+function ProjectHeader({ projectName, setProjectName, projectId, founderId }) {
   const [newName, setNewName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState('');
@@ -14,9 +14,7 @@ function ProjectHeader({ projectName, setProjectName, projectId }) {
 
   const handleSubmit = async event => {
     event.preventDefault();
-  
-    var obj = { founderId: userId, nameProject: newName };
-  
+
     try {
       // Check for project name length
       if (newName.length > 35) {
@@ -50,7 +48,7 @@ function ProjectHeader({ projectName, setProjectName, projectId }) {
       setProjectName(updatedProject.updatedName || newName);
       setNewName('');
       setIsModalOpen(false);
-        
+      window.location.reload();
       
     } catch (error) {
       console.error('Error updating project name:', error);
@@ -63,13 +61,16 @@ function ProjectHeader({ projectName, setProjectName, projectId }) {
   return (
     <div className="project-header">
       <h1>
-      <span className="project-name">{projectName}</span>
-        <button
-          className="btn-outline-primary"
-          onClick={() => setIsModalOpen(true)} // Open modal on button click
-        >
-          ✏️
-        </button>
+      <span style= {{fontSize: "0.6em"}} className="project-name">{projectName}</span>
+      {founderId === userId ?
+        <button style= {{fontSize: "0.3em"}}
+        className="btn-outline-primary2"
+        onClick={() => setIsModalOpen(true)} // Open modal on button click
+      >
+        ✏️ Edit Project Name
+      </button> : ''
+      }
+
       </h1>
 
       {/* Bootstrap Modal */}
@@ -78,7 +79,10 @@ function ProjectHeader({ projectName, setProjectName, projectId }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" id="changeProjectModalLabel">Change Project Name</h5>
-              <button type="button" className="btn-close" onClick={() => setIsModalOpen(false)} aria-label="Close"></button>
+               <button type="button" className="btn-close" onClick={() => setIsModalOpen(false)} aria-label="Close"
+                style={{ color: 'black', fontSize: '1.7rem', background: 'none', border: 'none' }}>  
+                  ✖  
+                </button>
             </div>
             <div className="modal-body">
               <input
@@ -93,7 +97,7 @@ function ProjectHeader({ projectName, setProjectName, projectId }) {
             <div className="modal-footer">
               <button 
                 type="button" 
-                className="btn btn-primary" 
+                className="btn btn-primary px-0 mx-0 mt-3 w-100" 
                 onClick={handleSubmit}
               >
                 Submit

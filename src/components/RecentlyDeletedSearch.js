@@ -12,7 +12,8 @@ function RecentlyDeletedSearch(){
     var _ud = localStorage.getItem('user_data');
     var ud = JSON.parse(_ud);
     var userId = ud._id;
-   
+    
+
     const doProjectSearch = async event =>{
         var obj;
         if(search.value){
@@ -31,18 +32,23 @@ function RecentlyDeletedSearch(){
             var res = JSON.parse(txt);
             //get list of project names and pass as prop to child
             if(res.length>0){
-                setChartsToDisplay(<RecentlyDeletedCharts projects={res}/>);
+                setChartsToDisplay(<RecentlyDeletedCharts projects={res} triggerReSearch={triggerReSearch}/>);
             }
             else{
-                setChartsToDisplay(<RecentlyDeletedCharts projects={empty}/>);
+                setChartsToDisplay(<RecentlyDeletedCharts projects={empty} triggerReSearch={triggerReSearch}/>);
             }
         }
         catch(e)
         {
             alert(e.toString());
         }
-    }    
-    const [chartsToDisplay, setChartsToDisplay] = useState(<RecentlyDeletedCharts projects={empty}/>);
+    }
+    const triggerReSearch = () =>{
+        search="";
+        doProjectSearch()
+    }
+    const [chartsToDisplay, setChartsToDisplay] = useState(<RecentlyDeletedCharts projects={empty} triggerReSearch={triggerReSearch}/>);
+    
 
 
     //do an empty search before page renders
@@ -50,16 +56,14 @@ function RecentlyDeletedSearch(){
     
 
     return(
-        <div class ="mt-3">
-            <div class = "container-sm px-0 mt-5 mx-0 mainContainer">
-                <h1 class="title">Recently Deleted</h1>
-                <div class="row">
+        <div>
+            <div class="px-0 mx-0 mt-5 mb-4">
                     <form>
-                            <div class = "col"><input type="search" class="form-control searchForm" placeholder='Search charts by name...' id="search projects" onChange={doProjectSearch} ref={(c) => search = c}/></div>
+                        <h1 class="title">Recently Deleted</h1>
+                        <input type="search" class="form-control searchForm" placeholder='Search charts by name...' id="search projects" onChange={doProjectSearch} ref={(c) => search = c}/>
                     </form>
-                </div>
-                {chartsToDisplay}
             </div>
+            {chartsToDisplay}
         </div>
     );
 };

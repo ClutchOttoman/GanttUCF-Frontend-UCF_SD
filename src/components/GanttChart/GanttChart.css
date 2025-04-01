@@ -1,3 +1,19 @@
+.main-container {
+  width: 98%;
+  min-height: 200px;
+  height: auto; /* Prevents it from getting too large */
+  padding: 15px 25px;
+  border-radius: 20px;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+  margin: 0 auto; 
+}
+
+input#search-tasks.form-control.searchForm{
+  position: relative;
+  right: 38px;
+  border: 1.0px solid black;
+}
+
 #gantt-container {
     --color-text: #272a2e;
     --color-primary-dark: #0195e4;
@@ -9,6 +25,10 @@
     --border-radius: 5px;
     --cell-height: 40px;
     padding: 1rem;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: 0.3px solid black !important;
+    background-color: white
   }
 
   .gantt-chart-time-range-selector {
@@ -16,6 +36,7 @@
     flex-direction: row;
     justify-content: flex-end;
     width: 100%;
+    margin-top: -130px;
     }
     
   .gantt-chart-time-range-selection {
@@ -30,11 +51,12 @@
   }
 
   .gantt-chart-sort-selector {
-    margin-top: -38px;
+   
     display: flex;
     justify-content: flex-start;
     align-items: center;
     margin-right: 5px;
+    margin-top: -30px;
   }
   
   .gantt-chart-sort-selection {
@@ -51,3 +73,44 @@
   .gantt-chart-sort-selection option {
     padding: 8px;
   }
+
+
+
+/* General button styles */
+.export-pdf-button,
+.export-csv-button {
+  margin: 0px;
+  font-size: 11px;
+  background-color: #e08554;
+  color: #ffffff;
+  border: black;
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 3px 7px;
+  font-weight: bold;
+  transition: ease-in 0.1s;
+  text-wrap: wrap;
+ 
+}
+
+.export-pdf-button:hover,
+.export-csv-button:hover {
+  background-color: #dc5e1a;
+}
+
+/* This class will hide export buttons during export */
+.exclude-from-pdf {
+  display: none !important;
+}
+
+
+
+/* To explicitly adjust the vertical position of the buttons */
+.export-buttons-container {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  overflow: visible;
+}

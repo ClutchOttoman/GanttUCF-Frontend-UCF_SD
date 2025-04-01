@@ -4,7 +4,7 @@ import './ProjectTitle.css';
 import {buildPath} from '../buildPath';
 
 
-const ProjectTitle = ({ projectId }) => {
+const ProjectTitle = ({ projectId, founderId }) => {
   const [projectName, setProjectName] = useState('');
 
   useEffect(() => {
@@ -24,12 +24,12 @@ const ProjectTitle = ({ projectId }) => {
     };
 
     fetchProjectName();
-  }, [projectId]);
+  }, [projectId, founderId]);
 
   return (
     <div>
       {/* Pass projectName, setProjectName, and projectId to ProjectHeader */}
-      <ProjectHeader projectName={projectName} setProjectName={setProjectName} projectId={projectId} />
+      <ProjectHeader projectName={projectName} setProjectName={setProjectName} projectId={projectId} founderId={founderId} />
     </div>
   );
 };

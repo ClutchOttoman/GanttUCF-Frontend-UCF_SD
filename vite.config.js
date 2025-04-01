@@ -1,11 +1,12 @@
 import { defineConfig,transformWithEsbuild } from 'vite'
 import react from '@vitejs/plugin-react'
+import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
 export default defineConfig(()=>({
 	plugins: [
     react(),
-
+    
     // Workaround
     {
       name: 'load+transform-js-files-as-jsx',
@@ -23,7 +24,7 @@ export default defineConfig(()=>({
       },
     },
     // End workaround
-
+    svgr(),
   ],
 
   // Workaround before renaming .js to .jsx
@@ -35,6 +36,8 @@ export default defineConfig(()=>({
     },
   },
   // End workaround
-	assetsInclude: ["**/*.PNG","**/*.JPG"],
-
+	assetsInclude: ["**/*.PNG","**/*.JPG","**/*.SVG"],
+	build: {
+   	 assetsInlineLimit: 0
+ 	 },
 }))

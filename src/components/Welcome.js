@@ -5,7 +5,7 @@ const baseStyle = {
 function Welcome(){
     return(
         <div>
-            <h1 style ={baseStyle} >Welcome to Ganttify!</h1>
+            <h1 style ={baseStyle} >Welcome to GanttUCF!</h1>
         </div>
     );
 }

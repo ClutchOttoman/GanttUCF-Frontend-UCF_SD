@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './App.css';
 import './index.css';
@@ -21,32 +22,39 @@ import RecentlyDeletedPage from './pages/RecentlyDeletedPage';
 import RegisterTokenPage from './pages/RegisterTokenPage';
 import VerifyEmailTokenPage from './pages/VerifyEmailTokenPage';
 import ConfirmDeletePage from './pages/ConfirmDeletePage';
-
+import ConfirmRestorePage from './pages/ConfirmRestorePage';
+import UISettingsPage from './pages/UISettingsPage';
+import ThemeProvider from './components/ThemeProvider';
 
 function App() {
+
   return (
-    <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/Login" element={<LoginPage />} />
-          <Route path="/cards" element={<CardPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/about-us" element={<AboutUsPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-          <Route path="/reset-password/:id/:token" element={<ResetPasswordPage />} />
-          <Route path="/verify-email/:email/:token" element={<VerifyEmailPage />} />
-          <Route path="/edit-email/:email/:token" element={<EditEmailPage />} />
-          <Route path="/dashboard/charts" element={<DashboardChartsPage/>}/>
-          <Route path="/dashboard/account" element={<DashboardAccountPage/>}/>
-          <Route path="/dashboard" element={<DashboardPage/>}/>
-          <Route path="/dashboard/recently-deleted" element={<RecentlyDeletedPage/>}/>
-          <Route path="/viewchart/:id" element={<ViewChartPage/>}/>
-          <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
-          <Route path="/register/:token" element={<RegisterTokenPage />} />
-          <Route path="/verify-invite/:token" element={<VerifyEmailTokenPage />} />
-          <Route path="/confirm-delete/:userId/:token" element={<ConfirmDeletePage />} />
-        </Routes>
-    </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/Login" element={<LoginPage />} />
+              <Route path="/cards" element={<CardPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/about-us" element={<AboutUsPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password/:id/:token" element={<ResetPasswordPage />} />
+              <Route path="/verify-email/:email/:token" element={<VerifyEmailPage />} />
+              <Route path="/edit-email/:email/:token" element={<EditEmailPage />} />
+              <Route path="/dashboard/charts" element={<DashboardChartsPage/>}/>
+              <Route path="/dashboard/account" element={<DashboardAccountPage/>}/>
+              <Route path="/dashboard" element={<DashboardPage/>}/>
+              <Route path="/dashboard/recently-deleted" element={<RecentlyDeletedPage/>}/>
+              <Route path="/viewchart/:id" element={<ViewChartPage/>}/>
+              <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
+              <Route path="/register/:token" element={<RegisterTokenPage />} />
+              <Route path="/verify-invite/:token" element={<VerifyEmailTokenPage />} />
+              <Route path="/confirm-delete/:userId/:token" element={<ConfirmDeletePage />} />
+              <Route path="/restore-account/:userId/:token" element={<ConfirmRestorePage />} />
+              <Route path="/dashboard/ui-settings" element={<UISettingsPage />} />
+            </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
   );
 }
 

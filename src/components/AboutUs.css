@@ -4,6 +4,47 @@ body {
     padding: 0;
 }
 
+.about-section {
+    padding-top: 8%;
+    margin-left: auto; 
+    margin-right: auto;
+    text-align: center;
+}
+
+.dropdown-section {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    position: relative;
+    display: inline-block;
+    width: 75%;
+}
+
+.section-header {
+    text-align: center;
+    color: white;
+    height: 2em;
+    background-color: #135C91;
+    width: 100%;
+    padding-top: 4px;
+    font-weight: bolder;
+}
+
+.dropdown-content {
+    width: 100%;
+    display: none;
+    z-index: 1;
+    position: absolute;
+    min-width: 25px;
+    padding: 10px;
+    width: "100%";
+    height: fit-content;
+    background-color: #135C91;
+}
+
+.dropdown-section:hover .dropdown-content {
+    display: block;
+}
+
 .topDiv {
     background-color: #DC6B2C;
     color: white;
@@ -19,32 +60,33 @@ body {
     height: 100%;
     margin: 0 auto;
     max-width: 1200px;
-    
 }
 
-.team-member-reverse {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    background-color: #FDDC87;
-}
 .team-member{
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    margin-left: 0%;
-}
-.member-text-info-reverse{
-    padding-right: 50px;
+    height: 200px;
+    background-color: #FDDC87;
 }
 
-.member-info{
+.team-member-alt {
+    display: flex;
+    height: 200px;
+    background-color: #135C91;
+    color: white;
+}
+
+.member-info-box {
+    text-align: left;
+}
+
+.member-info {
     padding-left: 50px;
+    height: fit-content;
+    margin-top: 2em;
+    margin-left: 2em;
 }
 
-.team-member img, .team-member-reverse img {
+.team-member img, .team-member-alt img {
     border-radius: 50%;
     margin-right: 20px;
     width: 150px;
@@ -52,15 +94,16 @@ body {
     object-fit: cover;
 }
 
-.team-member .member-info, .team-member-reverse .member-info {
+.team-member .member-info, .team-member-alt .member-info {
     max-width: 600px;
 }
 
 .team-image {
     width: 150px;
-    height: 150;
+    height: 150px;
+    margin-top: 1em;
+    margin-left: 2em;
 }
-
 
 .team-member .member-info {
     max-width: 600px;
@@ -69,14 +112,3 @@ body {
 .team-member h2 {
     margin: 0;
 }
-
-.team-member-reverse .member-info{
-    flex-direction: row-reverse;
-}
-
-.team-member-reverse img {
-    margin-right: 0;
-    margin-left: 20px;
-}
-
-

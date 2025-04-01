@@ -2,11 +2,66 @@
 import React, { useState, useEffect } from 'react';
 import './AddTaskButton.css';
 import {buildPath} from '../buildPath';
+import RichTextEditor from './RichTextEditor.js';
+import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.jsx';
+import Hollow_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Dot_Density_1.jsx';
+import Hollow_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Rhombus_Density_1.jsx';
+import Hollow_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Square_Density_1.jsx';
+import Hollow_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Star_Density_1.jsx';
+import Hollow_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Triangle_Density_1.jsx';
+import Diagonal_Left_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Left_Single_Line_Density_1.jsx';
+import Diagonal_Right_Single_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Right_Single_Line_Density_1.jsx';
+import Diagonal_Woven_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Diagonal_Woven_Line_Density_1.jsx';
+import Single_Horizontal_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Horizontal_Line_Density_1.jsx';
+import Single_Vertical_Line_Density_1 from '../../Images/assets/accessible_patterns/line_family/Single_Vertical_Line_Density_1.jsx';
+import Solid_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Circle_Density_1.jsx';
+import Solid_Single_Dot_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Dot_Density_1.jsx';
+import Solid_Single_Rhombus_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Rhombus_Density_1.jsx';
+import Solid_Single_Square_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Square_Density_1.jsx';
+import Solid_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Star_Density_1.jsx';
+import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Triangle_Density_1.jsx';
 
+import getPattern from './getPattern.js'
+import forcePatternColorChange from './forcePatternColorChange.js'
 
 //Default color
 const GanttifyOrange = "#DC6B2C";
 
+
+
+
+const patternDisplayNames = {
+	'Hollow_Single_Circle_Density_1.jsx':'Hollow Circles',
+	'Hollow_Single_Dot_Density_1.jsx':'Hollow Dots',
+	'Hollow_Single_Rhombus_Density_1.jsx':'Hollow Rhombuses',
+	'Hollow_Single_Square_Density_1.jsx':'Hollow Squares',
+	'Hollow_Single_Star_Density_1.jsx':'Hollow Stars',
+	'Hollow_Single_Triangle_Density_1.jsx':'Hollow Triangles',
+	'Diagonal_Left_Single_Line_Density_1.jsx':'Left Diagonal Lines',
+	'Diagonal_Right_Single_Line_Density_1.jsx':'Right Diagonal Lines',
+	'Diagonal_Woven_Line_Density_1.jsx':'Woven Diagonal Lines',
+	'Single_Horizontal_Line_Density_1.jsx':'Horizontal Line',
+	'Single_Vertical_Line_Density_1.jsx':'Vertical Line',
+	'Solid_Single_Circle_Density_1.jsx':'Solid Circles',
+	'Solid_Single_Dot_Density_1.jsx':'Solid Dots',
+	'Solid_Single_Rhombus_Density_1.jsx':'Solid Rhombuses',
+	'Solid_Single_Square_Density_1.jsx':'Solid Squares',
+	'Solid_Single_Star_Density_1.jsx':'Solid Stars',
+	'Solid_Single_Triangle_Density_1.jsx':'Solid Triangles',
+    'No Pattern':'No Pattern'
+}
+const patterns = {
+    'Diagonal_Right_Single_Line_Density_1.jsx':Diagonal_Right_Single_Line_Density_1,
+    'Diagonal_Left_Single_Line_Density_1.jsx':Diagonal_Left_Single_Line_Density_1, 'Diagonal_Left_Single_Line_Density_1.jsx':Diagonal_Left_Single_Line_Density_1,
+    'Diagonal_Woven_Line_Density_1.jsx':Diagonal_Woven_Line_Density_1, 'Single_Horizontal_Line_Density_1.jsx':Single_Horizontal_Line_Density_1,
+    'Single_Vertical_Line_Density_1.jsx':Single_Vertical_Line_Density_1,'Solid_Single_Circle_Density_1.jsx':Solid_Single_Circle_Density_1,
+    'Solid_Single_Dot_Density_1.jsx':Solid_Single_Dot_Density_1,'Solid_Single_Rhombus_Density_1.jsx':Solid_Single_Rhombus_Density_1,
+    'Solid_Single_Square_Density_1.jsx':Solid_Single_Square_Density_1,'Solid_Single_Star_Density_1.jsx':Solid_Single_Star_Density_1,
+    'Solid_Single_Triangle_Density_1.jsx':Solid_Single_Triangle_Density_1,'Hollow_Single_Circle_Density_1.jsx':Hollow_Single_Circle_Density_1,
+    'Hollow_Single_Dot_Density_1.jsx':Hollow_Single_Dot_Density_1,'Hollow_Single_Rhombus_Density_1.jsx':Hollow_Single_Rhombus_Density_1,
+    'Hollow_Single_Square_Density_1.jsx':Hollow_Single_Square_Density_1,'Hollow_Single_Star_Density_1.jsx':Hollow_Single_Star_Density_1,
+    'Hollow_Single_Triangle_Density_1.jsx':Hollow_Single_Triangle_Density_1
+  }
 // Initialization of the modal
 const AddTaskButton = ({ projectId }) => {
 
@@ -19,17 +74,22 @@ const AddTaskButton = ({ projectId }) => {
     assignedTasksUsers: [],
     color: GanttifyOrange,
     pattern: "No Pattern",
+    patternColor:"#000000",
     taskCategory: "",
     prerequisiteTasks: [],
     allowEmailNotifications: false,
     dependentTasks: [],
   });
 
+
   // Initialization of the variables
   const [teamUsers, setTeamUsers] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [color, setColor] = useState('#DC6B2C'); 
   const [pattern,setPattern] = useState('No Pattern');
+  const [patternFilename,setPatternFilename] = useState("")
+  const [patternColor,setPatternColor] = useState('#000000');
+  const [patternPreview, setPatternPreview] = useState(null);
   const [projectTasks, setProjectTasks] = useState([]);
   const [prerequisiteTasks, setPrerequisiteTasks] = useState([]);
   const [allowEmailNotifications, setAllowEmailNotifcations] = useState(false);
@@ -133,10 +193,16 @@ const AddTaskButton = ({ projectId }) => {
 
   //Updates the colors 
   const handleColorChange = async (newColor) => {
-    console.log(newColor);
     setColor(newColor); 
     setTaskData(oldData => ({...oldData, color: newColor}));
   };
+
+  const handlePatternColorChange = async (newColor) =>{
+    setPatternColor(newColor); 
+    const patternId = "addTaskPreview";
+    forcePatternColorChange(newColor,patternFilename,patternId);
+    setTaskData(oldData => ({...oldData, patternColor: newColor}));
+  }
 
 
   //Updates the task data whenever a text field changes
@@ -157,10 +223,18 @@ const AddTaskButton = ({ projectId }) => {
   const handlePatternChange = async (newPattern,newPatternToDisplay) => {
     console.log(newPattern);
     setPattern(newPatternToDisplay);
+    setPatternFilename(newPattern)
     setTaskData(oldData => ({...oldData, pattern: newPattern}));
-  }
+    setPatternPreview(getPattern(newPattern,patternColor,511,"addTaskPreview"));
 
+  }
+  const isPrerequisiteDropdownDisabled = () =>{
+    if(projectTasks[0] == null){return true}
+    else{return false}
+  }
+  
   const handlePrerequisiteChange = async (taskId) =>{
+    console.log("prereqs changed: " + taskId);
     if(prerequisiteTasks && prerequisiteTasks.includes(taskId)){
         setPrerequisiteTasks(prerequisiteTasks.filter(prereq => prereq !== taskId));
         //console.log("removing prereq: " + taskId + " from: " + prerequisiteTasks);
@@ -220,7 +294,9 @@ const AddTaskButton = ({ projectId }) => {
     
     
     try {
-
+      var timeZone =  " " + new Date().toString().match(/([A-Z]+[\+-][0-9]+)/)[1];
+      newTask.dueDateTime += timeZone; 
+      newTask.startDateTime += timeZone;
       const response = await fetch(buildPath('api/createtask'), {
         method: 'POST',
         headers: {
@@ -259,12 +335,16 @@ const AddTaskButton = ({ projectId }) => {
       assignedTasksUsers: [],
       color: GanttifyOrange,
       pattern: "default-pattern",
+      patternColor: "#000000",
       taskCategory: "", // Reset the task category
       prerequisiteTasks: [],
       dependentTasks:[],
       allowEmailNotifications: false,
     });
+    setPattern('No Pattern')
+    setPatternPreview('No Pattern')
     setColor(GanttifyOrange);
+    setPatternColor('#000000')
     setAllowEmailNotifcations(false);
     setErrorMessage(""); 
   };
@@ -272,6 +352,7 @@ const AddTaskButton = ({ projectId }) => {
 
   return (
     <>
+    
       <div className="floating-button" onClick={() => setShowModal(true)}>
         <div className="button-content">
           <span className="button-icon">+</span>
@@ -284,14 +365,18 @@ const AddTaskButton = ({ projectId }) => {
       {showModal && (
 
 
-        <div className="modal show" style={{ display: 'block' }}>
-          <div className="modal-dialog">
+        <div className="modal show w-100">
+          <div className="modal-dialog add-task-modal ">
             <div className="modal-content">
 
 
               <div className="modal-header">
                 <h5 className="modal-title">Add a Task</h5>
-                <button type="button" className="btn-close" onClick={closeModal}></button>
+        
+                <button type="button" className="btn-close align-content-center" onClick={closeModal} style={{ color: 'black', fontSize: '1.7rem', background: `${GanttifyOrange}`, border: 'none' }}>
+                    ✖  
+                </button>
+                      
               </div>
 
 
@@ -309,14 +394,13 @@ const AddTaskButton = ({ projectId }) => {
                     <input type="text" className="form-control" id="taskTitle" name="taskTitle" value={taskData.taskTitle} onChange={handleInputChange} required />
                   </div>
 
-                  <div className="mb-3">
+                  {/*Rich Text Editor */}
                     <label htmlFor="description" className="form-label">Description</label>
-                    <textarea className="form-control" id="description" name="description" value={taskData.description} onChange={handleInputChange}></textarea>
-                  </div>
-
-
-          
-
+                    <RichTextEditor
+                    taskDescription={taskData.description}
+                    setTaskDescription={(newDescription) => 
+                      setTaskData((prev) => ({ ...prev, description: newDescription }))}
+                    /> 
 
                   <div className="mb-3">
                     <label htmlFor="startDateTime" className="form-label">Start Date</label>
@@ -334,12 +418,12 @@ const AddTaskButton = ({ projectId }) => {
                   </div>
                     <div className="mb-4 dropup dropup-center d-grid gap-2">
                         <label htmlFor='prerequisiteTaskSelection' className="form-label text-align-start">Prerequisite Tasks</label>
-                        <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Select Prerequisite Tasks</button>
+                        <button class="dropdownBtnAdd dropdown-toggle" type="button" id="prerequisiteTasks" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false" disabled={isPrerequisiteDropdownDisabled()}>Select Prerequisite Tasks</button>
                         <ul class="dropdown-menu" id = "prerequisiteTaskDropdownMenu">
                             {projectTasks.map(task =>(
                                     <a href={"#" + `${task._id}`} key={task._id} class ="dropdown-item">
-                                        <div class="form-check">
-                                            <input type ="checkbox" id={task._id} class ="form-check-input" value={task._id} onChange={(e) => handlePrerequisiteChange(e.target.value)}/>
+                                        <div class="form-check  d-flex align-items-center">
+                                           <input type ="checkbox" id={task._id} className ="form-check-input checkBoxAddBtn me-2"  checked={taskData.prerequisiteTasks.includes(task._id)} onChange={() => handlePrerequisiteChange(task._id)}/>
                                             <label htmlFor = {task._id} class = "form-check-label prerequisiteTaskDropdownItem">{task.taskTitle}</label>
                                         </div>
                                     </a>
@@ -347,19 +431,20 @@ const AddTaskButton = ({ projectId }) => {
                             ))}
                            <>
                            </>
-                        </ul>
-
-                    </div>
+                        </ul> 
+                        </div>                 
                   <div className="mb-4 dropup dropup-center d-grid gap-2">
+                  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"></link>
                     <label htmlFor="assignedTasksUsers" className="form-label text-align-start">Assigned Users</label>
                     <button class="dropdownBtnAdd dropdown-toggle" type="button" id="assignedUsers" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">Select Users</button>
                     <ul class ="dropdown-menu" id="assignedUsersDropdownMenu" >
+
                       {teamUsers.map(user => (
-                        <a href={"#"+`${user.id}`}key={user._id} class="dropdown-item">
-                          <div class="form-check">
+                        <a href={"#"+`${user.id}`}key={user._id} class="dropdown-item ">
+                          <div class="form-check d-flex align-items-center">
                             <input
                                 type="checkbox"
-                                class ="form-check-input"
+                                class ="form-check-input checkBoxAddBtn me-2"
                                 id={`user-${user._id}`}
                                 checked={taskData.assignedTasksUsers.includes(user._id)}
                                 onChange={() => handleCheckboxChange(user._id)}
@@ -377,18 +462,11 @@ const AddTaskButton = ({ projectId }) => {
                       <input type="checkbox" class = "form-check-input allowEmailNotifcationsCheckBox" checked = {allowEmailNotifications} onChange={(e) => handleAllowEmailNotificationsCheckboxChange(allowEmailNotifications)}/>
                  </div>*/}
                   <div className="mb-3">
-                  <label className="form-label">Color</label>
-
-
-                  <div className="color-options">
-                    {colorOptions.map((colorOption) => (
-                      <div key={colorOption} className="color-option" style={{ backgroundColor: colorOption }} onClick={() => handleColorChange(colorOption)} />
-                    ))}
-                  </div>
+                  <label className="form-label">Task Color</label>
 
 
                   <div className="color-picker-container">
-                    <input type="color" className="form-control form-control-color" id="myColor" value={color} title="Choose a color" onChange={(e) => handleColorChange(e.target.value)} />
+                    <input type="color" className="form-control form-control-color taskAppearanceColorPicker" id="myColor" value={color} title="Choose a task color" onChange={(e) => handleColorChange(e.target.value)} />
                   </div>
 
                 </div>
@@ -400,28 +478,48 @@ const AddTaskButton = ({ projectId }) => {
                     </button>
                     <ul class="dropdown-menu">
                         <a onClick={()=>handlePatternChange('No Pattern','No Pattern')} class = "dropdown-item patternDropdownItem">No Pattern</a>
-                        <a onClick={()=>handlePatternChange('Hollow_Single_Dot_Density_1.svg','Hollow Dots')} class = "dropdown-item patternDropdownItem">Hollow Dots</a>
-                        <a onClick={()=>handlePatternChange('Hollow_Single_Rhombus_Density_1.svg','Hollow Rhombuses')} class = "dropdown-item patternDropdownItem">Hollow Rhombuses</a>
-                        <a onClick={()=>handlePatternChange('Hollow_Single_Square_Density_1.svg','Hollow Squares')} class = "dropdown-item patternDropdownItem">Hollow Squares</a>
-                        <a onClick={()=>handlePatternChange('Hollow_Single_Star_Density_1.svg','Hollow Stars')} class = "dropdown-item patternDropdownItem">Hollow Stars</a>
-                        <a onClick={()=>handlePatternChange('Hollow_Single_Triangle_Density_1.svg','Hollow Triangles')} class = "dropdown-item patternDropdownItem">Hollow Triangles</a>
-                        <a onClick={()=>handlePatternChange('Diagonal_Left_Single_Line_Density_1.svg','Left Diagonal Lines')} class = "dropdown-item patternDropdownItem">Left Diagonal Lines</a>
-                        <a onClick={()=>handlePatternChange('Diagonal_Right_Single_Line_Density_1.svg','Right Diagonal Lines')} class = "dropdown-item patternDropdownItem">Right Diagonal Lines</a>
-                        <a onClick={()=>handlePatternChange('Diagonal_Woven_Line_Density_1.svg','Woven Diagonal Lines')} class = "dropdown-item patternDropdownItem">Woven Diagonal Lines</a>
-                        <a onClick={()=>handlePatternChange('Single_Horizontal_Line_Density_1.svg','Horizontal Line')} class = "dropdown-item patternDropdownItem">Horizontal Line</a>
-                        <a onClick={()=>handlePatternChange('Single_Vertical_Line_Density_1.svg','Vertical Line')} class = "dropdown-item patternDropdownItem">Vertical Lines</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Circle_Density_1.svg','Solid Circles')} class = "dropdown-item patternDropdownItem">Solid Circles</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Dot_Density_1.svg','Solid Dots')} class = "dropdown-item patternDropdownItem">Solid Dots</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Rhombus_Density_1.svg','Solid Rhombuses')} class = "dropdown-item patternDropdownItem">Solid Rhombuses</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Square_Density_1.svg','Solid Squares')} class = "dropdown-item patternDropdownItem">Solid Squares</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Star_Density_1.svg','Solid Stars')} class = "dropdown-item patternDropdownItem">Solid Stars</a>
-                        <a onClick={()=>handlePatternChange('Solid_Single_Triangle_Density_1.svg','Solid Triangles')} class = "dropdown-item patternDropdownItem">Solid Triangles</a>
-                        <a onClick={()=>handlePatternChange('Halftone_Density_1.png','Halftone')} class = "dropdown-item patternDropdownItem">Halftone</a>
+                        <a onClick={()=>handlePatternChange('Hollow_Single_Dot_Density_1.jsx','Hollow Dots')} class = "dropdown-item patternDropdownItem">Hollow Dots</a>
+                        <a onClick={()=>handlePatternChange('Hollow_Single_Rhombus_Density_1.jsx','Hollow Rhombuses')} class = "dropdown-item patternDropdownItem">Hollow Rhombuses</a>
+                        <a onClick={()=>handlePatternChange('Hollow_Single_Square_Density_1.jsx','Hollow Squares')} class = "dropdown-item patternDropdownItem">Hollow Squares</a>
+                        <a onClick={()=>handlePatternChange('Hollow_Single_Star_Density_1.jsx','Hollow Stars')} class = "dropdown-item patternDropdownItem">Hollow Stars</a>
+                        <a onClick={()=>handlePatternChange('Hollow_Single_Triangle_Density_1.jsx','Hollow Triangles')} class = "dropdown-item patternDropdownItem">Hollow Triangles</a>
+                        <a onClick={()=>handlePatternChange('Diagonal_Left_Single_Line_Density_1.jsx','Left Diagonal Lines')} class = "dropdown-item patternDropdownItem">Left Diagonal Lines</a>
+                        <a onClick={()=>handlePatternChange('Diagonal_Right_Single_Line_Density_1.jsx','Right Diagonal Lines')} class = "dropdown-item patternDropdownItem">Right Diagonal Lines</a>
+                        <a onClick={()=>handlePatternChange('Diagonal_Woven_Line_Density_1.jsx','Woven Diagonal Lines')} class = "dropdown-item patternDropdownItem">Woven Diagonal Lines</a>
+                        <a onClick={()=>handlePatternChange('Single_Horizontal_Line_Density_1.jsx','Horizontal Line')} class = "dropdown-item patternDropdownItem">Horizontal Line</a>
+                        <a onClick={()=>handlePatternChange('Single_Vertical_Line_Density_1.jsx','Vertical Line')} class = "dropdown-item patternDropdownItem">Vertical Lines</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Circle_Density_1.jsx','Solid Circles')} class = "dropdown-item patternDropdownItem">Solid Circles</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Dot_Density_1.jsx','Solid Dots')} class = "dropdown-item patternDropdownItem">Solid Dots</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Rhombus_Density_1.jsx','Solid Rhombuses')} class = "dropdown-item patternDropdownItem">Solid Rhombuses</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Square_Density_1.jsx','Solid Squares')} class = "dropdown-item patternDropdownItem">Solid Squares</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Star_Density_1.jsx','Solid Stars')} class = "dropdown-item patternDropdownItem">Solid Stars</a>
+                        <a onClick={()=>handlePatternChange('Solid_Single_Triangle_Density_1.jsx','Solid Triangles')} class = "dropdown-item patternDropdownItem">Solid Triangles</a>
                         </ul>
                   </div>
 
+                  <div className="mb-3">
+                  <label className="form-label">Pattern Color</label>
 
-                  <button type="submit" className="btn btn-primary">Add Task</button>
+
+                  <div className="color-picker-container">
+                    <input type="color" className="form-control form-control-color taskAppearanceColorPicker" id="myColor" value={patternColor} title="Choose a pattern color" onChange={(e) => handlePatternColorChange(e.target.value)} />
+                  </div>
+
+                </div>
+                  <label class="form-label">Task Appearance Preview</label>
+                  <div class="row mt-3 justify-content-center">
+                    <div class="col-12 d-flex align-items-center">
+                        <div class="task-appearance-preview" draggable="false" style={{backgroundColor:`${color}`}}>
+                            {patternPreview}
+                        </div>
+                    </div>
+                  </div>
+                  <div class="row mt-3 justify-content-center">
+                    <div class="col-8">
+                        <button type="submit" className="btn btn-primary px-0 mx-0 mt-3 w-100">Add Task</button>
+                    </div>
+                  </div>
+                  
                 </form>
               </div>
             </div>

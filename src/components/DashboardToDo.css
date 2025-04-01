@@ -8,25 +8,109 @@ body{
     float:top;
 }
 .title{
-    font:bold;
     margin-left:40px;
     margin-top:-60px;
     color: black;
+
+}
+.calendar-btn{
+    margin-left: 10vw;
+    /* line-height: 1; */
+    padding: 5px 10px 5px 10px;
+    max-height: fit-content;
+    border-radius: var(--bs-border-radius);
+    align-self: center;
+    background-color: rgb(220, 107, 44);
+    border: none;
+    color: white;
+}
+
+.search-bar-calendar-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    /* flex-wrap: nowrap; */
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.todo-toolbar{
+    position: relative;
+    display: flex;
+    justify-content: flex;
+    width: 100vw;
+    gap: 50px;
 }
 .searchForm{
     margin-left:5%;
-    max-width: 20%;
-    min-width: 10%;
+    width: 500px !important;
 }
-.table{
-    margin-top: 40px;
+
+/* All css for to-do list table */
+.table {
     margin-left: 40px;
+    width: 70vw;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
-.tr{
-    line-height: 100px !important;
-    min-height: 100px !important; 
-    height: 100px !important;
+
+/* Resizing table */
+@media (max-width: 1400px) {
+    .table {
+        width: 60vw;
+        transform: translateX(-5%)
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .table{
+        max-width: 100vw; 
+        transform: translateX(0%)
+    }
+  }
+
+
+/* Used to give scroll to table body only */
+table tbody {
+    display: block;
+    height: 425px;
+    overflow-y: scroll;
+    scrollbar-width: thin;
 }
+    table thead, table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    text-align: center;
+    }
+
+/* Text wrapping */
+tr, td {
+    white-space: normal;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+
+
+  th.todoTableBody{ 
+    background-color: #DC6B2C;
+    border-color:#DC6B2C;
+    color:rgb(255, 255, 255);
+    visibility: visible;
+    &:first-child{
+        border-top-left-radius: 10px;
+    }
+    &:last-child{
+        border-top-right-radius: 10px;
+    }
+}   
+
+tr:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+
 .cell{
     vertical-align:middle;
 }
@@ -34,13 +118,22 @@ body{
     border: none;
     visibility: hidden;
 }
-.taskBtn{
-    border:none;
-    background: none;
-    color:none;
-    font-size:x-large;
-    padding: 0;
-    margin: 0;
+
+.taskBtn {
+    margin-right: 50px;
+    width: 33px; 
+    height: 33px;
+    border-radius: 50%;
+    display: block;
+    margin: auto;
+    border: none;
+    color: white;
+    background-color: #DC6B2C;
+
+    &:hover{
+        transition: background-color ease-in 0.1s;
+        background-color: #f08b4f;
+    }
 }
 .modalSubTitle{
     float:bottom;
@@ -57,4 +150,38 @@ body{
 .contactBody{
     margin-top: 0;
     margin-left: 40px;
+}
+.todoTableBody{
+    background-color: white;
+    color:black;
+}
+
+tr.task-row.show{
+    border-bottom: none;
+    border-color: transparent;
+}
+
+.progress-btn{
+    display: flex;
+    justify-items: auto;
+    margin-top: 20px;
+    width: 225px;
+}
+
+.details-row{
+    text-align: left;
+}
+
+/* Reformatting lists inside table data cell to move vertically */
+td ul {
+    text-align: left;
+}
+
+td li {
+    color: black;
+    pointer-events: none;
+    pointer-events: none;
+    &:hover{
+        color: black;
+    }
 }

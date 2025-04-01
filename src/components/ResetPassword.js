@@ -14,11 +14,45 @@ function ResetPassword() {
   const validPassSymbol = RegExp("[^a-zA-Z0-9]+");
   const validPassDigit = RegExp("[0-9]+");
 
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+
+  // For changing checkmark and x icons.
+  const [isMinLength, setIsMinLength] = useState(false);
+  const [doesContainLower, setDoesContainLower] = useState(false);
+  const [doesContainUpper, setDoesContainUpper] = useState(false);
+  const [doesContainDigit, setDoesContainDigit] = useState(false);
+  const [doesContainSpecialChar, setDoesContainSpecialChar] = useState(false);
+
   const [password, setPassword] = useState('');
   const [verifiedPassword, setVerifiedPassword] = useState('');
   const [disableButton, setDisableButton] = useState(false);
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    let passwordField = document.getElementById("floatingPassword");
+
+    if (!isPasswordVisible){
+      passwordField.type = "text";
+      setPasswordVisible(true);
+    } else {
+      passwordField.type = "password";
+      setPasswordVisible(false);
+    }
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    let passwordField = document.getElementById("floatingPassword2");
+
+    if (!isConfirmPasswordVisible){
+      passwordField.type = "text";
+      setConfirmPasswordVisible(true);
+    } else {
+      passwordField.type = "password";
+      setConfirmPasswordVisible(false);
+    }
+  }
 
   const doResetPassword = async event => {
     event.preventDefault();
@@ -26,27 +60,27 @@ function ResetPassword() {
     setDisableButton(true);
 
     if (password === null || password.length < 8) {
-      setMessage("*** Your password must be at least 8 characters ***");
+      setMessage("*** Your password does not meet the listed requirements. ***");
       setDisableButton(false);
       return;
     }
     if (!validPassLower.test(password)) {
-      setMessage("*** Your password must contain at least one lowercase letter ***");
+      setMessage("*** Your password does not meet the listed requirements. ***");
       setDisableButton(false);
       return;
     }
     if (!validPassUpper.test(password)) {
-      setMessage("*** Your password must contain at least one uppercase letter ***");
+      setMessage("*** Your password does not meet the listed requirements. ***");
       setDisableButton(false);
       return;
     }
     if (!validPassDigit.test(password)) {
-      setMessage("*** Your password must contain at least one digit ***");
+      setMessage("*** Your password does not meet the listed requirements. ***");
       setDisableButton(false);
       return;
     }
     if (!validPassSymbol.test(password)) {
-      setMessage("*** Your password must contain at least one special symbol ***");
+      setMessage("*** Your password does not meet the listed requirements. ***");
       setDisableButton(false);
       return;
     }
@@ -83,52 +117,55 @@ function ResetPassword() {
     
   };
 
+  // Sends visual indicators.
+  // Returns true if all fields are valid, false otherwise.
   function checkPasswordValidity() {
-
     
     if (password.localeCompare("") === 0) {
       setMessage("");
-      return;
     }
     
     if (password === null || password.length < 8) {
-      setMessage("*** Your password must be at least 8 characters ***");
-      return;
+      setIsMinLength(false);
+    } else {
+      setIsMinLength(true); // indicate visually.
     }
     
     if (!validPassLower.test(password)) {
-      setMessage("*** Your password must contain at least one lowercase letter ***");
-      return;
+      setDoesContainLower(false);
+    } else {
+      setDoesContainLower(true); // indicate visually.
     }
     
     if (!validPassUpper.test(password)) {
-      setMessage("*** Your password must contain at least one uppercase letter ***");
-      return;
+      setDoesContainUpper(false);
+    } else {
+      setDoesContainUpper(true);
     }
     
     if (!validPassDigit.test(password)) {
-      setMessage("*** Your password must contain at least one digit ***");
-      return;
+      setDoesContainDigit(false);
+    } else {
+      setDoesContainDigit(true);
     }
     
     if (!validPassSymbol.test(password)) {
-      setMessage("*** Your password must contain at least one special symbol ***");
-      return;
+      setDoesContainSpecialChar(false);
+    } else {
+      setDoesContainSpecialChar(true);
     }
     
+    // If field is empty.
     if (verifiedPassword.localeCompare("") === 0) {
       setMessage("");
-      return;
     }
     
     if (password !== verifiedPassword) {
       setMessage("*** Passwords do not match ***");
-      return;
-    } 
-    
-    else {
+      return false;
+    } else {
       setMessage("");
-      return;
+      return true;
     }
   }
 
@@ -145,36 +182,66 @@ function ResetPassword() {
   
   return (
 
-    
-    <div className="reset-password-container">
-      <div className="reset-password-form text-center">
+    <div className="reset-password-container background-tile-repeat">
+      <div className="reset-password-form">
 
-    
-        <div className="card-header registerFormHeader">
+        <div className="card-header registerFormHeader text-center">
           <h1 className="reset-password-title">Reset Password</h1>
         </div>
 
-    
         <div className="card-body p-0">
     
           <form onSubmit={doResetPassword}>
-    
-            <div className="row text-start">
-              <label className="formLabel mb-1" htmlFor="floatingPassword">New password</label>
+
+            {/* Password container */}
+            <div>
+              <label className="formLabel" htmlFor="floatingPassword">New password</label>
+               
+               {/* Password requirements */}
+               <div>
+                  <div className='indicate_valid_container'>
+                    <i className={`${isMinLength ? 'fa-solid fa-check' : 'fa-solid fa-xmark'}`}></i>
+                    <p>{isMinLength ? ('Your new password is least 8 characters.') : ('Your new password must be at least 8 characters.')}</p>
+                  </div>
+                  
+                  <div className='indicate_valid_container'>
+                    <i className={`${doesContainLower ? 'fa-solid fa-check' : 'fa-solid fa-xmark'}`}></i>
+                    <p>{doesContainLower ? ('Your new password has at least one lowercase letter.') : ('Your new password must contain at least one lowercase letter.')}</p>
+                  </div>
+
+                  <div className='indicate_valid_container'>
+                    <i className={`${doesContainUpper ? 'fa-solid fa-check' : 'fa-solid fa-xmark'}`}></i>
+                    <p>{doesContainUpper ? ('Your new password has at least one uppercase letter.') : ('Your new password must contain at least one uppercase letter.')}</p>
+                  </div>
+
+                  <div className='indicate_valid_container'>
+                    <i className={`${doesContainDigit ? 'fa-solid fa-check' : 'fa-solid fa-xmark'}`}></i>
+                    <p>{doesContainDigit ? ('Your new password has at least one digit.') : ('Your new password must contain at least one digit.')}</p>
+                  </div>
+
+                  <div className='indicate_valid_container'>
+                    <i className={`${doesContainSpecialChar ? 'fa-solid fa-check' : 'fa-solid fa-xmark'}`}></i>
+                    <p>{doesContainSpecialChar ? ('Your new password has at least one special symbol.') : ('Your new password must contain at least one special symbol.')}</p>
+                  </div>
+              </div>
+
+              {/* Password input */}
+              <div style={{position: "relative", display: "inline-flex", width: "100%", boxSizing: "border-box"}}>
+                <input type="password" id="floatingPassword" className="formItem mx-0 my-0 mt-0" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required autoComplete='off'/>
+                <i className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} detailIcon`} onClick={togglePasswordVisibility} style={{fontSize: "30px", minWidth:"30px", position: "absolute", top: "8px", right: "10px", backgroundColor: "white"}}></i>                       
+              </div>
+
             </div>
-    
-            <div className="row text-center mb-3">
-              <input type="password" id="floatingPassword" className="formItem mx-0 mt-0" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required />
+  
+            {/* Confirm password. */}
+            <div>
+              <label className="formLabel" htmlFor="floatingPassword2">Re-enter new password</label>
+              <div style={{position: "relative", display: "inline-flex", width: "100%", boxSizing: "border-box"}}>
+                <input type="password" id="floatingPassword2" className="formItem mx-0 my-0 mt-0" placeholder="Password" value={verifiedPassword} onChange={e => setVerifiedPassword(e.target.value)} required autoComplete='off'/>
+                <i className={`fas ${isConfirmPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} detailIcon`} onClick={toggleConfirmPasswordVisibility} style={{fontSize: "30px", minWidth:"30px", position: "absolute", top: "8px", right: "10px", backgroundColor: "white"}}></i>                       
+              </div>
             </div>
-    
-            <div className="row text-start">
-              <label className="formLabel mb-1" htmlFor="floatingPassword2">Re-enter new password</label>
-            </div>
-    
-            <div className="row text-center mb-3">
-              <input type="password" id="floatingPassword2" className="formItem" placeholder="Password" value={verifiedPassword} onChange={e => setVerifiedPassword(e.target.value)} required />
-            </div>
-    
+
             <div className="row text-center mb-1">
               <span>{message}</span>
             </div>

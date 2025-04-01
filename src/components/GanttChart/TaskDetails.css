@@ -4,13 +4,15 @@
   right: 0;
   width: 500px;
   height: calc(100vh - 112px); 
+  border-radius: 20px;
   background-color: #fff;
-  box-shadow: -2px 5px 2px rgba(0, 0, 0, 0.3); 
+  box-shadow: -2px 5px 4px rgba(0, 0, 0, 0.3); 
   z-index: 9999;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
-
+  transition: right 0.3s ease-in-out;
 }
 
 .task-details-header {
@@ -35,6 +37,10 @@
   margin-bottom: 20px;
 }
 
+div.details{
+  border-top-left-radius: 20px !important;
+  border-top-right-radius: 20px !important;
+}
 .task-details-content {
   margin-left: 10px;
   margin-right: 10px;
@@ -45,7 +51,7 @@
   height: 20px;
   border-radius: 50%;
   cursor: pointer;
-  margin-right: 15px;
+  margin-inline: 5px;
   flex-shrink: 0;
   cursor: default;
 }
@@ -59,18 +65,22 @@
 .task-details-body {
   flex: 1;
   padding: 10px;
-  max-height: 200px;
+  min-height: 300px;
   border-top: 1px solid #ddd;
-
 }
 
-.description-text{
-  margin-left: 10px;
+.task-details-sidebar #textbox {
+  border-top: 1px solid #ddd;
+  overflow-y: auto;
+  min-height: 225px;
+  padding-left: 10px;
+  overflow-x: hidden;
+  overflow-wrap: break-word;
+  white-space: normal;
 }
 
 .task-details-footer {
   padding: 10px;
-  border-top: 1px solid #ddd;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -120,6 +130,10 @@
   padding-right: 8px;
   padding-top: 4px;
   padding-bottom: 4px;
+  
+  &:hover{
+    background-color:#d6d6d6 !important;
+  }
 }
 
 #placeHolderDivDetails {
@@ -132,16 +146,12 @@
   position: absolute;
   background-color: white;
   border-radius: 5px;
-  width: 250px;
-  height: 110px;
+  width: 225px;
+  height: 300px;
   margin-left: 20px;
   box-shadow: -1px 3px 8px rgba(0, 0, 0, 0.3);
   margin-top: 95px;
-  align-items: center;
-  justify-content: center;
   z-index: 99999;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
   padding-top: 5px;
 }
 
@@ -150,31 +160,9 @@
   outline-offset: 3px; 
 }
 
-
-/* .color-circle:hover {
-  outline: 2px solid #7AA7B7; 
-  outline-offset: 3px; 
-  cursor: default;
-} */
-
 .color-option-sidebar:hover {
   outline: 2px solid #7AA7B7; 
   outline-offset: 3px; 
-}
-
-
-
-#description {
-  border-radius: 5px;
-  max-height: 100px;
-  overflow-y: auto;
-  height: 100px;
-  padding-bottom: 30px;
-  margin-top: 6px;
-  font-size: 15px;
-  margin-left: 10px;
-  margin-right: 10px;
-  color: #737373;
 }
 
 #title-text {
@@ -208,11 +196,12 @@
   margin-top: 20px;
 }
 
-#details-header {
+.details-header {
   border-bottom: 1px solid #ddd;
   padding: 5px;
   font-size: 18px;
   text-align: center;
+  border-radius: 5px;
 }
 
 #details-content {
@@ -268,7 +257,6 @@ select[multiple] {
 }
 
 .done-button {
-  position: fixed;
   bottom: 15px;
   right: 22px;
   background-color: #135C91;
@@ -327,6 +315,21 @@ select[multiple] {
     padding-top: 4px;
     padding-bottom: 4px;
 }
+.taskPatternDropdown{
+    border-color: black;
+    width: 100%;
+    background-color:white;
+    border-style: groove;
+    border-width: 1px;
+    border-radius: 5px;
+    border-radius: 5px;
+    
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
 
 .color-option-sidebar {
   width: 20px;
@@ -338,6 +341,22 @@ select[multiple] {
   align-items: center;
   justify-content: center;
   margin-left: 8px;
+}
+
+.color-picker-sidebar-close-btn{
+    width:50% !important;
+    height:50% !important;
+}
+
+.task-appearance-preview{
+    width: 100%;
+    height: 30px;
+    border-radius:5px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.05);
+}
+.pattern-preview{
+    width:100%;
+    height:30px;
 }
 
 .color-picker-wrapper {
@@ -355,20 +374,23 @@ select[multiple] {
 }
 
 .form-control-color-sidebar {
-  width: 24px;
+  width: 48px;
   height: 24px;
-  border-radius: 50%;
   padding: 0;
   border: none;
   background-color: transparent;
   cursor: pointer;
-  
 }
 
 .form-control-color-sidebar:hover {
   outline: 2px solid #7AA7B7; 
   outline-offset: 3px; 
   
+}
+
+.color-sidebar-color-picker{
+    width: 60px !important;
+    height: 30px !important;
 }
 
 .form-control-color-sidebar::-webkit-color-swatch-wrapper {
@@ -379,9 +401,6 @@ select[multiple] {
   border: none;
   border-radius: 50%;
 }
-
-
-
 
 
 .task-detail-field {
@@ -434,4 +453,20 @@ select[multiple] {
     margin-left: 10px;
 }
 
+.editTaskAppearanceContainer{
+    margin-top: 10px;
+    margin-inline-start: 20px;
+}
+.taskDurationBaseStyle{
+    position: absolute;
+    height: calc(var(--cell-height) * 0.75);
+    top: calc(var(--cell-height) / 8);
+    border-radius: var(--border-radius);
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.05);
+}
+
+.editTaskAppearanceButton{
+    height: 32px !important;
+    width: fit-content;
+}
 

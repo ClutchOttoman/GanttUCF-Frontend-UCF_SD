@@ -59,7 +59,7 @@ function ForgotPassword() {
 
   return (
      
-    <div className="forgot-password-container">
+    <div className="forgot-password-container background-tile-repeat">
       <div className="forgot-password-card">
 
      

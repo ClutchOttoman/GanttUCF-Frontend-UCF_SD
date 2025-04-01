@@ -6,9 +6,6 @@ const AboutUsPage = () => {
     return (
         <div className="about-us-page">
             <NavBar layout={1} pageTitle="Ganttify" />
-            <br></br>
-            <br></br>
-            <br></br>
             <AboutUs />
         </div>
     );

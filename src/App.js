@@ -1,31 +1,35 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import './App.css';
+import NavBar from "./components/NavBar";
 import './index.css';
 
+import AboutUsPage from './pages/AboutUsPage';
+import AcceptInvitePage from './pages/AcceptInvitePage';
+import CardPage from './pages/CardPage';
+import ConfirmDeletePage from './pages/ConfirmDeletePage';
+import ConfirmRestorePage from './pages/ConfirmRestorePage';
+import DashboardAccountPage from './pages/DashboardAccountPage';
+import DashboardChartsPage from './pages/DashboardChartsPage';
+import DashboardPage from './pages/DashboardPage';
+import EditEmailPage from './pages/EditEmailPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
-import CardPage from './pages/CardPage';
-import RegisterPage from './pages/RegisterPage';
-import AboutUsPage from './pages/AboutUsPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import EditEmailPage from './pages/EditEmailPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
-import DashboardPage from './pages/DashboardPage';
-import DashboardChartsPage from './pages/DashboardChartsPage';
-import DashboardAccountPage from './pages/DashboardAccountPage';
-import ViewChartPage from './pages/ViewChartPage';
-import AcceptInvitePage from './pages/AcceptInvitePage';
 import RecentlyDeletedPage from './pages/RecentlyDeletedPage';
+import RegisterPage from './pages/RegisterPage';
 import RegisterTokenPage from './pages/RegisterTokenPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import UISettingsPage from "./pages/UISettingsPage";
+import VerifyEmailPage from './pages/VerifyEmailPage';
 import VerifyEmailTokenPage from './pages/VerifyEmailTokenPage';
-import ConfirmDeletePage from './pages/ConfirmDeletePage';
-
+import ViewChartPage from './pages/ViewChartPage';
 
 function App() {
+
   return (
     <BrowserRouter>
+        <NavBar />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/Login" element={<LoginPage />} />
@@ -45,6 +49,8 @@ function App() {
           <Route path="/register/:token" element={<RegisterTokenPage />} />
           <Route path="/verify-invite/:token" element={<VerifyEmailTokenPage />} />
           <Route path="/confirm-delete/:userId/:token" element={<ConfirmDeletePage />} />
+          <Route path="/restore-account/:userId/:token" element={<ConfirmRestorePage />} />
+          <Route path="/ui-settings" element={<UISettingsPage />} />
         </Routes>
     </BrowserRouter>
   );

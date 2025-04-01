@@ -1,12 +1,34 @@
+.title{
+  font:bold;
+  margin-top: 0px;
+  margin-bottom:20px;
+  color: black;
+}
 
 .dashboardAccountContainer {
-    max-width: 600px;
-    margin: 50px auto;
+    width: 38vw;
+    min-width: 350px;
+    margin: 0px auto;
     padding: 20px;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    font-family: "Inter", sans-serif;
+    transition: ease-in 3s ease;
+    margin-left: 20vw;
+  }
+
+  @media (max-width: 1280px) {
+    .dashboardAccountContainer {
+        width: 50vw; 
+        margin-left: 10vw;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .dashboardAccountContainer {
+        width: 60vw; 
+        margin-left: -5vw;
+    }
   }
   
   .dashboardTitle {
@@ -19,7 +41,7 @@
 
   .dashboardTitle::before, .dashboardTitle::after {
     content: '';
-    position: absolute;
+    position: relative;
     top: 50%;
     width: 80px;
     height: 2px;
@@ -52,10 +74,21 @@
   .detailLabel {
     font-weight: bold;
     color: #555;
+    flex: 1;
+    text-align: left;
   }
   
   .detailValue {
     color: #333;
+    text-align: left;
+    flex: 2;
+    padding-left: 140px;
+  }
+
+  .detailIcon {
+    flex: 1;
+    text-align: right;
+    cursor: pointer;
   }
   
   .accountActions {
@@ -63,6 +96,7 @@
     display: flex;
     justify-content: center;
     gap: 20px;
+    max-width: 100%;
   }
   
   .btn {
@@ -76,24 +110,20 @@
   
   .deleteBtn {
     background-color: #dc3545;
-    color: white;
+    &:hover {
+      background-color: #b52d3a;
+      color: white;
+    }
   }
-  
-  .deleteBtn:hover {
-    background-color: #b52d3a;
-  }
-  
+
   .editBtn,
   .saveBtn {
     background-color: #007bff;
-    color: white;
+    &:hover {
+      background-color: #0056b3;
+      color: white;
   }
-  
-  .editBtn:hover,
-  .saveBtn:hover {
-    background-color: #0056b3;
   }
-  
   .editInput {
     padding: 5px;
     font-size: 14px;
@@ -105,11 +135,10 @@
   
   .resetPasswordBtn {
     background-color: #ffc107;
-    color: #000;
-  }
-  
-  .resetPasswordBtn:hover {
-    background-color: #e0a800;
+    &:hover{
+      background-color: #e0a800;
+      color: white;
+    }
   }
 
   .editSelect {
@@ -128,4 +157,55 @@
     border-color: #007bff; 
     outline: none;
     box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+
+
+  .password-modal {
+    top: 0;
+    margin-top: -125px;
+    position: absolute;
+    height: 90vh;
+    min-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; 
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .modal-content button {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background: #dc6b2c;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .modal-content button:hover {
+    background: #f08b4f;
+  }
+  
+  .error {
+    color: red;
+    font-size: 14px;
   }

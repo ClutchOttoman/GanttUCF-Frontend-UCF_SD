@@ -1,0 +1,352 @@
+html.high-contrast {
+    scrollbar-color: #363636 #C7C7C7 !important; 
+    /* General CSS */
+    /* General Buttons */
+
+    /* Toast Notifications */
+    .Toastify__toast {
+      font-size: 16px;
+      background-color: white;
+      color: black;
+      border-radius: 8px;
+    }
+
+    button.btn-outline-primary{
+      color: #000;
+    }
+    
+    button, .btn.btn-primary, .btn, .cta-button,  .fc-daygrid-event-dot, button.close{
+        background-color: #002238  !important;  /* Dark background for buttons */
+        border-color: #002238  !important;
+        color: #fff;  /* Light text */
+        transition: ease-in 0.1s;
+        visibility: visible;
+        &:hover{
+          background-color: #1a4a75 !important;
+        }
+      }
+
+    /* General Modal, Task Details Modal, and Add Task Modal*/
+    .modal-body, .modal-header, .modal-footer, div.modal-content, 
+    div.task-details-footer, div.task-details-header, div.task-details-body,
+    div#textbox, .align-items-start, button.delete-button, button.edit-button, div.icon-button-container, #task-title.task-title,
+    div.task-title-container, div#task-tab, .loginForm.mt-1, .card-header.loginFormHeader.text-center{
+      color: black;
+      background-color: white !important;
+      visibility: visible;
+    }
+    /* Navbar */  
+    /*Top navbar text buttons */
+    .navbar, .navbarDash {
+      background-color: #6B2B00;
+      visibility: visible;
+      color: white !important;
+    }
+    #button {
+        background-color: transparent !important;
+        color: #fff !important; 
+        visibility: visible;
+        &:hover{
+            color:#FFE4B5 !important;  
+            visibility: visible;
+        }
+    }
+    .btn.navBtn, .btn.navBtnSmall{
+        background-color: #402C12 !important; /*  (background buttons) Dark background */
+        color: #ffffff;
+        visibility: visible;
+    
+        &:hover{
+          background-color: #b35408 !important;
+          visibility: visible;
+        }
+    }
+
+    /* info button */
+    i.fas.fa-info-circle.info-icon{
+      color:  #002238  !important; 
+      &:hover{
+        color: #1a4a75 !important;
+      }
+    }
+      
+    /* Sidebar text color */
+    .navBtnText, .navBtnTextSmall{
+        color: white !important;
+    }
+    /* Transparent background Edit Project Name + Delete*/
+    button.btn-outline-primary, button.btn-outline-primary2, button.projectBtn, .img.btnIcon{
+        background-color: transparent !important;
+        &:hover{
+            background-color: transparent !important;         
+        }
+    }
+
+    /* Team Dropdown */
+    a#navbarDropdown.nav-link.dropdown-toggle{ /* Team */
+      color: #ffffff;
+      visibility: visible;
+      &:hover{
+        color:#FFE4B5 !important;  
+      }
+    }
+  
+    /* Dashboard sidebar + topbar */
+    /* Background Ribbon colors */
+    div.d-none.d-md-table-cell.container-lg.navBarBody, div.d-md-none.navBarBodySmall.mb-5{
+      background-color: #f3b35b !important;  /*  (NAV BAR ON SIDE) Dark background */
+      visibility: visible;
+    }
+
+    /* Home Page/Landing Page */
+    /* Content Boxes */
+    .card-contentbox {
+        background-color: #752F00 !important; /* Dark background */
+        color: #fff !important; /* Light text */
+        border-radius: 0 0 9.5px 9.5px; /* Rounded bottom corners */
+        padding: 15px; /* Optional: Adds spacing inside */
+        visibility: visible;
+    }
+    .footer, a.footer-link{
+        background-color: #6B2B00 !important;  /* WORK (footer) members background */
+        color: #ffffff !important;  /* Light text */
+        visibility: visible;
+    }
+    .card-subtext{
+        color: #fff !important;
+    }
+    
+    /* Login, Register/Create an Account, Verify Email and Forget Password*/
+    /* Form Containers */
+    div.loginForm.text-center, div.card-header.loginFormHeader, div.forgot-password-card, .registerForm.text-center.mt-1,
+    .card-header.registerFormHeader, h1.verify-email-title, div.verify-email-card{
+        background-color: #f3b35b;
+        visibility: visible;
+    }
+    .forgot-password-link, .forgot-password-back-link{
+        color: #002238  !important;
+        &:hover{
+            text-decoration: underline;
+        }
+    }
+    /* Verify Email Specific CSS */
+    a.btn-2.btn-link.mt-2{
+        background-color: #f3b35b;
+        color: #630D19;
+        visibility: visible;
+        &:hover{
+            background-color: #f3b35b;
+            color: #630D19;
+            visibility: visible;
+        }
+      }
+    
+      h1.verify-email-title::before, h1.verify-email-title::after{
+        background-color: #630D19;
+        visibility: visible;
+      }
+      
+      span.email-style{
+        color: #660000;
+        visibility: visible;
+      }
+
+        
+    /* About Us Page*/
+    
+    .team-member{
+        visibility: visible;
+        background-color: #f3b35b !important;  /* WORK members background */
+    }
+    
+    .team-member-reverse{
+        background-color: #F0A53D; /*(8.15)*/
+        visibility: visible;
+    }
+    
+    .bottomDiv{
+        background-color: #f3b35b;
+        visibility: visible;
+     }
+  
+    /* To Do/todo List Page */
+    /* Table background*/
+    th.todoTableBody, .fc-header-toolbar.fc-toolbar{ 
+        background-color: #6B2B00;
+        border-color: #6B2B00;
+        color:rgb(255, 255, 255);
+        visibility: visible;
+    }
+
+    /* calender table text */
+    .fc-event-title, a.fc-col-header-cell-cushion{
+      color: #002238  !important
+    }
+    /*Table scrollbar */
+    div.table-responsive-xxl{ 
+        scrollbar-color: #363636 #C7C7C7 !important; 
+    }
+    
+    /* Button inside the table 
+    .taskBtn {
+    }
+    */
+    
+    /* Charts Page */
+    /* Chart Cards */
+    /* View Chart Button */
+    .btn.viewChartBtn{
+        background-color: #002238 !important; /*  (View Chart) Dark background */
+        color: #ffffff;
+        visibility: visible;
+        &:hover{
+          background-color: #0f4875 !important;
+          visibility: visible;
+        } 
+    }
+
+    /*Project Card */
+    .card{
+        background-color: #ffc370 !important; /*  (chart cards) Dark background */
+        border: 5px solid #402C12; /* Wider colored border */
+        visibility: visible;
+    }
+
+    /* Account Details Page*/
+    
+    .dashboardAccountContainer {
+        visibility: visible;
+        background-color: #f3b35b !important; /*  (Account square) Dark background */
+    }
+  
+    /* UI Settings Page */
+    /* Toggle Buttons */
+    button.dark-mode-toggle, button.high-contrast-mode-toggle, .protan-toggle, .deuteran-toggle, .tritan-toggle { 
+        background-color: #8a3700;  /* Darker background for toggle button */
+        visibility: visible;
+    }
+
+    /* Toggle Buttons Hover */
+    button.dark-mode-toggle:hover, button.high-contrast-mode-toggle:hover, button.protan-toggle:hover, button.deuteran-toggle:hover, button.tritan-toggle:hover{ 
+        background-color: #b75927; /* Brighter background for hover */
+        visibility: visible;
+    }
+
+    /* Toggle Button Slider Animation */
+    button.high-contrast-mode-toggle.high-contrast .thumb{
+        left: calc(50px - 25px);
+        visibility: visible;
+      }
+
+    .ui-settings-container, .color-preset-container, .ui-preview-container, .font-container {
+        background-color: #f3b35b !important;
+        visibility: visible;
+    }
+
+    /* Gantt Chart/Project Page */
+    /* Time table */
+    /*Task bar border */
+    .task-duration { 
+        background-color: 1.2px solid #002238 !important;
+        visibility: visible;
+      }
+
+    /* Timetable scrollbar */
+    #gantt-grid-container__time {
+    scrollbar-color: #363636 #C7C7C7 !important; 
+      visibility: visible;
+    }
+    
+    /* Category */
+    .gantt-task-row .task-category {
+      background: linear-gradient(135deg, #494F50, #3A3F40); /* Gradient background for modern look */
+      visibility: visible;
+    }
+
+    /* Add Task and Task Details */
+    /* Floating add task button */
+    .floating-button{ 
+        background-color: #002238 !important;
+        visibility: visible;
+    }
+
+
+    /*Add Task Scrollbar */
+    div.modal-content{
+        scrollbar-color: #363636 #C7C7C7 !important; 
+      }
+  
+
+    /*Task Dropdowns */
+    /* Dropdown buttons */
+    #assignedUsers.dropdownBtnAdd.dropdown-toggle, #prerequisiteTasks, button#pattern.dropdownBtnAdd.dropdown-toggle, .taskPatternDropdown, #todoDropdown.nav-link.dropdown-toggle{
+    background-color: #002238 !important;
+    visibility: visible;
+    color: white !important;
+    &:hover{
+        background-color: #6d6d6d !important;
+        visibility: visible;
+    } 
+    }
+  
+    /* Dropdown items w/hover*/
+    .dropdown-item:hover {  
+        background-color:#F0F0F0 !important;
+    }
+    label.form-check-label.prerequisiteTaskDropdownItem, label.form-check-label.assignedUserDropdownItem{
+      background-color: transparent !important;
+    }
+  
+    /*Checkbox for assigning users dropdown */
+    .form-check-input:checked{
+      background-color: #002238 !important ;
+      visibility: visible;
+    }
+
+        /*Rich Text Editor */
+        button.toolbar-btn{
+            background-color: #4a4a4a;
+            visibility: visible;
+          }
+          /*Color Selector */
+          .highlight-picker-sidebar, .color-picker-sidebar{
+            background-color: #313131 !important;
+            color: white;
+            visibility: visible;
+            
+          }
+          /*Text editor */
+          
+
+          div#editor-toolbar{
+            background-color: #f0f0f0;
+            button.toolbar-btn{
+              background-color: transparent !important;
+              visibility: visible;
+              &:hover{
+                background-color: #d3d3d3 !important;
+              }
+              &.active{
+                background-color: #6B2B00  !important;
+              }
+            }
+            .dropdown-toggle{
+              background-color: #f0f0f0 !important;
+              color: black !important;
+              border-color: #ddd !important;
+              visibility: visible;
+              &:hover{
+                background-color: #d3d3d3 !important;
+              }
+            }
+            .dropdown-menu, .dropdown-menu .header-item{
+              background-color:#2b2b2b !important;
+              color: white !important;
+              visibility: visible;
+              
+            }
+            .header-item:hover{
+              background-color:#555  !important;
+            }
+        }
+}
