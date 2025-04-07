@@ -8,7 +8,6 @@ import {
   getDaysInMonth,
   getNextDateFromStr,
   monthDiff,
-  weekDiff,
 } from '../../helpers/dateFunctions';
 // Patterns for tasks
 import Hollow_Single_Circle_Density_1 from '../../Images/assets/accessible_patterns/hollow_shape_family/Hollow_Single_Circle_Density_1.svg';
@@ -35,6 +34,8 @@ import { buildPath } from '../buildPath';
 import getPattern from './getPattern';
 import {toast} from 'react-toastify';
 import ToastConfirm from '../ToastConfirm';
+
+const CHECK_FOR_SVG = true; 
 
 const debounce = (func, delay) => {
   let timeout;
@@ -200,7 +201,7 @@ export default function TimeTable({
   // Handles the "resizing" of a singular task 
   // Only when the start (left side) of a task is dragged
   const handleResizeStart = (e, taskDurationId, direction) => {
-    console.log("starting resize");
+    //console.log("starting resize");
     e.stopPropagation();
     e.preventDefault();
     setResizingTask(taskDurationId);
@@ -324,37 +325,202 @@ export default function TimeTable({
     }
   };
 
+
+
+//Create all of the pattern components to be displayed on the chart for days,weeks,months
+//Will fix any broken/dated patterns in database as well//////////
+
   const initPatternDictionaryDays = (taskArray) =>{
     let taskPatterns = {};
     taskArray.map(task => {
         let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
-        if(!task.patternColor){
-            //addPatternColorField(task._id);
+        let patternToOrder = task.pattern;
+        if (CHECK_FOR_SVG && !patternToOrder.includes("jsx") && patternToOrder.localeCompare("No Pattern") != 0){
+            if(patternToOrder.includes("svg"))
+                patternToOrder = new String(task.pattern.replace("svg","jsx"));
+            else
+                patternToOrder = new String("No Pattern");
+            editTaskPattern(task,patternToOrder);
         }
-        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
-        console.log(taskPatterns[task._id])
+        else if(!task.patternColor)
+            editTaskPattern(task,task.pattern);
+        taskPatterns[task._id] = getPattern(patternToOrder,currPatternColor,Math.abs(dayDiff(task.startDateTime,task.dueDateTime))*60,`${task._id}--pattern-target`)
+        //console.log(taskPatterns[task._id])
     });
     setTaskPatternDictionaryDays(taskPatterns)
   }
   const initPatternDictionaryWeeks = (taskArray) =>{
-    let startMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 6);
     let taskPatterns = {};
-    taskArray.map(task => {
-        let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
-        //Math.abs(weekDiff(startMonth,new Date(task.startDateTime),new Date(task.dueDateTime)))
-        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,0,`${task._id}--week-pattern-target`)
-        //console.log(taskPatterns[task._id])
-    });
-    setTaskPatternDictionaryWeeks(taskPatterns);
+    let tempDateHolder = new Date(startMonth.getFullYear(), startMonth.getMonth(), 1);
+      let numWeeks = 0;
+
+      // Decides if the task is occurring in a specified week
+      function isTaskHappeningInWeek(taskStart, taskEnd, weekStart, weekEnd) {
+        taskStart = new Date(taskStart);
+        taskEnd = new Date(taskEnd);
+        weekStart = new Date(weekStart);
+        weekEnd = new Date(weekEnd);
+        weekEnd.setHours(23, 59, 59, 999);
+
+        return (
+          (taskStart >= weekStart && taskStart <= weekEnd) ||
+          (taskEnd >= weekStart && taskEnd <= weekEnd) ||
+          (taskStart < weekStart && taskEnd > weekEnd)
+        );
+      }
+
+      for (let i = 0; i < numMonths; i++) {
+        // For each month, push the Month + Year to the top of the chart
+
+        let currentWorkingDate = new Date(tempDateHolder);
+        let lastDate = new Date(currentWorkingDate.getFullYear(), currentWorkingDate.getMonth() + 1, 0);
+
+        while(currentWorkingDate <= lastDate){
+          let nextWorkingDate = new Date(currentWorkingDate);
+          nextWorkingDate.setDate(currentWorkingDate.getDate() + 6);
+
+
+          // Incrementing the current week
+          currentWorkingDate.setDate(currentWorkingDate.getDate() + 7);
+
+          numWeeks++;
+
+          if(currentWorkingDate == lastDate){
+            tempDateHolder = new Date(currentWorkingDate.getFullYear(), currentWorkingDate.getMonth() + 1, 1);
+          }
+          else if(currentWorkingDate > lastDate){
+            tempDateHolder = new Date(currentWorkingDate);
+          }
+        }
+
+        month.setMonth(month.getMonth() + 1);
+      }
+
+      // Finding the task duration for the task bars' patterns
+      function findTaskDuration(currentWeekStart, endDate){
+        const currentWeekEnd = new Date(currentWeekStart);
+        currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+        ////console.log("timeTable: " + currentWeekStart);
+        let weekDif = 0;
+
+        do{
+          weekDif++;
+          currentWeekStart.setDate(currentWeekEnd.getDate() + 1);
+          currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+        }while(endDate > currentWeekEnd)
+
+        if(endDate > currentWeekStart){
+          weekDif++;
+        }
+
+        return weekDif;
+      }
+
+      if (taskArray) {
+        //for weeks we need to calculate the proper week difference inorder to get the correct length for pattern.
+        //pretty much just copies the same method to render chart cells and task bars. This has to be done this way unless you want to fix it
+        taskArray.forEach((task) => {
+          const startDate = new Date(task.startDateTime);
+          const dueDate = new Date(task.dueDateTime);
+          for (let weekIndex = 0; weekIndex < numWeeks; weekIndex++) {
+            const currentWeekStart = new Date(startMonth);
+            currentWeekStart.setDate(currentWeekStart.getDate() + weekIndex * 7);
+      
+            const currentWeekEnd = new Date(currentWeekStart);
+            currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+            currentWeekEnd.setHours(23, 59, 59, 999);
+      
+            const isTaskInWeek = isTaskHappeningInWeek(
+              startDate,
+              dueDate,
+              currentWeekStart,
+              currentWeekEnd
+            );
+
+            // Sets first week be line with the earliest task that is NOT complete
+            if(isTaskInWeek && (earliestTaskStartWeek == null || ((currentWeekStart < earliestTaskStartWeek) || ((task.progress !== "Completed") && (earliestTaskStartWeekProgress === "Completed")) ))){
+              earliestTaskStartWeek = currentWeekStart;
+              earliestTaskStartWeekProgress = task.progress;
+              earliestTaskStartWeekIndex = weekIndex;
+            }
+            taskDurations.map((el) => {                  
+                const elStartDate = new Date(el?.start.split('T')[0]);
+
+                const adjustedWeekEnd = new Date(currentWeekEnd);
+                adjustedWeekEnd.setHours(23, 59, 59, 999);
+
+                if (el?.task === task._id &&
+                  elStartDate >= currentWeekStart &&
+                  elStartDate <= adjustedWeekEnd
+                ) {
+                    let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
+                    let patternLength = findTaskDuration(currentWeekStart,dueDate) * 90 - 3;
+                    let patternToOrder = task.pattern;
+                    if (CHECK_FOR_SVG && !patternToOrder.includes("jsx") && patternToOrder.localeCompare("No Pattern") != 0){
+                        if(patternToOrder.includes("svg"))
+                            patternToOrder = new String(task.pattern.replace("svg","jsx"));
+                        else
+                            patternToOrder = new String("No Pattern");
+                        editTaskPattern(task,patternToOrder);
+        }
+                    else if(!task.patternColor)
+                        editTaskPattern(task,task.pattern);
+                    taskPatterns[task._id] = getPattern(patternToOrder,currPatternColor,patternLength,`${task._id}--week-pattern-target`);
+                }});
+      }});
+      }
+      setTaskPatternDictionaryWeeks(taskPatterns);
   }
   const initPatternDictionaryMonths = (taskArray) =>{
     let taskPatterns = {};
     taskArray.map(task => {
         let currPatternColor = task.patternColor ? task.patternColor : "#0000000"
-        taskPatterns[task._id] = getPattern(task.pattern,currPatternColor,(Math.abs(monthDiff(new Date(task.startDateTime),new Date(task.dueDateTime))) + 1)*180 - 1,`${task._id}--month-pattern-target`)
-        console.log(taskPatterns[task._id])
+        let patternToOrder = task.pattern;
+        if (CHECK_FOR_SVG && !patternToOrder.includes("jsx") && patternToOrder.localeCompare("No Pattern") != 0){
+            if(patternToOrder.includes("svg"))
+                patternToOrder = new String(task.pattern.replace("svg","jsx"));
+            else
+                patternToOrder = new String("No Pattern");
+            editTaskPattern(task,patternToOrder);
+        }
+        else if(!task.patternColor)
+            editTaskPattern(task,task.pattern);
+        taskPatterns[task._id] = getPattern(patternToOrder,currPatternColor,(Math.abs(monthDiff(new Date(task.startDateTime),new Date(task.dueDateTime))) + 1)*180 - 1,`${task._id}--month-pattern-target`)
+        //console.log(taskPatterns[task._id])
     });
     setTaskPatternDictionaryMonths(taskPatterns)
+  }
+
+  //for fixing patterns that are missing color or have a svg pattern
+  const editTaskPattern = async (task,jsxifiedPattern) => {
+    if (!task || !task._id || !task.pattern) {
+        console.error("Task is undefined or missing ID or is missing a pattern.");
+        return;
+    }
+    
+    try{
+              const response = await fetch(buildPath(`api/tasks/${task._id}`), {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  pattern: jsxifiedPattern,
+                  patternColor: task.patternColor? task.patternColor : "#000000",
+                }),
+              });
+          
+              if (!response.ok) {
+                throw new Error('Failed to update task');
+              }
+          
+              const updatedTask = await response.json();
+              console.log('Task updated successfully:', updatedTask);
+    }
+    catch(e){
+        console.error("Error: " + e)
+        return;
+    }
   }
   // Styling
   const ganttTimePeriod = {
@@ -555,7 +721,7 @@ export default function TimeTable({
           currentDateInWeek ?
             dayRow.push(
               <div>
-                <div key={currentWorkingDate.toISOString()} style={{ ...ganttTimePeriod, outline: 'none' }}>
+                <div key={`${currentWorkingDate.toISOString()}`} style={{ ...ganttTimePeriod, outline: 'none' }}>
                   <span style={{ ...ganttTimePeriodSpanMonths, color: '#3E455B' }}>
                     {`${startMonthName} ${startDay}${startOrdinal} - ${endMonthName} ${endDay}${endOrdinal}`}
                   </span>
@@ -609,7 +775,7 @@ export default function TimeTable({
       function findTaskDuration(currentWeekStart, endDate){
         const currentWeekEnd = new Date(currentWeekStart);
         currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
-        //console.log("timeTable: " + currentWeekStart);
+        ////console.log("timeTable: " + currentWeekStart);
         let weekDif = 0;
 
         do{
@@ -630,7 +796,7 @@ export default function TimeTable({
         tasks.forEach((task, index) => {
           const startDate = new Date(task.startDateTime);
           const dueDate = new Date(task.dueDateTime);
-          const taskPattern = taskPatternDictionaryWeeks[task._id];
+          const taskPattern = taskPatternDictionaryWeeks[task._id]
           for (let weekIndex = 0; weekIndex < numWeeks; weekIndex++) {
             const currentWeekStart = new Date(startMonth);
             currentWeekStart.setDate(currentWeekStart.getDate() + weekIndex * 7);
@@ -653,11 +819,12 @@ export default function TimeTable({
               earliestTaskStartWeekProgress = task.progress;
               earliestTaskStartWeekIndex = weekIndex;
             }
+                    
       
             // Push individual task to the row
             taskRow.push(
               <div
-                key={`${task._id}-${currentWeekStart.toISOString()}-${index}`}
+                id={`${task._id}-${currentWeekStart.toISOString()}-${index}-weeks`}
                 style={{
                   ...ganttTimePeriodCell,
                   backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#ffffff',
@@ -679,6 +846,8 @@ export default function TimeTable({
                     elStartDate >= currentWeekStart &&
                     elStartDate <= adjustedWeekEnd
                   ) {
+                    ////console.log(`${task.taskTitle} -> length: ${findTaskDuration(currentWeekStart, dueDate)}`)
+
 
                     return (
                       <div
@@ -867,7 +1036,7 @@ export default function TimeTable({
 
               taskRow.push(
                 <div
-                  key={`${task._id}-${currentMonth.toISOString()}-${index}`}
+                  key={`${task._id}-${currentMonth.toISOString()}-${index}-months`}
                   style={{
                     ...ganttTimePeriodCell,
                     backgroundColor: index % 2 === 0 ? '#f9f9f9' : '#ffffff',
@@ -1159,7 +1328,7 @@ export default function TimeTable({
   const forceTaskVisualUpdate = (taskId,newPattern,newColor) => {
     let taskDuration = document.getElementById(`${taskId}--pattern-target`)
     if(!taskDuration){
-        console.log("Task cant be found by id: " + `${taskId}--pattern-target` );
+        //console.log("Task cant be found by id: " + `${taskId}--pattern-target` );
         return;
     }
     //taskDuration.style.backgroundImage = newPattern ? `url(${patterns[newPattern]})` : 'none';
@@ -1182,17 +1351,17 @@ export default function TimeTable({
       }
 
       const data = await response.json();
-      console.log('Task deleted successfully:', data);
+      //console.log('Task deleted successfully:', data);
 
       
       setTasks(prevTasks => prevTasks.filter(task => task._id !== taskId));
       setTaskDurations(prevDurations => prevDurations.filter(duration => duration.task !== taskId));
-      console.log(tasks)
+      //console.log(tasks)
   
       setShowDetails(false);
       setSelectedTask(null);
       setCurrentDayMarkerHeight(currentDayMarkerHeight - 1);
-      console.log(currentDayMarkerHeight);
+      //console.log(currentDayMarkerHeight);
       return true;
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -1224,7 +1393,7 @@ export default function TimeTable({
       setTaskDurationElDraggedId(taskDurationId);
       setHoveredTask(null);
       setIsDragging(true);
-      console.log("Drag started for taskDurationId:", taskDurationId);
+      //console.log("Drag started for taskDurationId:", taskDurationId);
     }
   }
 
@@ -1237,7 +1406,7 @@ export default function TimeTable({
       setHoveredTask(null);
       setIsDragging(false);
       
-      console.log("Drag ended for taskDurationId:", taskDurationId);
+      //console.log("Drag ended for taskDurationId:", taskDurationId);
     }
   }
 
@@ -1257,7 +1426,7 @@ export default function TimeTable({
         throw new Error(`HTTP error, status: ${response.status}`);
       }
   
-      console.log('Task dates updated successfully on the server.');
+      //console.log('Task dates updated successfully on the server.');
       setResizingTask(null);
       setResizeDirection(null);
       setIsResizing(false);
@@ -1283,11 +1452,11 @@ export default function TimeTable({
     const dataDate = targetCell.getAttribute('data-date');
     const targetTaskId = targetCell.getAttribute('data-task-id');
 
-    console.log(taskDuration)
-    console.log(targetTaskId)
+    //console.log(taskDuration)
+    //console.log(targetTaskId)
 
     if (taskDuration.task !== targetTaskId) {
-      console.log("Task can only be dropped within its respective row.");
+      //console.log("Task can only be dropped within its respective row.");
       return;
     }
 
@@ -1318,7 +1487,7 @@ export default function TimeTable({
     } 
     
     else {
-      console.log("It's occupied!");
+      //console.log("It's occupied!");
     }
 
     setTaskDurationElDraggedId(null);
@@ -1366,7 +1535,7 @@ export default function TimeTable({
           cellWidth = 180;
           scrollPosition = earliestTaskStartMonthIndex * cellWidth;
 
-          console.log("earliestTaskStartMonthIndex: ", earliestTaskStartMonthIndex);
+          //console.log("earliestTaskStartMonthIndex: ", earliestTaskStartMonthIndex);
     
           ganttRef.current.scrollLeft = scrollPosition;
         }
