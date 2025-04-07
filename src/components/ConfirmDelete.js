@@ -36,10 +36,10 @@ function ConfirmDelete() {
   }, [userId, token]);
 
   return (
-    <div className="confirm-delete-container">
-      <div className="confirm-delete-form text-center">
+    <div className="confirmDeleteContainer">
+      <div className="confirmDeleteForm text-center">
         <div className="card-header registerFormHeader">
-          <h1 className="confirm-delete-title">Account Deletion</h1>
+          <h1 className="confirmDeleteTitle">Account Deletion</h1>
         </div>
         <div className="card-body p-0">
           <p id="floatingMessage">{message}</p>

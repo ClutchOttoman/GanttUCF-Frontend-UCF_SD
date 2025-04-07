@@ -1,6 +1,12 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import AnnouncementModal from './AnnouncementModal';
+import { buildPath } from './buildPath';
+import DashboardCalendar from './DashboardCalendar.js';
 import './DashboardToDo.css';
-import {buildPath} from './buildPath';
+import {toast} from 'react-toastify';
+import ToastSuccess from './ToastSuccess';
+import ToastError from './ToastError';
+var i, j, task,tasks = [];
 
 function toDate(timestanp) {
     var i = 0;
@@ -8,7 +14,8 @@ function toDate(timestanp) {
     date += timestanp.slice(5, 7) + "/" + timestanp.slice(8, 10) + "/" + timestanp.slice(0, 4);
     return date;
 }
-// MM/DD/YYYY
+
+// Function used to show task date as MM/DD/YYYY
 function toDisplayDate(date) {
     const today = new Date();
     const year = parseInt(date.slice(6, 10));
@@ -26,45 +33,31 @@ function toDisplayDate(date) {
     if(day-thisDay == 0){return "Today";}
     return date;
 }
-function toPhonePretty(phoneNum){
-    const first = phoneNum.slice(0,3);
-    const second = phoneNum.slice(3,6);
-    const third = phoneNum.slice(6, 10);
-    return "("+first+")"+" "+second+"-"+third;
-}
-var i, task,tasks = [];
+
 function DashboardToDo() {
     var search = ""
     var _ud = localStorage.getItem('user_data');
     var ud = JSON.parse(_ud);
     var userId = ud._id;
     var displayedTasks = [];
-    const [taskList, setTaskList] = useState([]);
-    const [taskToDisplay, setTaskToDisplay] = useState(null);
 
-    function actionButtonClick(task){
-        return function (){
-            setTaskToDisplay(task);
-            var turnOnDiv = 0;
-            task.users.forEach(u =>{
-                //console.log(u);
-                if(u.localeCompare(userId) === 0){return;}
-                const info = document.getElementById(u);
-                if(!info){return;}
-                info.style.display = "";
-                if(turnOnDiv === 0){
-                    turnOnDiv = 1;
-                }
-            })
-            const contactInfoDiv = document.getElementById("taskContactsDiv");
-            if(turnOnDiv === 1){
-                contactInfoDiv.style.display = "";
-            }
-            else{
-                contactInfoDiv.style.display = "none";
-            }
-        }
-    }
+    const [taskList, setTaskList] = useState([])
+    const [prerequisites, setPrerequisites] = useState([]);
+    const [expandedRow, setExpandedRow] = useState(null);
+    const [displayCalendar, setDisplayCalendar] = useState(false);
+    const [calendar, setCalendar] = useState(<div></div>);
+    const [buttonText, setButtonText] = useState("Calendar View");
+
+    useEffect(() => { 
+        const fetchTasks = async () => {
+            getTasks();
+
+        };
+        fetchTasks();
+
+    }, []);
+
+    // Function to get all the tasks assigned to the user
     const getTasks = async event => {
         var obj = { userId: userId };
         var js = JSON.stringify(obj);
@@ -81,15 +74,16 @@ function DashboardToDo() {
             var allProjects = JSON.parse(txt2);
 
             var usersToSearch = [];
-            //create table for tasks
-            //console.log(usersTasks);
-
+            
+            //For loop goes through each task pulled from the fetch and adds it to tasks
             for (i = 0; i < usersTasks.length; i++) {
-                if (displayedTasks.includes(usersTasks[i]._id) || taskList.includes(usersTasks[i]._id)) {
+
+                if (displayedTasks.includes(usersTasks[i]._id)) {
                     return;
                 }
-                displayedTasks.push(usersTasks[i]._id);
-                //get all info relevant info  for respecitve task
+                displayedTasks.push(usersTasks[i]._id); // Flag used to prevent readding the same task(?)
+
+                //get all info relevant info for respecitve task
                 let currTaskId = usersTasks[i]._id;
                 let currTaskTitle = usersTasks[i].taskTitle;
                 let currTaskDescription = usersTasks[i].description;
@@ -105,6 +99,7 @@ function DashboardToDo() {
                 let currTaskProgress = usersTasks[i].progress
                 let currTaskCategory = usersTasks[i].taskCategory;
                 let currTaskCategoryId = usersTasks[i].taskCategoryId;
+                let prerequisiteTasks = usersTasks[i].prerequisiteTasks;
                 let currProject = allProjects.filter(project => project._id === currProjectId);
                 var currProjectName;
                 var currProjectOwnerId;
@@ -112,6 +107,7 @@ function DashboardToDo() {
                     currProjectName = currProject[0].nameProject;
                     currProjectOwnerId = currProject[0].founderId;
                 }
+
                 task = {
                     _id: currTaskId,
                     taskTitle: currTaskTitle,
@@ -124,107 +120,63 @@ function DashboardToDo() {
                     progress: currTaskProgress,
                     projectOwnerId: currProjectOwnerId,
                     taskCategory: currTaskCategory,
-                    taskCategoryId: currTaskCategoryId,
+                    taskCategoryId: currTaskCategoryId
                 };
                 tasks.push(task);
             };
-            //get info on all users in projects that the user has a task in
-            var userInfoRaw;
-            if(usersToSearch && usersToSearch.length){
-                var obj3 = {ids:usersToSearch};
-                var js3 = JSON.stringify(obj3);
-                const response3 = await fetch(buildPath('api/search/taskworkers'),{ method: 'POST', body: js3, headers: { 'Content-Type': 'application/json' } });
-                var txt3 = await response3.text();
-                userInfoRaw = JSON.parse(txt3);
-                //console.log(userInfoRaw);
 
-            }
-            const taskContactsDiv = document.getElementById("taskContactsDiv");
-            taskContactsDiv.setAttribute("class","contactInfoDiv mt-1")
-            const taskContactsHeader = document.createElement("h5");
-            taskContactsHeader.textContent = "Teammate Information:"
-            taskContactsDiv.appendChild(taskContactsHeader);
-            if(userInfoRaw){
-                userInfoRaw.forEach(userRaw =>{
-                    //console.log(userRaw);
-                    const userInfoDiv = document.createElement("div");
-                    userInfoDiv.setAttribute("class","contactName");
-                    if(userRaw._id.localeCompare(userId) === 0){
-                        return;
-                    }
-                    //console.log(userRaw);
-                    let email = "Email: " + userRaw.email;
-                    const emailText = document.createElement("p");
-                    emailText.innerText=email;
-                    emailText.setAttribute("class","contactBody");
-                    let phone = "Phone: " + toPhonePretty(userRaw.phone);
-                    const phoneText = document.createElement("p");
-                    phoneText.innerText = phone;
-                    phoneText.setAttribute("class","contactBody");
-                    let name = userRaw.name;
-                    const nameText = document.createElement("p");
-                    nameText.innerText = name;
-                    nameText.setAttribute("class","contactName");
-                    userInfoDiv.appendChild(nameText);
-                    userInfoDiv.appendChild(emailText);
-                    userInfoDiv.appendChild(phoneText);
-                    userInfoDiv.id = userRaw._id
-                    userInfoDiv.style.display = "none";
-                    taskContactsDiv.appendChild(userInfoDiv);
-                });
-            }
-            for (i = 0; i < tasks.length; i++) {
-                const tableBody = document.getElementById('taskTableBody');
-                const newRow = document.createElement('tr');
-
-                const dueDateCol = document.createElement('td');
-                dueDateCol.innerText =  tasks[i]['dueDatePretty'];
-
-                const taskNameCol = document.createElement('td');
-                taskNameCol.innerText = tasks[i]['taskTitle'];
-
-                const taskCategoryCol = document.createElement('td');
-                taskCategoryCol.innerText = tasks[i]['taskCategory'];
-
-                const projectNameCol = document.createElement('td');
-                projectNameCol.innerText = tasks[i]['projectName'];
-
-                const taskProgressCol = document.createElement('td');
-                taskProgressCol.innerText = tasks[i]['progress'];
-
-                const actionCol = document.createElement('td');
-
-                const actionButton = document.createElement('button');
-                actionButton.id = 'task-action-button' + i
-                actionButton.setAttribute('data-bs-toggle','modal');
-                actionButton.setAttribute('data-bs-target','#taskModal');
-                actionButton.addEventListener("click",actionButtonClick(tasks[i]));
-                actionButton.setAttribute("Class","taskBtn");
-                actionButton.textContent = "..."
-
-                newRow.appendChild(dueDateCol);
-                newRow.appendChild(taskNameCol);
-                newRow.appendChild(taskCategoryCol);
-                newRow.appendChild(projectNameCol);
-                newRow.appendChild(taskProgressCol);   
-                actionCol.appendChild(actionButton); 
-                newRow.appendChild(actionCol);
-                tableBody.appendChild(newRow);
-                if(tasks[i]['progress'].localeCompare("Completed") === 0 && tasks[i]['dueDatePretty'].localeCompare("PAST DUE") === 0){
-                    newRow.style.display = "None";
-                }
-            }
             setTaskList(tasks);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }
+    
+    const getPrerequisites = async (taskId) =>{
+        console.log(taskId);
+        let obj = { id: taskId };
+        let js = JSON.stringify(obj);
+        try {
+            //get list of tasks user is assigned to 
+            const response = await fetch(buildPath('api/readallprerequisites'),
+                { method: 'POST', body: js, headers: { 'Content-Type': 'application/json' } });
+    
+            let txt = await response.text();
+            let prequisites = JSON.parse(txt);
+    
+            setPrerequisites(prequisites.allPrerequisitesOfTask || []);
+        } catch (e) {
+            console.log(e);
+        }
+    };
 
+    // Removes a row that whose task has been marked as complete.
+    function dismissTaskFromList(rowNum){
+        if (!rowNum){return;}
+        console.log(`Inside of dismissTaskFromList(${rowNum})`);
+        document.getElementById(`task-row ${rowNum}`).remove();
+        document.getElementById(`task-row ${rowNum} show`).remove();
+    }
+    // Toggles the visibility of a expanded row's content.
+    function toggleExpandVisible(rowNum){
+        try{
+            let rowToggle = document.getElementById(`task-row ${rowNum} show`);
+            if (rowToggle.style.visibility === "collapse"){
+                rowToggle.style.visibility = "visible";
+            } else if (rowToggle.style.visibility === "visible"){
+                rowToggle.style.visibility = "collapse";
+            }
         }
         catch (e) {
             console.log(e);
         }
     }
    
+    // Function for task searching on to-do list
     function doTaskSearch() {
         let value = search.value.toLowerCase();
         let rows = document.getElementById("taskTableBody").getElementsByTagName("tr");
+        setExpandedRow(null)
 
         for (var i = 0; i < rows.length; i++) {
             let taskCol = rows[i].getElementsByTagName("td")[1].textContent.toLowerCase();
@@ -239,106 +191,177 @@ function DashboardToDo() {
         }
 
     }
-    const doMarkTaskComplete = async event => {
-        var error = "";
-        var obj = {progress:"Completed"};
-        var js = JSON.stringify(obj);
 
-        try{
-            const response = await fetch(buildPath('api/tasks/'+taskToDisplay['_id']),{method:'PUT',body:js,headers:{'Content-Type': 'application/json'}});
-            var txt = await response.text();
-            var res = JSON.parse(txt);
-            if(res.acknowledged){
-                window.location.assign(window.location.pathname);
-            }
-            else{
-                error = "Failed to update project visibility"
-                alert(error);
-            }
-        }
-        catch(e){
-            alert(error);
-        }
-    }
-    const doMarkTaskInProgress = async event => {
-        var error = "";
-        var obj = {progress:"In-Progress"};
-        var js = JSON.stringify(obj);
+    //Removes tasks from the todo list that are completed AND are past due date (Doesn't show old tasks)
+    const filterTasks = () => {
+        return taskList.filter(task => !(task.dueDatePretty === "PAST DUE" && task.progress === "Completed"));
+    };
 
-        try{
-            const response = await fetch(buildPath('api/tasks/'+taskToDisplay['_id']),{method:'PUT',body:js,headers:{'Content-Type': 'application/json'}});
-            var txt = await response.text();
-            var res = JSON.parse(txt);
-            if(res.acknowledged){
-                window.location.assign(window.location.pathname);
-            }
-            else{
-                error = "Failed to update project visibility"
-                alert(error);
-            }
+    // Function to change the progress of a task within the to-do list
+    const doMarkTaskStatus = async (task, index) => { 
+        var error = "";
+        var obj;
+
+        // Only switch between in-progress and completed
+        if(task.progress == "In-Progress"){
+            var obj = { progress: "Completed" };
         }
-        catch(e){
-            alert(error);
+        else{
+            var obj = { progress: "In-Progress" };
+        }
+
+        var js = JSON.stringify(obj);
+    
+        // Change the progress of the task in the DB
+        try {
+            console.log("Editing task in to-do list; " + task._id);
+            const response = await fetch(buildPath(`api/to-do-tasks/${task._id}`),
+            { 
+                method: 'PUT', 
+                body: js, 
+                headers: { 'Content-Type': 'application/json' } 
+            });
+    
+            var jsonResult = await response.json();
+            if (response.ok) {
+                toast.success(ToastSuccess, {data: {title: jsonResult.message},
+                    draggable: false, autoClose: 2000, ariaLabel: jsonResult.message,
+                });
+
+                // Remove the item from the to-do list.
+                dismissTaskFromList(index);
+
+            } else {
+                toast.error(ToastError, {data: {title: jsonResult.error},
+                    draggable: false, autoClose: 2000, ariaLabel: jsonResult.error,
+                });
+            }
+
+        } catch (e) {
+            error = "Failed to update task visibility";
+            toast.error(ToastError, {data: {title: error},
+                draggable: false, autoClose: 2000, ariaLabel: error,
+            });
         }
     }
-    function doTaskModalClose(){
-        const contactInfoDiv = document.getElementById("taskContactsDiv");
-        taskToDisplay.users.forEach(u =>{
-            //console.log(u);
-            if(u.localeCompare(userId) === 0){return;}
-            const info = document.getElementById(u);
-            if(!info){return;}
-            info.style.display = "none";
-        })
-        contactInfoDiv.style.display = "none";
-    }
-    useLayoutEffect(() => { getTasks() }, []);
+
+    // Function to help swithcing to the calendar view
+    const switchViews = () => {
+        setDisplayCalendar(!displayCalendar);
+        
+        // Change the button text based on the current view
+        if (buttonText === "Calendar View") {
+            setButtonText("List View");
+        } else {
+            setButtonText("Calendar View");
+        }
+    };
+
     return (
-        <div class="wrapper mt-3">
-            <div class="container-sm px-0 mt-5 mx-0 mainContainer">
-                <h1 class="title">To Do List</h1>
-                <form>
+        // Display the calendar or the to-do list
+        displayCalendar ? (
+            <div class="container px-0 mt-5 mx-0">
+                <h1 class="title">Calendar</h1>
+                <form class="search-bar-calendar-btn" onSubmit={(e) => e.preventDefault()}>
                     <input type="search" class="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
+                    <button id="calendar-btn" class="calendar-btn" onClick={switchViews} >{buttonText}</button>
                 </form>
-                <div class="table-responsive-lg">
-                    <table class="table table-bordereless" id="taskTableHeader">
-                        <thead>
-                            <tr>
-                                <th width="15%" scope='col'>Due Date</th>
-                                <th width="25%" scope='col'>Task Name</th>
-                                <th width="15%" scope='col'>Category</th>
-                                <th width="25%" scope='col'>Project</th>
-                                <th width="20%" scope='col'>Progress</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-group-divider" id="taskTableBody">
-                            <script>
-
-                            </script>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal fade" tabindex="-1" id="taskModal" data-bs-backdrop="static" data-bs-keyboard="false">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                            {taskToDisplay ? <h3 class="modal-title">{taskToDisplay['taskTitle']}<h5 class="modal-title">{taskToDisplay['projectName']}</h5></h3> : null}
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onClick={doTaskModalClose}></button>
-                            </div>
-                            <div class="modal-body">
-                             {taskToDisplay ? 
-                                <div><p>{taskToDisplay['description']}</p>{taskToDisplay['progress'].localeCompare("Completed") === 0 ? null:<p>{taskToDisplay['dueDatePretty'].localeCompare("PAST DUE") === 0 ? "THIS TASK WAS DUE: "+ taskToDisplay['dueDateActual']: "Due: "+ taskToDisplay['dueDatePretty']}</p>}{taskToDisplay['userInfoText']}</div> : null}<div id = "taskContactsDiv"></div></div>
-                            {taskToDisplay? 
-                            <div class="modal-footer">
-                                {(taskToDisplay['progress'].localeCompare("Completed") === 0) ?  <button type="button" class="btn btn-primary" onClick={()=>doMarkTaskInProgress()}>Mark Task In Progress</button>:
-                                <button type="button" class="btn btn-primary" onClick={()=>doMarkTaskComplete()}>Mark Task Complete</button>}
-                            </div>:null}
-                        </div>
-                    </div>
+                <div>
+                    {/* Render the calendar using the already fetched task list */}
+                    <DashboardCalendar taskList={taskList} />
                 </div>
             </div>
+        ) : (
+        <div class="container px-0 mt-5 mx-0">
+            {/*Announcements for new features */}
+            <AnnouncementModal />
+
+                <h1 class="title">To Do List</h1>
+                <form class="search-bar-calendar-btn" onSubmit={(e) => e.preventDefault()}>
+                    <input type="search" class="form-control searchForm" placeholder='Search tasks by name, category or project...' id="search projects" onChange={doTaskSearch} ref={(c) => search = c} />
+                    <button class="calendar-btn" onClick={switchViews} >{buttonText}</button>
+                </form>
+                    <table className="table" id="taskTableHeader">
+                        <thead>
+                            <tr>
+                                <th scope='col' className="todoTableBody">Due Date</th>
+                                <th scope='col' className="todoTableBody">Task Name</th>
+                                <th scope='col' className="todoTableBody">Category</th>
+                                <th scope='col' className="todoTableBody" >Project</th>
+                                <th scope='col' className="todoTableBody" >Progress</th>
+                                <th scope='col' className="todoTableBody" >Details</th>
+                            </tr>
+                        </thead>
+                            <tbody className="table-group-divider" id="taskTableBody">
+                            {filterTasks().map((task, index) => (
+                                    <React.Fragment key={task._id}>
+                                        {/* Default visible row. */}
+                                        <tr
+                                            {...index++}
+                                            key={task._id}
+                                            id={`task-row ${index}`}
+                                        >
+                                            <td>{task.dueDatePretty}</td>
+                                            <td>{task.taskTitle}</td>
+                                            <td>{task.taskCategory}</td>
+                                            <td>{task.projectName}</td>
+                                            <td>{task.progress}</td>
+                                            <td><button className="taskBtn" onClick={() => toggleExpandVisible(index)}>...</button></td>
+                                        </tr>
+                                        {/* For making a row visible on click */}
+                                        <tr id={`task-row ${index} show`} style={{visibility: "collapse"}}>
+                                            <td colSpan="6" className="details-row">
+                                                <div>
+                                                    <h5><strong>Description:</strong></h5>
+                                                        <p dangerouslySetInnerHTML={{__html: task.description}}></p>
+                                                    <p>
+                                                        <span>
+                                                            {task.dueDatePretty === 'PAST DUE' ?
+                                                            `THIS TASK WAS DUE: ${task.dueDateActual}`
+                                                            : ''}
+                                                        </span>
+                                                    </p>
+                                                    <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task, index)}>
+                                                        Mark As {task.progress === "In-Progress" ? "Completed" : 'In-Progress'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {/* Expands row to show task description when clicking action button */}
+                                        {expandedRow === task._id && (
+                                            <tr>
+                                                <td colSpan="6" className="details-row">
+                                                    <div>
+                                                        <h5><strong>Description:</strong></h5>
+                                                        <p dangerouslySetInnerHTML={{ __html: task.description }}></p>
+                                                        <h5><strong>Prerequisite Tasks:</strong></h5>
+                                                        <ul className="prerequsisite-list">
+                                                            {prerequisites.map((prereq, index) => (
+                                                                <li key={index}>
+                                                                    {prereq.taskTitle} - {prereq.progress}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                        <p>
+                                                            <span>
+                                                                {task.dueDatePretty === 'PAST DUE' ?
+                                                                `THIS TASK WAS DUE: ${task.dueDateActual}`
+                                                                : ''}
+                                                            </span>
+                                                        </p>
+                                                        <button className="btn btn-primary progress-btn" onClick={() => doMarkTaskStatus(task, index)}>
+                                                            Mark As {task.progress === "In-Progress" ? "Completed" : 'In-Progress'}
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </React.Fragment>
+                                ))}
+                            </tbody>
+                    </table>
         </div>
-    );
+        ));
 };
 
 export default DashboardToDo;

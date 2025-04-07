@@ -1,57 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import './VerifyEmail.css';
+import './AcceptInvite.css';
 
-import {buildPath} from './buildPath';
+import { buildPath } from './buildPath';
 
 
 function AcceptInvite() {
 
+  const headMessage = "Please enter the email used for your Ganttify account";
+  const thankYouMessage = "Thank you, you have been added as a member of the team!";
 
   const { token } = useParams();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const validEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
+  // Compare the entered email to the valid email test
+  function checkEmailValidity(){
+    if(email.localeCompare("") === 0){
+      setEmailMessage("");
+    }
+    else if(!validEmail.test(email)){
+      setEmailMessage("*** Please enter a valid email ***")
+    }
+    else{
+      setEmailMessage("");
+      return true;
+    }
 
-  useEffect(() => {
-    const doAcceptInvite = async () => {
+    return false;
+  }
 
+  const handleInputChange = (e) => {
+    setEmail(e.target.value);
+    setMessage("");
+    setEmailMessage("");
+  };
 
-      try {
-        const response = await fetch(buildPath(`api/accept-invite/${token}`), {
+  // After submit, check validity then accept the invite
+  const handleSubmit = () => {
+    if(checkEmailValidity()){
+      doAcceptInvite();
+    }
+  };
+
+  const doAcceptInvite = async () => {
+    // Check email isnt empty, and is valid
+    if(email !== "" && validEmail.test(email)){
+      let isValidUser = false;
+
+      // Find the user based on their email
+      try{
+        const response = await fetch(buildPath(`api/search-user/${email}`), {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json' }
         });
 
-        const contentType = response.headers.get('content-type');
-
-
-        if (contentType && contentType.indexOf('application/json') !== -1) {
-
-
-          const res = await response.json();
-          if (res.error) {
-            setMessage('There was an issue with accepting your invite.');
-          } else {
-            setMessage('Your invite has been successfully accepted and you are now a team member!');
-          }
-
-
-
-        } else {
-          setMessage('Invite accepted, redirecting to login.');
-        
-          setTimeout(() => {
-            window.location.href = '/login';
-          }, 3000);
+        const res = await response.json();
+        if (res.error) {
+          setMessage('That email is not associated with a Ganttify account\nPlease try again or create an account and try again.');
+          return;
         }
-      } catch (e) {
-        console.error('Error accepting invite:', e);
-        setMessage('There was an issue with accepting your invite.');
-      }
-    };
+        else{
+          isValidUser = true;
+        }
 
-    doAcceptInvite();
-  }, [token]);
+        // If the user has a valid GanttUCF account
+        if(isValidUser){
+          // Accept the invite
+          try {
+            const response = await fetch(buildPath(`api/accept-invite/${token}/${email}`), {
+              method: 'GET',
+              headers: { 'Content-Type': 'application/json'}
+            });
+  
+          } catch (e) {
+            console.error('Error accepting invite:', e);
+            setMessage('There was an issue with accepting your invite.');
+            return;
+          }
+        }
+
+        // Display thank you message, and reroute to login page
+        setMessage(thankYouMessage);
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 3000);
+
+      }catch(error){
+        setMessage('There was an issue with accepting your invite.');
+        console.error('Error finding email:', error);
+      }
+    }
+  };
 
   return (
 
@@ -61,12 +104,41 @@ function AcceptInvite() {
 
         <h1 className="verify-email-title">Accept Invite</h1>
 
-        <p className='verify-email-description'>{message}</p>
+        <p className='verify-email-description'>{headMessage}</p>
 
+        {message !== "" ? message : ""}
+        {message === thankYouMessage && <p>Redirecting to Login Page...</p>}
+
+        <input
+          type="email"
+          className="email-input"
+          placeholder="Enter your email"
+          value={email}
+          onChange={handleInputChange}
+        />
+
+        {/* Displaying the email message and the forms depending on what the message currently is */}
         <div className="button-container d-grid gap-2">
-
-          <a href="/login" className="btn-2 btn-link mt-2">Back to Login</a>
-
+          {emailMessage === "" ? (
+            <div>
+              <button className="btn btn-primary mt-2" onClick={handleSubmit}>
+                Submit
+              </button>
+              <a href="/register" className="btn-2 btn-link mt-2">
+                Create an Account
+              </a>
+            </div>
+          ) : (
+            <div>
+              <p>{emailMessage}</p>
+              <button className="btn btn-primary mt-2" onClick={handleSubmit}>
+                Submit
+              </button>
+              <a href="/register" className="btn-2 btn-link mt-2">
+                Create an Account
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -1,17 +1,176 @@
 <!doctype html>
-<html lang="en">
+
+<html class="no-flash" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/Page_Logo.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <title>Ganttify - Free Gantt Charts</title>
+    <title>GanttUCF - Free Gantt Charts</title>
+
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <!-- https://github.com/DaltonLens/libDaltonLens/tree/master -->
+    <!-- Is public domain from its Unlicense license -->
+    <!-- Created by Nicolas Burrus -->  
+    <style>
+      .protanopia {
+          -webkit-filter: url(#protanopia);
+          -moz-filter: url(#protanopia);
+          -ms-filter: url(#protanopia);
+          -o-filter: url(#protanopia);
+          filter: url(#protanopia);
+      }
+      .deuteranopia {
+          -webkit-filter: url(#deuteranopia);
+          -moz-filter: url(#deuteranopia);
+          -ms-filter: url(#deuteranopia);
+          -o-filter: url(#deuteranopia);
+          filter: url(#deuteranopia);
+      }
+      .tritanopia {
+          -webkit-filter: url(#tritanopia);
+          -moz-filter: url(#tritanopia);
+          -ms-filter: url(#tritanopia);
+          -o-filter: url(#tritanopia);
+          filter: url(#tritanopia);
+      }
+      </style>
+  
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- https://github.com/DaltonLens/libDaltonLens/tree/master -->
+    <!-- Is public domain from its Unlicense license -->
+    <!-- Created by Nicolas Burrus -->  
+    <svg style='height: 0; width: 0; padding: 0; margin: 0; line-height: 0;'>
+      <!-- Single matrix approximation of Viénot, Brettel & Mollon 1999 -->
+      <filter id="protanopia" color-interpolation-filters="linearRGB">
+          <feColorMatrix type="matrix" in="SourceGraphic" values="
+              0.10889,0.89111,-0.00000,0,0
+              0.10889,0.89111,0.00000,0,0
+              0.00447,-0.00447,1.00000,0,0
+              0,0,0,1,0"
+          />
+      </filter>
+
+      <!-- Single matrix approximation of Viénot, Brettel & Mollon 1999 -->
+      <filter id="deuteranopia" color-interpolation-filters="linearRGB">
+          <feColorMatrix type="matrix" in="SourceGraphic" values="
+              0.29031,0.70969,-0.00000,0,0
+              0.29031,0.70969,-0.00000,0,0
+              -0.02197,0.02197,1.00000,0,0
+              0,0,0,1,0"
+          />
+      </filter>
+
+      <!-- 
+        Brettel, Viénot & Mollon 1997 algorithms with two projection planes.
+
+        This is the only approach I know that is supposed to be reasonably
+        accurate for tritanopia, the single matrix approaches are NOT accurate.
+      -->
+      <filter id="tritanopia" color-interpolation-filters="linearRGB">
+          <!-- 
+              Projection 1, with a special alpha that encodes the separation plane.
+              If dot(rgb, n) > 0, then use projection 1, otherwise use projection 2.
+              This is encoded in alpha by:
+                  - Applying a 1.0 factor on the source alpha so that 0 input alpha remains 0
+                  - Subtracting 0.2 so that negative values become < 0.8 and position values >= 0.8
+                  - It is important to normalize the factors to keep a good numerical accuracy
+                  and to keep a large alpha threshold since the RGB values are then stored
+                  premultiplied by alpha.
+                  - This assumes that negative values get clipped to 0, and positive
+                  values clipped to 1, without overflowing, etc. Which seems to be the case
+                  on all browsers.
+          -->
+          <feColorMatrix type="matrix" in="SourceGraphic" result="ProjectionOnPlane1" values="
+              1.01354, 0.14268, -0.15622, 0, 0
+              -0.01181, 0.87561, 0.13619, 0, 0
+              0.07707, 0.81208, 0.11085, 0, 0
+              7.92482, -5.66475, -2.26007, 1, -0.2"
+          />
+          <!-- 
+              Binarize alpha. 5 values means the last chunk will start at 0.8.
+              All the values below 0.8 will become 0 (correspond to the dot
+              product with the separation plane being negative) and above will become 1
+          -->        
+          <feComponentTransfer in="ProjectionOnPlane1" result="ProjectionOnPlane1">
+              <feFuncA type="discrete" tableValues="0 0 0 0 1"/>
+          </feComponentTransfer>
+
+          <feColorMatrix type="matrix" in="SourceGraphic" result="ProjectionOnPlane2" values="
+              0.93337, 0.19999, -0.13336, 0, 0
+              0.05809, 0.82565, 0.11626, 0, 0
+              -0.37923, 1.13825, 0.24098, 0, 0
+              0,0,0,1,0"
+          />
+
+          <!-- Uncomment the debug black matrix to see which pixels go to which plane -->
+          <!-- <feColorMatrix type="matrix" in="SourceGraphic" result="ProjectionOnPlane2" values="0,0,0,0,0 0,0,0,0,0 0,0,0,0,0 0,0,0,1,0"/> -->
+
+          <!-- Blend the two projections, picking one or the other depending on alpha. -->
+          <feBlend in="ProjectionOnPlane1" in2="ProjectionOnPlane2" mode="normal"/>
+      </filter>
+    </svg>
+
+    <!-- Custom functions that will apply or remove a CSV filter to a class. -->
+    <script>
+      
+      // Apply protanopia CVD filter.
+      const applyProtanCVDFilter = () => {
+        // Get all tags and objects that are of class "cvd_filter_applicable"
+        const allInstances = document.getElementsByClassName("cvd_filter_applicable");
+
+         // Apply Protanopia CVD filter to each of these.
+         for (let i = 0; i < allInstances.length; i++){
+            allInstances[i].classList.remove("normal", "protanopia", "deuteranopia", "tritanopia");
+            allInstances[i].classList.add("protanopia");
+          }
+      }
+
+      // Apply deuteranopia CVD filter.
+      const applyDeuteranCVDFilter = () => {
+        // Get all tags and objects that are of class "cvd_filter_applicable"
+        const allInstances = document.getElementsByClassName("cvd_filter_applicable");
+
+        // Apply Deuteranopia CVD filter.
+        for (let i = 0; i < allInstances.length; i++){
+            allInstances[i].classList.remove("normal", "protanopia", "deuteranopia", "tritanopia");
+            allInstances[i].classList.add("deuteranopia");
+        }
+      }
+
+      // Apply tritanopia CVD filter.
+      const applyTritanCVDFilter = () => {
+        // Get all tags and objects that are of class "cvd_filter_applicable"
+        const allInstances = document.getElementsByClassName("cvd_filter_applicable");
+
+        // Apply Tritanopia CVD filter.
+        for (let i = 0; i < allInstances.length; i++){
+            allInstances[i].classList.remove("normal", "protanopia", "deuteranopia", "tritanopia");
+            allInstances[i].classList.add("tritanopia");
+        }
+      }
+
+      // Remove all CVD filters.
+      const removeCVDFilter = () => {
+        // Get all tags and objects that are of class "cvd_filter_applicable"
+        const allInstances = document.getElementsByClassName("cvd_filter_applicable");
+
+        // Apply no filter.
+        for (let i = 0; i < allInstances.length; i++){
+          allInstances[i].classList.remove("normal", "protanopia", "deuteranopia", "tritanopia");
+          allInstances[i].classList.add("normal");
+        }
+      }
+    </script>
+
   </body>
 </html>

@@ -1,0 +1,50 @@
+.confirmRestoreContainer {
+    min-height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.confirmRestoreForm {
+    background: #FFEFD5;
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    margin-top: -20px;
+}
+
+.confirmRestoreTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    display: inline-block;
+    color: #000;
+}
+
+.confirmRestoreTitle::before,
+.confirmRestoreTitle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 150px;
+    height: 2px;
+    background: #DC6B2C;
+}
+
+.confirmRestoreTitle::before {
+    left: -167px;
+}
+
+.confirmRestoreTitle::after {
+    right: -167px;
+}
+
+
+#floatingMessage {
+    margin-bottom: 10px;
+}

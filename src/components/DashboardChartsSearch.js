@@ -22,7 +22,7 @@ function DashboardChartsSearch(){
             obj = {founderId:userId,title:""};
         }
         var js = JSON.stringify(obj);
-        console.log(js)
+        ///console.log(js)
         try
         {   
             const response = await fetch(buildPath('api/search/projects'),
@@ -39,10 +39,15 @@ function DashboardChartsSearch(){
                     }
                     return false;
                 });
-                setChartsToDisplay(<DashboardCharts projects={modifiedRes}/>);
+                if(modifiedRes !== chartsAreDisplayed){
+                    setChartsToDisplay(<DashboardCharts projects={modifiedRes} triggerReSearch={triggerReSearch}/>);
+                    setChartsAreDisplayed(modifiedRes);
+                }
+                
             }
             else{
-                setChartsToDisplay(<DashboardCharts projects={empty}/>);
+                setChartsToDisplay(<DashboardCharts projects={empty} triggerReSearch={triggerReSearch}/>);
+                setChartsAreDisplayed(empty);
             }
         }
         catch(e)
@@ -50,7 +55,12 @@ function DashboardChartsSearch(){
             alert(e.toString());
         }
     }
-    const [chartsToDisplay, setChartsToDisplay] = useState(<DashboardCharts projects={empty}/>);
+    const triggerReSearch = () =>{
+        search="";
+        doProjectSearch()
+    }
+    const [chartsToDisplay, setChartsToDisplay] = useState(<DashboardCharts projects={empty} triggerReSearch={triggerReSearch}/>);
+    const [chartsAreDisplayed,setChartsAreDisplayed] = useState([]);
 
 
     //do an empty search before page renders
@@ -58,17 +68,16 @@ function DashboardChartsSearch(){
     
 
     return(
-        <div class = "mt-3">
-            <div class = "container-sm px-0 mt-5 mx-0 mainContainer">
-                <h1 class="title">Charts</h1>
-                <div class="row">
-                    <form>
-                            <div class = "col"><input type="search" class="form-control searchForm" placeholder='Search charts by name...' id="search projects" onChange={doProjectSearch} ref={(c) => search = c}/></div>
+            <div>
+                <div class="px-0 mx-0 mt-5 mb-4">
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <h1 class="title">Charts</h1>
+                        <input type="search" class="form-control searchForm" placeholder='Search charts by name...' id="search projects" onChange={doProjectSearch} ref={(c) => search = c}/>
                     </form>
                 </div>
                 {chartsToDisplay}
             </div>
-        </div>
+        
     );
 };
 

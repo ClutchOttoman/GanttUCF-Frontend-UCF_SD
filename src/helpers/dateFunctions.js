@@ -71,3 +71,4 @@ export function getNextDateFromStr(year,month,day){
 
     return createFormattedDateFromStr(year,month,day);
 }
+

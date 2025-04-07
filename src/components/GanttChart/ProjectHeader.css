@@ -4,7 +4,7 @@
     justify-content: center; /* To keep the title centered */
   }
   
-  .btn-outline-primary {
+  .btn-outline-primary2 {
     background: transparent;
     border: none;
     font-size: 20px; /* Adjust size as needed */
@@ -15,7 +15,7 @@
     transition: transform 0.3s ease; /* Add animation for hover effect */
   }
 
-  .btn-outline-primary:hover {
+  .btn-outline-primary2:hover {
     transform: scale(1.2); /* Slightly enlarge the pencil on hover */
   }
 
@@ -64,3 +64,4 @@
     font-weight: bold;
   }
   
+

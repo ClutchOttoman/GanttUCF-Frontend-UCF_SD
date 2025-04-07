@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
-import './Login.css';
+import './login.css';
 import {buildPath} from './buildPath';
 
 function Login() {
   const [message, setMessage] = useState('');
   const [loginEmail,setLoginEmail] = useState('');
   const [loginPassword,setLoginPassword] = useState('');
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    let passwordField = document.getElementById("passwordForm");
+
+    if (!isPasswordVisible){
+      passwordField.type = "text";
+      setPasswordVisible(true);
+    } else {
+      passwordField.type = "password";
+      setPasswordVisible(false);
+    }
+  }
 
   const doLogin = async event => {
     event.preventDefault();
@@ -25,19 +38,23 @@ function Login() {
       if (res.error !== "") {
         setMessage(res.error);
       } else {
+
+        // Load user information and ui settings.
         var user = {
-            _id:res._id,
+            token: res.token,
+            _id: res._id,
             email: res.email,
             name: res.name,
             username: res.username,
             phone: res.phone,
-            projects: res.projects,
-            toDoList: res.toDoList,
-            error: res.error};
+            showAnnouncement: res.showAnnouncement,
+            uiOptions: res.uiOptions,
+            test: res.test,
+            error: res.error
+        };
+        console.log(JSON.stringify(user));
         localStorage.setItem('user_data', JSON.stringify(user));
-        console.log(user._id);
-        
-
+        localStorage.setItem('modalShown', 'false');
         setMessage('');
         window.location.href = '/dashboard';
       }
@@ -48,29 +65,36 @@ function Login() {
   };
 
   return (
-
-    
-    <div className = "loginContainer mt-5">
-      <div className ="loginForm text-center">
-          <div className ="card-header loginFormHeader">
-              <h1 className = "loginTitle">Login</h1>
+    <div className = "loginContainer background-tile-repeat">
+      <div className ="loginForm mt-1">
+          <div className ="card-header loginFormHeader text-center">
+            <h1 className = "loginTitle">Login</h1>
           </div>
-      
           <div className = "card-body p-0">
       
               <form onSubmit={doLogin}>
-                  <div className = "row text-start"><label className = "formLabel mb-1" htmlFor="nameForm">Email</label></div>
+
+                  {/* Username */}
+                  <div>
+                    <label className = "formLabel" htmlFor="nameForm" style={{textAlign: "left"}}>Email</label>
+                    <div>
+                      <input id="nameForm" type="email" className="row formItem mx-0 mt-0" placeholder='Email' value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required>
+                      </input>
+                    </div>
+                  </div>
+
                   
-                  <div className = "row text-center mb-3"><input id="nameForm" type="email" className="formItem mx-0 mt-0" placeholder='Email' value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} required></input></div>
-                  
-                  <div className = "row text-start"><label className = "formLabel mb-1" htmlFor="passwordForm">Password</label></div>
-                  
-                  <div className = "row text-center  mb-3"><input id="passwordForm" type="password" className="formItem" placeholder='Password1!' value ={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required></input></div>
+                  {/* Password */}
+                  <div>
+                    <label className = "formLabel" htmlFor="passwordForm">Password</label>
+                    <div style={{position: "relative", display: "inline-flex", width: "100%", boxSizing: "border-box"}}>
+                      <input id="passwordForm" type="password" className="row formItem mx-0 my-0 mt-0" placeholder='Password' value ={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required autoComplete='off'></input>
+                      <i className={`fas ${isPasswordVisible ? 'fa-eye-slash' : 'fa-eye'} detailIcon`} onClick={togglePasswordVisibility} style={{fontSize: "30px", minWidth:"30px", position: "absolute", top: "8px", right: "10px", backgroundColor: "white"}}></i>
+                    </div>
+                  </div>
                   
                   <div className = "row text-center mb-1"><span>{message}</span></div>
-
                   <div className = "row text-center mb-2"><input id="submitLogin" className = "btn"type="submit" value="Login"/></div>
-
                   <div className ="row text-start mb-2"><a href="/forgot-password" className="forgot-password-link">Forgot your password?</a></div>
                   
               </form>
