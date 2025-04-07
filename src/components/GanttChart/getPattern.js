@@ -16,6 +16,9 @@ import Solid_Single_Square_Density_1 from '../../Images/assets/accessible_patter
 import Solid_Single_Star_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Star_Density_1.jsx?react';
 import Solid_Single_Triangle_Density_1 from '../../Images/assets/accessible_patterns/solid_shape_family/Solid_Single_Triangle_Density_1.jsx?react';
 
+//File to hold all functions for making pattern components to be used in timetable,addtaskbutton and taskdetails. 
+//To add future patterns just make a function for new pattern and add the function call to if elif chain
+
 const Assemble_Hollow_Single_Circle_Density_1 = (color,width,patternId) => {
     //console.log("Assembled Hollow Single Circle Density 1 with color " + color +" and width " + width);
     return <Hollow_Single_Circle_Density_1 stroke={color} patternWidth={width} patternId={patternId}/>;
