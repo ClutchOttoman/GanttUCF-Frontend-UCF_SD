@@ -6,7 +6,10 @@
 
 Frontend Component Documentation
 Gantt Chart
-File	Description
+|**File Name**||**Description**|
+| :--- | :--- |
+| Login.js | Handles user login and saves information to localStorage. |
+| Register.js | User registration functionality. |
 AddButton.js	Deprecated
 AddTask.js	Deprecated
 AddTaskButton.js	Floating add button on the View Chart page to create new tasks.
